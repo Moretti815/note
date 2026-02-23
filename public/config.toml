@@ -6,12 +6,13 @@ header_title = "Petal Note"
 header_subtitle = """
 风吹落的花瓣，和那些无处安放的碎碎念。
 """
-private_tip = "输入轻语解锁梦境..."
+private_tip = ""
 home_url = "https://github.com/miniyu157/petal-note"
 
 icon = "./assets/favicon.ico"
 font = "./assets/font.ttf"
 theme_color = "#FFB6C1"
 
-load_delay = 800 # ms
+load_delay = 800   # ms
 data_order = "asc" # [asc|desc]
+
