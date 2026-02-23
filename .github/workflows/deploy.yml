@@ -6,7 +6,7 @@ on:
       - main
       - master
     paths:
-      - 'index.html'
+      - 'public/index.html'
 
 jobs:
   notify:
