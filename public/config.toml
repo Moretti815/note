@@ -1,18 +1,25 @@
 data_source = "./data.txt"
 private_source = "./private.txt"
+home_url = "https://github.com/miniyu157/petal-note"
+font = "./assets/font.ttf"
 
 title = "Petal"
 header_title = "Petal Note"
 header_subtitle = """
 风吹落的花瓣，和那些无处安放的碎碎念。
 """
-private_tip = ""
-home_url = "https://github.com/miniyu157/petal-note"
-
 icon = "./assets/favicon.ico"
-font = "./assets/font.ttf"
 theme_color = "#FFB6C1"
+unread_empty_tip = "所有的花瓣都已读过了，去吹吹风吧。"
+
+private_tip = "" # 回退: '输入轻语解锁梦境...'
+
+private_title = ""
+private_header_title = ""
+private_header_subtitle = ""
+private_icon = ""
+private_theme_color = ""
+private_unread_empty_tip = ""
 
 load_delay = 800   # ms
 data_order = "asc" # [asc|desc]
-

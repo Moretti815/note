@@ -359,7 +359,8 @@
             transform-style: preserve-3d;
         }
 
-        .timeline.ready .item {
+        .timeline.ready .item,
+        .timeline.ready .empty-tip {
             animation: deepSurface 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
@@ -702,6 +703,17 @@
             user-select: none;
             -webkit-user-select: none;
         }
+
+        .empty-tip {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            letter-spacing: 0.1em;
+            margin-block-start: 2.5rem;
+            font-style: italic;
+            opacity: 0.8;
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
@@ -938,6 +950,7 @@
                     this.petalBtn.classList.remove('unlocked');
                 }
 
+                this.updateHeadAndHeader();
                 this.renderTags();
                 this.render();
                 
@@ -985,19 +998,36 @@
                 });
             }
 
-            applyConfig(c) {
-                if (c.title) document.getElementById('doc-title').innerText = c.title;
-                if (c.theme_color) document.getElementById('theme-color').content = c.theme_color;
-                if (c.private_tip) this.pwdInput.placeholder = c.private_tip;
+            updateHeadAndHeader() {
+                const c = this.config;
+                const mode = this.isPrivateMode;
                 
-                if (c.icon) {
-                    let link = document.createElement('link');
-                    link.rel = 'icon';
-                    link.href = c.icon;
-                    document.head.appendChild(link);
+                const title = mode ? (c.private_title || c.title) : c.title;
+                if (title !== undefined) document.getElementById('doc-title').innerText = title;
+                
+                const theme = mode ? (c.private_theme_color || c.theme_color) : c.theme_color;
+                if (theme !== undefined) document.getElementById('theme-color').content = theme;
+                
+                const icon = mode ? (c.private_icon || c.icon) : c.icon;
+                if (icon) {
+                    let link = document.querySelector('link[rel="icon"]');
+                    if (!link) {
+                        link = document.createElement('link');
+                        link.rel = 'icon';
+                        document.head.appendChild(link);
+                    }
+                    link.href = icon;
                 }
-                if (c.header_title) document.getElementById('site-title').innerText = c.header_title;
-                if (c.header_subtitle) document.getElementById('site-subtitle').innerHTML = c.header_subtitle.replace(/\n/g, '<br>');
+                
+                const hTitle = mode ? (c.private_header_title || c.header_title) : c.header_title;
+                if (hTitle !== undefined) document.getElementById('site-title').innerText = hTitle;
+                
+                const hSub = mode ? (c.private_header_subtitle || c.header_subtitle) : c.header_subtitle;
+                if (hSub !== undefined) document.getElementById('site-subtitle').innerHTML = hSub.replace(/\n/g, '<br>');
+            }
+
+            applyConfig(c) {
+                if (c.private_tip) this.pwdInput.placeholder = c.private_tip;
                 
                 const cornerBtn = document.getElementById('corner-link');
                 if (c.home_url) {
@@ -1005,6 +1035,7 @@
                     cornerBtn.innerText = c.home_url.replace(/^https?:\/\//, '').replace(/\/$/, '');
                     cornerBtn.style.display = 'block';
                 }
+
                 if (c.font) {
                     const style = document.createElement('style');
                     style.textContent = `
@@ -1013,6 +1044,8 @@
                     `;
                     document.head.appendChild(style);
                 }
+
+                this.updateHeadAndHeader();
             }
 
             bindGlobalEvents() {
@@ -1215,6 +1248,20 @@
                 const filtered = activeTag === '__UNREAD__'
                     ? items.filter(i => !this.readHashes.has(i.hash))
                     : (activeTag ? items.filter(i => i.tags.includes(activeTag)) : items);
+
+                if (filtered.length === 0 && activeTag === '__UNREAD__') {
+                    const tip = this.isPrivateMode 
+                        ? (this.config.private_unread_empty_tip || this.config.unread_empty_tip) 
+                        : this.config.unread_empty_tip;
+                    
+                    if (tip) {
+                        const emptyNode = document.createElement('div');
+                        emptyNode.className = 'empty-tip';
+                        emptyNode.innerText = tip;
+                        this.el.appendChild(emptyNode);
+                    }
+                    return;
+                }
 
                 filtered.forEach((item, i) => {
                     const node = document.createElement('article');
