@@ -570,8 +570,9 @@
 
         .text-strike {
             text-decoration: line-through;
-            text-decoration-color: var(--text-deco);
-            opacity: 0.8;
+            text-decoration-color: currentColor;
+            text-decoration-thickness: 1.5px;
+            opacity: 0.95;
         }
 
         .text-underline {
@@ -583,6 +584,10 @@
         .text-wavy {
             text-decoration: underline wavy var(--text-deco);
             text-underline-offset: 3px;
+        }
+
+        .manual-br {
+            height: 0.5em;
         }
 
         .card-img {
@@ -793,6 +798,20 @@
                 this.readHashes = new Set(JSON.parse(localStorage.getItem('dream_read_hashes') || '[]'));
             }
 
+            cleanDeadHashes() {
+                const pubSet = new Set(this.publicItems.map(i => i.hash));
+                const privSet = this.privateItems.length ? new Set(this.privateItems.map(i => i.hash)) : null;
+                
+                const validHashes = Array.from(this.readHashes).filter(h => {
+                    if (h.startsWith('pub_')) return pubSet.has(h);
+                    if (h.startsWith('priv_')) return privSet ? privSet.has(h) : true;
+                    return false;
+                });
+                
+                this.readHashes = new Set(validHashes);
+                localStorage.setItem('dream_read_hashes', JSON.stringify(validHashes));
+            }
+
             async bootstrap() {
                 this.bindGlobalEvents();
                 const loader = document.getElementById('loader');
@@ -831,7 +850,9 @@
                     const text = await dataRes.text();
                     if (text.trim().startsWith('<')) throw new Error('Data format error');
                     
-                    this.publicItems = this.parse(text);
+                    this.publicItems = this.parse(text, false);
+                    this.cleanDeadHashes();
+                    
                     this.renderTags();
                     this.render();
                     new SakuraSystem('bg-canvas');
@@ -857,7 +878,10 @@
                 this.el.classList.remove('ready');
 
                 if (toPrivate) {
-                    if (decryptedData) this.privateItems = this.parse(decryptedData);
+                    if (decryptedData) {
+                        this.privateItems = this.parse(decryptedData, true);
+                        this.cleanDeadHashes();
+                    }
                     this.isPrivateMode = true;
                     document.body.classList.add('private-mode');
                     this.petalBtn.classList.add('unlocked');
@@ -989,13 +1013,13 @@
                 return Math.abs(h).toString(36);
             }
 
-            parse(raw) {
+            parse(raw, isPrivate) {
                 const isAsc = this.config.data_order === 'asc';
                 const blocks = raw.split('\n---\n').map(b => b.trim()).filter(b => b && b.split('\n').length >= 2);
                 const total = blocks.length;
 
                 const parsedData = blocks.map((block, index) => {
-                    const blockHash = this.generateHash(block);
+                    const blockHash = (isPrivate ? 'priv_' : 'pub_') + this.generateHash(block);
                     const lines = block.split('\n');
                     const date = lines.shift().trim();
                     const tags = [];
@@ -1049,8 +1073,8 @@
                         return p;
                     });
 
-                    let finalHtml = processedLines.join('<br>');
-                    finalHtml = finalHtml.replace(/(?:<br>)*\s*(<img[^>]+>)\s*(?:<br>)*/g, '$1');
+                    let finalHtml = processedLines.join('<div class="manual-br"></div>');
+                    finalHtml = finalHtml.replace(/(?:<div class="manual-br"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="manual-br"><\/div>)*/g, '$1');
                     finalHtml = finalHtml.replace(/(<img[^>]+>){2,}/g, match => {
                         const count = (match.match(/<img/g) || []).length;
                         const gridClass = (count === 2 || count === 4) ? 'grid-2' : 'grid-3';
