@@ -419,21 +419,10 @@
             transform-origin: center bottom;
         }
 
-        @media (hover: hover) {
-            .card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 15px 35px var(--glow-accent), inset 0 0 0 1px rgb(255 255 255 / 40%);
-                border-color: rgb(255 255 255 / 80%);
-            }
-            body.private-mode .card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 15px 40px rgb(242 198 208 / 30%), inset 0 0 25px rgb(255 255 255 / 80%);
-            }
-        }
-
         .card:active {
-            transform: translateY(-2px) scale(0.99);
-            box-shadow: 0 8px 20px var(--glow-accent);
+            transform: scale(0.99);
+            box-shadow: 0 8px 25px var(--glow-accent), inset 0 0 0 1px rgb(255 255 255 / 40%);
+            border-color: rgb(255 255 255 / 80%);
             transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
@@ -443,8 +432,8 @@
         }
 
         body.private-mode .card:active {
-            transform: translateY(-2px) scale(0.99);
-            box-shadow: 0 8px 25px rgb(242 198 208 / 25%), inset 0 0 15px rgb(255 255 255 / 70%);
+            transform: scale(0.99);
+            box-shadow: 0 8px 30px rgb(242 198 208 / 30%), inset 0 0 25px rgb(255 255 255 / 80%);
         }
 
         .card-id {
@@ -460,7 +449,7 @@
             z-index: 2;
         }
 
-        .card:hover .card-id { opacity: 0.5; }
+        .card:active .card-id { opacity: 0.5; }
 
         .card-inner {
             padding: 1.2rem 1.4rem;
