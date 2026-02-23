@@ -17,6 +17,7 @@
             --bg-gradient-end: #f1f3f4;
             --private-accent: #f2c6d0;
             --glow-accent: rgb(216 140 154 / 30%);
+            --text-deco: rgb(171 155 160 / 60%);
         }
 
         body.private-mode {
@@ -24,6 +25,7 @@
             --bg-gradient-end: #f4e8eb;
             --timeline-accent: #e8a0b0;
             --card-bg-blur: rgb(255 253 254 / 75%);
+            --text-deco: rgb(238 187 77 / 40%);
         }
 
         *, *::before, *::after {
@@ -560,6 +562,29 @@
             background: rgb(216 140 154 / 10%);
         }
 
+        .text-weak {
+            color: var(--text-muted);
+            font-size: 0.9em;
+            opacity: 0.85;
+        }
+
+        .text-strike {
+            text-decoration: line-through;
+            text-decoration-color: var(--text-deco);
+            opacity: 0.8;
+        }
+
+        .text-underline {
+            text-decoration: none;
+            border-bottom: 1px solid var(--text-deco);
+            padding-bottom: 1px;
+        }
+
+        .text-wavy {
+            text-decoration: underline wavy var(--text-deco);
+            text-underline-offset: 3px;
+        }
+
         .card-img {
             max-width: 100%;
             height: auto;
@@ -1013,6 +1038,14 @@
                             const { alt, url } = imgStore[idx];
                             return `<img src="${url}" alt="${alt}" class="card-img" loading="lazy" />`;
                         });
+
+                        p = p.replace(/(?<!\\)%%(.+?)(?<!\\)%%/g, '<span class="text-weak">$1</span>');
+                        p = p.replace(/(?<!\\)~~(.+?)(?<!\\)~~/g, '<span class="text-strike">$1</span>');
+                        p = p.replace(/(?<!\\)\+\+(.+?)(?<!\\)\+\+/g, '<span class="text-underline">$1</span>');
+                        p = p.replace(/(?<!\\)\^\^(.+?)(?<!\\)\^\^/g, '<span class="text-wavy">$1</span>');
+                        
+                        p = p.replace(/\\(%%|~~|\+\+|\^\^)/g, '$1');
+
                         return p;
                     });
 
