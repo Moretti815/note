@@ -302,6 +302,47 @@
             }
         }
 
+        .tag.special-unread {
+            color: var(--rose-ellipsis);
+            border-color: rgb(216 140 154 / 30%);
+            font-weight: 500;
+        }
+
+        .tag.special-unread.active {
+            background: var(--rose-ellipsis);
+            border-color: var(--rose-ellipsis);
+            color: #fff;
+        }
+
+        @keyframes microwave {
+            0% { box-shadow: 0 0 0 0 rgb(216 140 154 / 50%); }
+            100% { box-shadow: 0 0 0 6px rgb(216 140 154 / 0%); }
+        }
+
+        .tag.special-unread.has-unread {
+            animation: microwave 2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+        }
+
+        body.private-mode .tag.special-unread {
+            color: #eebb4d;
+            border-color: rgb(238 187 77 / 30%);
+        }
+
+        body.private-mode .tag.special-unread.active {
+            background: #eebb4d;
+            border-color: #eebb4d;
+            color: #fff;
+        }
+
+        @keyframes microwave-private {
+            0% { box-shadow: 0 0 0 0 rgb(238 187 77 / 50%); }
+            100% { box-shadow: 0 0 0 6px rgb(238 187 77 / 0%); }
+        }
+
+        body.private-mode .tag.special-unread.has-unread {
+            animation: microwave-private 2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+        }
+
         .timeline {
             display: grid;
             gap: 2rem;
@@ -356,7 +397,22 @@
                 margin-block-top: 0.5em; 
                 position: relative;
                 z-index: 2;
-                transition: all 0.6s ease;
+                transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            }
+
+            & .node::after {
+                content: '';
+                position: absolute;
+                top: calc(100% + 2px);
+                left: 50%;
+                transform: translateX(-50%);
+                width: 2px;
+                height: 14px;
+                background: linear-gradient(to bottom, var(--rose-ellipsis), transparent);
+                border-radius: 2px;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
             }
 
             & .line {
@@ -366,6 +422,16 @@
                 opacity: 0.5;
                 transition: background 0.6s ease, opacity 0.6s ease;
             }
+        }
+
+        .item.unread .track .node {
+            border-color: var(--rose-ellipsis);
+            box-shadow: 0 0 0 3px rgb(216 140 154 / 20%), 0 0 12px 2px rgb(216 140 154 / 35%);
+        }
+
+        .item.unread .track .node::after {
+            opacity: 0.85;
+            visibility: visible;
         }
 
         @keyframes heartbeat {
@@ -381,6 +447,16 @@
         body.private-mode .track .node {
             border-color: var(--private-accent);
             animation: heartbeat 2.5s ease-in-out infinite;
+        }
+
+        body.private-mode .track .node::after {
+            background: linear-gradient(to bottom, #eebb4d, transparent);
+        }
+
+        body.private-mode .item.unread .track .node {
+            border-color: #eebb4d;
+            box-shadow: 0 0 0 3px rgb(238 187 77 / 20%), 0 0 12px 2px rgb(238 187 77 / 35%);
+            animation: none;
         }
 
         body.private-mode .track .line {
@@ -689,6 +765,7 @@
                 
                 this.isPrivateMode = false;
                 this.rawPrivateData = null; 
+                this.readHashes = new Set(JSON.parse(localStorage.getItem('dream_read_hashes') || '[]'));
             }
 
             async bootstrap() {
@@ -878,12 +955,22 @@
                 }
             }
 
+            generateHash(str) {
+                let h = 0;
+                for (let i = 0; i < str.length; i++) {
+                    h = (h << 5) - h + str.charCodeAt(i);
+                    h |= 0;
+                }
+                return Math.abs(h).toString(36);
+            }
+
             parse(raw) {
                 const isAsc = this.config.data_order === 'asc';
                 const blocks = raw.split('\n---\n').map(b => b.trim()).filter(b => b && b.split('\n').length >= 2);
                 const total = blocks.length;
 
                 const parsedData = blocks.map((block, index) => {
+                    const blockHash = this.generateHash(block);
                     const lines = block.split('\n');
                     const date = lines.shift().trim();
                     const tags = [];
@@ -938,27 +1025,45 @@
                     });
 
                     const id = isAsc ? index + 1 : total - index;
-                    return { id, date, text: finalHtml, tags };
+                    return { id, date, text: finalHtml, tags, hash: blockHash };
                 });
 
                 return isAsc ? parsedData.reverse() : parsedData;
+            }
+
+            updateUnreadTagState() {
+                const items = this.isPrivateMode ? this.privateItems : this.publicItems;
+                const unreadCount = items.filter(i => !this.readHashes.has(i.hash)).length;
+                const unreadBtn = this.tagsEl.querySelector('[data-val="__UNREAD__"]');
+                if (unreadBtn) {
+                    if (unreadCount > 0) {
+                        unreadBtn.classList.add('has-unread');
+                    } else {
+                        unreadBtn.classList.remove('has-unread');
+                    }
+                }
             }
 
             renderTags() {
                 const modeStr = this.isPrivateMode ? 'private' : 'public';
                 const items = this.isPrivateMode ? this.privateItems : this.publicItems;
                 
-                const set = new Set();
-                items.forEach(i => i.tags.forEach(t => set.add(t)));
-                const unique = Array.from(set);
-                
-                if (!unique.length) {
+                if (!items.length) {
                     this.tagsEl.style.display = 'none';
                     return;
                 }
                 
+                const set = new Set();
+                items.forEach(i => i.tags.forEach(t => set.add(t)));
+                const unique = Array.from(set);
+                
                 this.tagsEl.style.display = 'flex';
-                this.tagsEl.innerHTML = unique.map(t => `<button class="tag" data-val="${t}">#${t}</button>`).join('');
+                
+                const unreadCount = items.filter(i => !this.readHashes.has(i.hash)).length;
+                const unreadClass = unreadCount > 0 ? 'has-unread' : '';
+                const unreadTagHtml = `<button class="tag special-unread ${unreadClass}" data-val="__UNREAD__">✦ 未读</button>`;
+                
+                this.tagsEl.innerHTML = unreadTagHtml + unique.map(t => `<button class="tag" data-val="${t}">#${t}</button>`).join('');
                 
                 const activeTag = this.activeTags[modeStr];
                 if (activeTag) {
@@ -986,11 +1091,14 @@
                 const items = this.isPrivateMode ? this.privateItems : this.publicItems;
                 const activeTag = this.activeTags[modeStr];
                 
-                const filtered = activeTag ? items.filter(i => i.tags.includes(activeTag)) : items;
+                const filtered = activeTag === '__UNREAD__'
+                    ? items.filter(i => !this.readHashes.has(i.hash))
+                    : (activeTag ? items.filter(i => i.tags.includes(activeTag)) : items);
 
                 filtered.forEach((item, i) => {
                     const node = document.createElement('article');
-                    node.className = 'item';
+                    const isUnread = !this.readHashes.has(item.hash);
+                    node.className = `item ${isUnread ? 'unread' : ''}`;
                     node.id = `post-${item.id}`;
                     node.style.animationDelay = `${i * 0.08}s`;
 
@@ -1018,6 +1126,13 @@
                     card.addEventListener('click', (e) => {
                         if (e.target.closest('a') || e.target.tagName === 'IMG') return;
                         history.replaceState(null, '', '#' + item.id);
+                        
+                        if (node.classList.contains('unread')) {
+                            node.classList.remove('unread');
+                            this.readHashes.add(item.hash);
+                            localStorage.setItem('dream_read_hashes', JSON.stringify([...this.readHashes]));
+                            this.updateUnreadTagState();
+                        }
                         
                         if (!card.classList.contains('has-more')) return;
                         if (card.classList.toggle('expanded')) {

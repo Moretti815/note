@@ -91,5 +91,4 @@ Petal
 #碎碎念
 如果你喜欢，请在 [GitHub](https://github.com/miniyu157/petal-note) 上帮我点个 Star 哦！✨
 也欢迎在 [Issues](https://github.com/miniyu157/petal-note/issues) 中提出任何建议和意见。
-
 ---
