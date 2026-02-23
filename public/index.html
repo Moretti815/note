@@ -1017,7 +1017,22 @@
 
             bindGlobalEvents() {
                 document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.card') && !e.target.closest('#pwd-modal') && window.location.hash) {
+                    const internalLink = e.target.closest('a.card-link');
+                    if (internalLink && internalLink.getAttribute('href').startsWith('#')) {
+                        e.preventDefault();
+                        const targetHash = internalLink.getAttribute('href');
+                        const modeStr = this.isPrivateMode ? 'private' : 'public';
+                        this.activeTags[modeStr] = null;
+                        if (this.tagsEl) {
+                            Array.from(this.tagsEl.children).forEach(btn => btn.classList.remove('active'));
+                        }
+                        history.replaceState(null, '', targetHash);
+                        this.render();
+                        requestAnimationFrame(() => this.handleInitialHash());
+                        return;
+                    }
+
+                    if (!e.target.closest('.card') && !e.target.closest('#pwd-modal') && !e.target.closest('a') && window.location.hash) {
                         history.replaceState(null, '', window.location.pathname + window.location.search);
                     }
                     
@@ -1103,7 +1118,9 @@
                         });
                         p = p.replace(/__LNK_(\d+)__/g, (_, idx) => {
                             const { text, url } = linkStore[idx];
-                            return `<a href="${url}" target="_blank" class="card-link" rel="noopener noreferrer">${text}</a>`;
+                            const isInternal = url.startsWith('#');
+                            const targetProps = isInternal ? '' : 'target="_blank" rel="noopener noreferrer"';
+                            return `<a href="${url}" ${targetProps} class="card-link">${text}</a>`;
                         });
                         p = p.replace(/__IMG_(\d+)__/g, (_, idx) => {
                             const { alt, url } = imgStore[idx];
