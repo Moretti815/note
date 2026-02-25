@@ -34,8 +34,9 @@ def resolve_password(arg_pwd: str) -> str:
     pwd = os.environ.get("PASSWORD")
     if not pwd and Path(".env").is_file():
         for line in Path(".env").read_text(encoding="utf-8").splitlines():
+            line = line.strip()
             if line.startswith("PASSWORD="):
-                pwd = line.split("=", 1)[1].strip()
+                pwd = line.split("=", 1)[1].strip().strip("'\"")
                 break
 
     if not pwd:
