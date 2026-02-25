@@ -17,8 +17,6 @@ printf "仓库: github.com/%s\n" "$_src"
 printf "拉取 index.html...\n"
 curl -fsSL "$REPO/public/index.html" -o "public/index.html"
 
-printf "\n"
-
 mapfile -t TARGET_FILES < <(python3 -c '
 import sys, tomllib
 from pathlib import Path
@@ -34,7 +32,7 @@ except Exception:
 ')
 
 if ((${#TARGET_FILES[@]} > 0)); then
-    printf "从 miniyu157/petal-note 拉取 cipher-thoughts.py ...\n"
+    printf "拉取 cipher-thoughts.py...\n"
     curl -fsSL "$REPO/scripts/cipher-thoughts.py" -o "cipher-thoughts.py"
 
     unset PYTHONPATH
