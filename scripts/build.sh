@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
+set -a
+[[ -f .env ]] && source .env
+set +a
+
 readonly REPO="https://raw.githubusercontent.com/miniyu157/petal-note/main"
 PATH_PART=${REPO#https://raw.githubusercontent.com/}
 _user=${PATH_PART%%/*} _repo=${PATH_PART#*/} _repo=${_repo%%/*}
@@ -24,7 +28,7 @@ try:
         for key in ("private_source", "editor_config"):
             src = conf.get(key, "")
             if src:
-                print(Path(src).name)
+                print(f"{key}|{Path(src).name}")
 except Exception:
     pass
 ')
@@ -37,12 +41,25 @@ if ((${#TARGET_FILES[@]} > 0)); then
     python3 -m venv .venv
     .venv/bin/pip install -q cryptography
 
-    for target in "${TARGET_FILES[@]}"; do
-        if [[ -f $target ]]; then
-            .venv/bin/python cipher-thoughts.py -f "$target" -O "public/$target" 2>&1 |
-                sed "s/^/[cipher-thoughts.py: ${target}] /"
+    for item in "${TARGET_FILES[@]}"; do
+        IFS='|' read -r conf_key target <<< "$item"
+
+        specific_key="KEY_${conf_key}"
+        pwd_val="${!specific_key:-}"
+
+        if [[ -z $pwd_val ]]; then
+            pwd_val="${PASSWORD:-}"
+        fi
+
+        if [[ -n $pwd_val ]]; then
+            if [[ -f $target ]]; then
+                .venv/bin/python cipher-thoughts.py -f "$target" -O "public/$target" -p "$pwd_val" 2>&1 |
+                    sed "s/^/[cipher-thoughts.py: ${target}] /"
+            else
+                printf "找不到文件: %s\n" "$target"
+            fi
         else
-            printf "找不到文件: %s\n" "$target"
+            printf "未找到密钥, 请在 .env 中配置 %s 或 PASSWORD\n" "$specific_key"
         fi
     done
 else
