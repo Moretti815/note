@@ -28,13 +28,16 @@ def decrypt(b64_data: bytes, password: str) -> bytes:
 
 
 def resolve_password(arg_pwd: str) -> str:
+    if arg_pwd:
+        return arg_pwd
+
     pwd = os.environ.get("PASSWORD")
     if not pwd and Path(".env").is_file():
         for line in Path(".env").read_text(encoding="utf-8").splitlines():
             if line.startswith("PASSWORD="):
                 pwd = line.split("=", 1)[1].strip()
                 break
-    pwd = pwd or arg_pwd
+
     if not pwd:
         sys.stderr.write(
             "未提供密码，请通过 PASSWORD 环境变量、.env 文件 or -p 参数指定\n"
@@ -162,4 +165,3 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         sys.exit(130)
-
