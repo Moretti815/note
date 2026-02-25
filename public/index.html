@@ -847,13 +847,13 @@
                 this.pwdInput = document.getElementById('pwd-input');
                 this.dreamTransition = document.getElementById('dream-transition');
                 
-                this.config = {}; 
+                this.config = {};
                 this.publicItems = [];
                 this.privateItems = [];
                 this.activeTags = { public: null, private: null };
                 
                 this.isPrivateMode = false;
-                this.rawPrivateData = null; 
+                this.rawPrivateData = null;
                 this.readHashes = new Set(JSON.parse(localStorage.getItem('dream_read_hashes') || '[]'));
             }
 
@@ -1092,9 +1092,28 @@
                 if (/^#\d+$/.test(hash)) {
                     const target = document.getElementById('post-' + hash.substring(1));
                     if (target) {
-                        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         const card = target.querySelector('.card');
-                        card.style.animation = 'targetPulse 2.5s cubic-bezier(0.22, 1, 0.36, 1)';
+                        const triggerAnim = () => {
+                            card.style.animation = 'none';
+                            card.offsetHeight;
+                            card.style.animation = 'targetPulse 2.5s cubic-bezier(0.22, 1, 0.36, 1)';
+                        };
+                        const rect = target.getBoundingClientRect();
+                        const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+                        if (isVisible) {
+                            triggerAnim();
+                        } else {
+                            let fired = false;
+                            const endScroll = () => {
+                                if (fired) return;
+                                fired = true;
+                                window.removeEventListener('scrollend', endScroll);
+                                triggerAnim();
+                            };
+                            window.addEventListener('scrollend', endScroll);
+                            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            setTimeout(endScroll, 1200);
+                        }
                     }
                 }
             }
