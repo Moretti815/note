@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>内容编辑器</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.9.1/fonts/remixicon.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --text-main: #5c4b51;
+            --text-muted: #ab9ba0;
+            --timeline-accent: #f4c2c2;
+            --card-bg-blur: rgb(255 255 255 / 75%);
+            --rose-ellipsis: #d88c9a;
+            --bg-gradient-start: #fdfbfb;
+            --bg-gradient-end: #f1f3f4;
+            --danger-color: #e5989b;
+            --success-color: #b5c99a;
+            --text-deco: rgb(171 155 160 / 60%);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgb(216 140 154 / 20%);
+            border-radius: 4px;
+            transition: background 0.3s ease;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgb(216 140 154 / 50%);
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-main);
+            height: 100dvh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #pwd-modal {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.5s ease;
+        }
+
+        #pwd-modal.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        #pwd-input {
+            background: transparent;
+            border: none;
+            background-image: linear-gradient(90deg, transparent, var(--timeline-accent), transparent);
+            background-size: 0px 2px;
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            color: var(--text-main);
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 0.5rem 1rem;
+            width: 280px;
+            outline: none;
+            font-family: inherit;
+            letter-spacing: 0.1em;
+            text-shadow: 0 0 12px rgb(216 140 154 / 0%);
+            transition: background-size 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                        text-shadow 0.7s ease;
+        }
+
+        #pwd-input:focus {
+            background-size: 100% 2px;
+            text-shadow: 0 0 8px rgb(216 140 154 / 20%);
+        }
+
+        #pwd-input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+            font-weight: 300;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: var(--card-bg-blur);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgb(255 255 255 / 40%);
+            z-index: 10;
+        }
+
+        .tools-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.4rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn span {
+            font-size: 0.85rem;
+            font-family: system-ui, sans-serif;
+            letter-spacing: 0.05em;
+        }
+
+        .btn:hover {
+            color: var(--rose-ellipsis);
+            background: rgb(216 140 154 / 10%);
+        }
+
+        .btn.active {
+            color: var(--rose-ellipsis);
+            background: rgb(216 140 154 / 15%);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #status-msg {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            transition: color 0.3s ease;
+        }
+
+        #btn-cancel {
+            display: none;
+            padding: 0.2rem;
+            color: var(--danger-color);
+        }
+
+        #btn-cancel:hover {
+            background: rgb(229 152 155 / 15%);
+        }
+
+        .workspace {
+            flex: 1;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pane {
+            flex: 1;
+            height: 100%;
+            overflow-y: auto;
+            scrollbar-gutter: stable;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        #editor-pane {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        .format-bar {
+            display: flex;
+            gap: 0.4rem;
+            padding: 0.6rem 1.5rem;
+            background: rgb(253 251 251 / 40%);
+            border-bottom: 1px dashed rgb(216 140 154 / 20%);
+            align-items: center;
+            overflow-x: auto;
+            flex-shrink: 0;
+        }
+
+        .format-bar::-webkit-scrollbar {
+            height: 0;
+        }
+
+        .fmt-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.35rem 0.5rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .fmt-btn:hover {
+            color: var(--rose-ellipsis);
+            background: rgb(216 140 154 / 10%);
+        }
+
+        .fmt-divider {
+            width: 1px;
+            height: 1.2rem;
+            background: rgb(216 140 154 / 30%);
+            margin: 0 0.4rem;
+            flex-shrink: 0;
+        }
+
+        #editor {
+            width: 100%;
+            flex: 1;
+            resize: none;
+            border: none;
+            background: transparent;
+            color: var(--text-main);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            outline: none;
+            padding: 1.5rem 2rem;
+        }
+
+        #preview {
+            background: rgb(253 251 251 / 60%);
+            border-left: 1px dashed rgb(216 140 154 / 30%);
+            display: none;
+            scroll-behavior: smooth;
+            padding: 1.5rem 2rem;
+        }
+
+        .split-mode #preview {
+            display: block;
+        }
+
+        @media (min-width: 769px) {
+            .split-mode #editor-pane { width: 50%; flex: none; }
+            .split-mode #preview { width: 50%; flex: none; }
+        }
+
+        @media (max-width: 768px) {
+            .toolbar { padding: 0.8rem 1rem; }
+            .format-bar { padding: 0.6rem 1rem; }
+            #editor { padding: 1.2rem 1.2rem; }
+            #preview { padding: 1.2rem 1.2rem; border-left: none; }
+            
+            .split-mode #editor-pane { display: none; }
+            .split-mode #preview { width: 100%; flex: 1; }
+        }
+
+        .preview-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .preview-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            font-family: system-ui, sans-serif;
+            margin-left: 0.2rem;
+        }
+
+        .preview-card {
+            position: relative;
+            background: var(--card-bg-blur);
+            backdrop-filter: blur(12px) saturate(120%);
+            -webkit-backdrop-filter: blur(12px) saturate(120%);
+            border-radius: 8px;
+            border: 1px solid rgb(255 255 255 / 60%);
+            box-shadow: 0 4px 15px rgb(0 0 0 / 2%), inset 0 0 0 1px rgb(255 255 255 / 30%);
+            padding: 1.2rem 1.4rem;
+            line-height: 1.7;
+            font-size: 0.95rem;
+            word-wrap: break-word;
+        }
+
+        .preview-card-id {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.4rem;
+            font-size: 0.75rem;
+            font-family: system-ui, sans-serif;
+            color: var(--text-muted);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .card-tag {
+            color: var(--rose-ellipsis);
+            margin-inline-end: 0.4rem;
+            display: inline-block;
+            font-family: system-ui, sans-serif;
+            font-size: 0.85rem;
+        }
+
+        .card-link {
+            color: var(--rose-ellipsis);
+            text-decoration: none;
+            border-bottom: 1px dashed rgb(216 140 154 / 40%);
+            transition: all 0.3s ease;
+            padding-bottom: 1px;
+            word-break: break-all;
+        }
+
+        .card-link:hover {
+            border-bottom-color: var(--rose-ellipsis);
+            background: rgb(216 140 154 / 10%);
+        }
+
+        .text-weak {
+            color: var(--text-muted);
+            font-size: 0.9em;
+            opacity: 0.85;
+        }
+
+        .text-strike {
+            text-decoration: line-through;
+            text-decoration-color: currentColor;
+            text-decoration-thickness: 1.5px;
+            opacity: 0.95;
+        }
+
+        .text-underline {
+            text-decoration: none;
+            border-bottom: 1px solid var(--text-deco);
+            padding-bottom: 1px;
+        }
+
+        .text-wavy {
+            text-decoration: underline wavy var(--text-deco);
+            text-underline-offset: 3px;
+        }
+
+        .manual-br {
+            height: 0.5em;
+        }
+
+        .card-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-block: 0.6rem;
+            box-shadow: 0 2px 6px rgb(0 0 0 / 5%);
+            display: block;
+        }
+
+        .gallery {
+            display: grid;
+            gap: 0.4rem;
+            margin-block: 0.6rem;
+        }
+
+        .gallery.grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .gallery.grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+        .gallery .card-img {
+            margin: 0;
+            aspect-ratio: 1;
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+        }
+
+        #commit-modal {
+            position: fixed;
+            inset: 0;
+            background: rgb(253 251 251 / 60%);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        #commit-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .commit-box {
+            background: var(--card-bg-blur);
+            border: 1px solid rgb(255 255 255 / 80%);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 680px;
+            max-width: 90vw;
+            box-shadow: 0 15px 35px rgb(0 0 0 / 4%), inset 0 0 0 1px rgb(255 255 255 / 50%);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            transform: translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        #commit-modal.active .commit-box {
+            transform: translateY(0);
+        }
+
+        .commit-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .commit-field {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid rgb(216 140 154 / 30%);
+            border-radius: 6px;
+            background: rgb(255 255 255 / 60%);
+            font-family: inherit;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s ease, background 0.3s ease;
+        }
+
+        .commit-field:focus {
+            border-color: var(--timeline-accent);
+            background: rgb(255 255 255 / 90%);
+        }
+
+        textarea.commit-field {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .diff-container {
+            border-radius: 6px;
+            background: rgb(0 0 0 / 2%);
+            border: 1px solid rgb(0 0 0 / 5%);
+            max-height: 280px;
+            overflow-y: auto;
+            padding: 0.5rem 0;
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .diff-line {
+            padding: 0.1rem 1rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .diff-add {
+            background: rgb(181 201 154 / 25%);
+            color: #4a5d3c;
+        }
+
+        .diff-remove {
+            background: rgb(229 152 155 / 20%);
+            color: #9c4b4e;
+        }
+
+        .commit-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn-solid {
+            background: var(--timeline-accent);
+            color: #fff;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgb(244 194 194 / 30%);
+        }
+
+        .btn-solid:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgb(244 194 194 / 40%);
+        }
+
+        @keyframes pulse-status {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .loading {
+            animation: pulse-status 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="pwd-modal">
+        <input type="text" id="pwd-input" placeholder="谋权篡位..." autocomplete="off">
+    </div>
+
+    <div id="commit-modal">
+        <div class="commit-box">
+            <div class="commit-input-group">
+                <input type="text" id="commit-title" class="commit-field" placeholder="摘要">
+                <textarea id="commit-desc" class="commit-field" placeholder="补充详细描述..."></textarea>
+            </div>
+            <div class="diff-container" id="diff-view"></div>
+            <div class="commit-actions">
+                <button class="btn" id="btn-commit-cancel">取消</button>
+                <button class="btn-solid" id="btn-commit-confirm">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <div class="tools-group">
+            <button class="btn" id="btn-back" title="返回"><i class="ri-arrow-left-line"></i></button>
+            <button class="btn" id="btn-public" title="公开数据"><span>Public</span></button>
+            <button class="btn" id="btn-private" title="私有数据"><span>Private</span></button>
+        </div>
+        <div class="status-container">
+            <div id="status-msg">就绪</div>
+            <button class="btn" id="btn-cancel" title="取消"><i class="ri-close-circle-line"></i></button>
+        </div>
+        <div class="tools-group">
+            <button class="btn" id="btn-split" title="预览切换"><i class="ri-layout-column-line"></i></button>
+            <button class="btn" id="btn-save" title="保存"><i class="ri-save-3-line"></i></button>
+        </div>
+    </div>
+
+    <div class="workspace" id="workspace">
+        <div class="pane" id="editor-pane">
+            <div class="format-bar">
+                <button class="fmt-btn" id="btn-undo" title="撤销"><i class="ri-arrow-go-back-line"></i></button>
+                <button class="fmt-btn" id="btn-redo" title="重做"><i class="ri-arrow-go-forward-line"></i></button>
+                <div class="fmt-divider"></div>
+                <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="++" data-suffix="++" title="下划线"><i class="ri-underline"></i></button>
+                <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="%%" data-suffix="%%" title="减弱"><i class="ri-font-color"></i></button>
+                <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="^^" data-suffix="^^" title="波浪线"><i class="ri-rhythm-line"></i></button>
+                <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="~~" data-suffix="~~" title="删除线"><i class="ri-strikethrough"></i></button>
+                <div class="fmt-divider"></div>
+                <button class="fmt-btn fmt-action" data-type="link" data-prefix="[" data-suffix="]()" title="链接"><i class="ri-link"></i></button>
+                <button class="fmt-btn fmt-action" data-type="link" data-prefix="![" data-suffix="]()" title="图片"><i class="ri-image-line"></i></button>
+                <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="#" data-suffix="" title="标签"><i class="ri-hashtag"></i></button>
+                <div class="fmt-divider"></div>
+                <button class="fmt-btn" id="btn-locate" title="定位预览位置"><i class="ri-crosshair-2-line"></i></button>
+            </div>
+            <textarea id="editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane" id="preview"></div>
+    </div>
+
+    <script type="module">
+        import { parse } from 'https://esm.sh/smol-toml@1.3.0';
+        import { diffLines } from 'https://esm.sh/diff@5.2.0';
+
+        const CryptoSys = {
+            async deriveKey(password) {
+                const encoder = new TextEncoder();
+                const hash = await crypto.subtle.digest('SHA-256', encoder.encode(password));
+                return crypto.subtle.importKey('raw', hash, { name: 'AES-GCM' }, false, ['decrypt']);
+            },
+            async decrypt(base64Data, password) {
+                try {
+                    const raw = atob(base64Data);
+                    const buf = new Uint8Array(raw.length);
+                    for (let i = 0; i < raw.length; i++) buf[i] = raw.charCodeAt(i);
+                    const iv = buf.slice(0, 12);
+                    const data = buf.slice(12);
+                    const key = await this.deriveKey(password);
+                    const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+                    return new TextDecoder().decode(decrypted);
+                } catch (e) {
+                    return null;
+                }
+            }
+        };
+
+        const Base64 = {
+            encode(str) {
+                const bytes = new TextEncoder().encode(str);
+                let bin = '';
+                for (let i = 0; i < bytes.byteLength; i++) bin += String.fromCharCode(bytes[i]);
+                return btoa(bin);
+            },
+            decode(b64) {
+                const bin = atob(b64);
+                const bytes = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                return new TextDecoder().decode(bytes);
+            }
+        };
+
+        class EditorCore {
+            constructor() {
+                this.pwdInput = document.getElementById('pwd-input');
+                this.pwdModal = document.getElementById('pwd-modal');
+                this.commitModal = document.getElementById('commit-modal');
+                this.commitTitle = document.getElementById('commit-title');
+                this.commitDesc = document.getElementById('commit-desc');
+                this.diffView = document.getElementById('diff-view');
+                
+                this.editor = document.getElementById('editor');
+                this.preview = document.getElementById('preview');
+                this.workspace = document.getElementById('workspace');
+                this.statusEl = document.getElementById('status-msg');
+                this.btnCancel = document.getElementById('btn-cancel');
+                
+                this.btnBack = document.getElementById('btn-back');
+                this.btnPub = document.getElementById('btn-public');
+                this.btnPriv = document.getElementById('btn-private');
+                this.btnSplit = document.getElementById('btn-split');
+                this.btnSave = document.getElementById('btn-save');
+
+                this.sysConfig = null;
+                this.authConfig = null;
+                this.currentMode = null; 
+                this.currentSha = null;
+                this.originalContent = '';
+                this.fetchController = null;
+
+                this.init();
+            }
+
+            async init() {
+                try {
+                    const res = await fetch('config.toml');
+                    if (!res.ok) throw new Error();
+                    this.sysConfig = parse(await res.text());
+                    if (!this.sysConfig.editor_config) {
+                        this.setStatus('未配置鉴权文件', 'var(--danger-color)');
+                        return;
+                    }
+                    this.updateViewIcon();
+                    this.bindEvents();
+                    this.bindFormatters();
+                } catch (e) {
+                    this.setStatus('配置解析失败', 'var(--danger-color)');
+                }
+            }
+
+            setStatus(msg, color = 'var(--text-muted)', loading = false) {
+                this.statusEl.innerText = msg;
+                this.statusEl.style.color = color;
+                if (loading) {
+                    this.statusEl.classList.add('loading');
+                    this.btnCancel.style.display = 'block';
+                } else {
+                    this.statusEl.classList.remove('loading');
+                    this.btnCancel.style.display = 'none';
+                }
+            }
+
+            updateViewIcon() {
+                const isActive = this.workspace.classList.contains('split-mode');
+                const icon = this.btnSplit.querySelector('i');
+                if (window.innerWidth <= 768) {
+                    icon.className = isActive ? 'ri-edit-line' : 'ri-eye-line';
+                } else {
+                    icon.className = 'ri-layout-column-line';
+                }
+            }
+
+            bindFormatters() {
+                document.getElementById('btn-undo').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.editor.focus();
+                    document.execCommand('undo');
+                });
+
+                document.getElementById('btn-redo').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.editor.focus();
+                    document.execCommand('redo');
+                });
+
+                document.getElementById('btn-locate').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (!this.workspace.classList.contains('split-mode')) {
+                        this.workspace.classList.add('split-mode');
+                        this.updateViewIcon();
+                        this.updatePreview();
+                    }
+
+                    const textBefore = this.editor.value.substring(0, this.editor.selectionStart);
+                    const index = textBefore.split('\n---\n').length - 1;
+                    
+                    const items = this.preview.querySelectorAll('.preview-item');
+                    if (items[index]) {
+                        items[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+
+                document.querySelectorAll('.fmt-action').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const type = btn.dataset.type;
+                        const pre = btn.dataset.prefix;
+                        const suf = btn.dataset.suffix;
+                        const start = this.editor.selectionStart;
+                        const end = this.editor.selectionEnd;
+                        const selected = this.editor.value.substring(start, end);
+
+                        const replacement = pre + selected + suf;
+                        
+                        this.editor.focus();
+                        this.editor.setSelectionRange(start, end);
+
+                        if (!document.execCommand('insertText', false, replacement)) {
+                            this.editor.setRangeText(replacement, start, end, 'end');
+                        }
+
+                        if (type === 'link') {
+                            const pos = start + pre.length + selected.length + 2;
+                            this.editor.setSelectionRange(pos, pos);
+                        } else if (!selected && type === 'wrap') {
+                            const pos = start + pre.length;
+                            this.editor.setSelectionRange(pos, pos);
+                        }
+
+                        this.editor.dispatchEvent(new Event('input'));
+                    });
+                });
+            }
+
+            bindEvents() {
+                this.pwdInput.addEventListener('keydown', async (e) => {
+                    if (e.key === 'Enter') {
+                        const pwd = e.target.value;
+                        if (!pwd) return;
+                        this.setStatus('验证中...', 'var(--timeline-accent)', true);
+                        try {
+                            const res = await fetch(this.sysConfig.editor_config);
+                            const raw = (await res.text()).trim();
+                            const decrypted = await CryptoSys.decrypt(raw, pwd);
+                            if (decrypted) {
+                                this.authConfig = parse(decrypted);
+                                this.pwdModal.classList.add('hidden');
+                                this.setStatus('验证通过');
+                                this.loadTarget('public');
+                            } else {
+                                this.setStatus('密码错误', 'var(--danger-color)');
+                            }
+                        } catch(err) {
+                            this.setStatus('配置解析失败', 'var(--danger-color)');
+                        }
+                    }
+                });
+
+                this.btnCancel.addEventListener('click', () => {
+                    if (this.fetchController) {
+                        this.fetchController.abort();
+                        this.fetchController = null;
+                    }
+                });
+
+                this.btnBack.addEventListener('click', () => {
+                    if (this.editor.value !== this.originalContent) {
+                        if (!confirm('当前有未保存的修改，确定要离开吗？')) return;
+                    }
+                    window.location.href = 'index.html';
+                });
+
+                this.btnPub.addEventListener('click', () => this.loadTarget('public'));
+                this.btnPriv.addEventListener('click', () => this.loadTarget('private'));
+
+                this.btnSplit.addEventListener('click', () => {
+                    this.workspace.classList.toggle('split-mode');
+                    this.btnSplit.classList.toggle('active', this.workspace.classList.contains('split-mode'));
+                    this.updateViewIcon();
+                    if (this.workspace.classList.contains('split-mode')) {
+                        this.updatePreview();
+                    }
+                });
+
+                window.addEventListener('resize', () => this.updateViewIcon());
+
+                this.preview.addEventListener('click', (e) => {
+                    const link = e.target.closest('a.card-link');
+                    if (link) {
+                        const href = link.getAttribute('href');
+                        if (href && href.startsWith('#')) {
+                            e.preventDefault();
+                            const targetId = 'preview-post-' + href.substring(1);
+                            const targetEl = document.getElementById(targetId);
+                            if (targetEl) {
+                                targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                const card = targetEl.querySelector('.preview-card');
+                                card.animate([
+                                    { boxShadow: '0 0 0 2px var(--timeline-accent)' },
+                                    { boxShadow: '0 4px 15px rgb(0 0 0 / 2%), inset 0 0 0 1px rgb(255 255 255 / 30%)' }
+                                ], { duration: 1500, easing: 'ease-out' });
+                            }
+                        }
+                    }
+                });
+
+                this.editor.addEventListener('input', () => {
+                    if (this.workspace.classList.contains('split-mode')) {
+                        this.updatePreview();
+                    }
+                    if (this.editor.value !== this.originalContent) {
+                        this.btnSave.style.color = 'var(--rose-ellipsis)';
+                    } else {
+                        this.btnSave.style.color = '';
+                    }
+                });
+
+                this.btnSave.addEventListener('click', () => this.showCommitModal());
+
+                document.getElementById('btn-commit-cancel').addEventListener('click', () => {
+                    this.commitModal.classList.remove('active');
+                });
+
+                document.getElementById('btn-commit-confirm').addEventListener('click', () => {
+                    this.executeCommit();
+                });
+
+                window.addEventListener('beforeunload', (e) => {
+                    if (this.editor.value !== this.originalContent) {
+                        e.preventDefault();
+                        e.returnValue = '';
+                    }
+                });
+            }
+
+            parseDreamSyntax(raw) {
+                const isAsc = this.sysConfig?.data_order === 'asc';
+                const blocks = raw.split('\n---\n').map(b => b.trim()).filter(b => b && b.split('\n').length >= 2);
+                const total = blocks.length;
+                
+                return blocks.map((block, index) => {
+                    const id = isAsc ? index + 1 : total - index;
+                    const lines = block.split('\n');
+                    const date = lines.shift().trim();
+                    const tags = [];
+                    const imgStore = [];
+                    const linkStore = [];
+                    
+                    if (lines.length > 0) {
+                        lines[0] = lines[0].replace(/#([^\s#]+)/g, (_, tag) => {
+                            tags.push(tag);
+                            return `<span class="card-tag">#${tag}</span>`;
+                        });
+                    }
+                    
+                    const processedLines = lines.map(line => {
+                        let p = line;
+                        p = p.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
+                            imgStore.push({ alt, url });
+                            return `__IMG_${imgStore.length - 1}__`;
+                        });
+                        p = p.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
+                            linkStore.push({ text, url });
+                            return `__LNK_${linkStore.length - 1}__`;
+                        });
+                        p = p.replace(/(https?:\/\/[^\s<]+)/g, (match, url) => {
+                            let cleanUrl = url;
+                            let trailing = '';
+                            const matchPunc = url.match(/([.,;:!?。，、！？]+)$/);
+                            if (matchPunc) {
+                                cleanUrl = url.substring(0, url.length - matchPunc[0].length);
+                                trailing = matchPunc[0];
+                            }
+                            const displayUrl = cleanUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                            return `<a href="${cleanUrl}" target="_blank" class="card-link" rel="noopener noreferrer">${displayUrl}</a>${trailing}`;
+                        });
+                        p = p.replace(/__LNK_(\d+)__/g, (_, idx) => {
+                            const { text, url } = linkStore[idx];
+                            const isInternal = url.startsWith('#');
+                            const targetProps = isInternal ? '' : 'target="_blank" rel="noopener noreferrer"';
+                            return `<a href="${url}" ${targetProps} class="card-link">${text}</a>`;
+                        });
+                        p = p.replace(/__IMG_(\d+)__/g, (_, idx) => {
+                            const { alt, url } = imgStore[idx];
+                            return `<img src="${url}" alt="${alt}" class="card-img" loading="lazy" />`;
+                        });
+
+                        p = p.replace(/(?<!\\)%%(.+?)(?<!\\)%%/g, '<span class="text-weak">$1</span>');
+                        p = p.replace(/(?<!\\)~~(.+?)(?<!\\)~~/g, '<span class="text-strike">$1</span>');
+                        p = p.replace(/(?<!\\)\+\+(.+?)(?<!\\)\+\+/g, '<span class="text-underline">$1</span>');
+                        p = p.replace(/(?<!\\)\^\^(.+?)(?<!\\)\^\^/g, '<span class="text-wavy">$1</span>');
+                        
+                        p = p.replace(/\\(%%|~~|\+\+|\^\^)/g, '$1');
+
+                        return p;
+                    });
+
+                    let finalHtml = processedLines.join('<div class="manual-br"></div>');
+                    finalHtml = finalHtml.replace(/(?:<div class="manual-br"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="manual-br"><\/div>)*/g, '$1');
+                    finalHtml = finalHtml.replace(/(<img[^>]+>){2,}/g, match => {
+                        const count = (match.match(/<img/g) || []).length;
+                        const gridClass = (count === 2 || count === 4) ? 'grid-2' : 'grid-3';
+                        return `<div class="gallery ${gridClass}">${match}</div>`;
+                    });
+
+                    return `
+                        <div class="preview-item" id="preview-post-${id}">
+                            <div class="preview-date">${date}</div>
+                            <div class="preview-card">
+                                <span class="preview-card-id">#${id}</span>
+                                ${finalHtml}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            updatePreview() {
+                this.preview.innerHTML = this.parseDreamSyntax(this.editor.value);
+            }
+
+            async loadTarget(mode) {
+                if (this.editor.value !== this.originalContent) {
+                    if (!confirm('当前有未保存的修改，确定要切换吗？')) return;
+                }
+
+                if (this.fetchController) {
+                    this.fetchController.abort();
+                }
+                this.fetchController = new AbortController();
+
+                this.currentMode = mode;
+                this.btnPub.classList.toggle('active', mode === 'public');
+                this.btnPriv.classList.toggle('active', mode === 'private');
+                
+                const path = mode === 'public' ? this.authConfig.data_path : this.authConfig.private_path;
+                if (!path) {
+                    this.setStatus(`配置路径不存在`);
+                    this.editor.value = '';
+                    this.originalContent = '';
+                    return;
+                }
+
+                this.setStatus('加载中...', 'var(--timeline-accent)', true);
+                this.editor.disabled = true;
+
+                try {
+                    const url = `https://api.github.com/repos/${this.authConfig.github_user}/${this.authConfig.github_repo}/contents/${path}`;
+                    const res = await fetch(url, {
+                        headers: {
+                            'Accept': 'application/vnd.github+json',
+                            'Authorization': `Bearer ${this.authConfig.github_token}`,
+                            'X-GitHub-Api-Version': '2022-11-28'
+                        },
+                        signal: this.fetchController.signal
+                    });
+
+                    if (res.status === 404) {
+                        this.currentSha = null;
+                        this.editor.value = '';
+                        this.originalContent = '';
+                        this.setStatus(`未找到${mode === 'public' ? '公开' : '私有'}数据`, 'var(--text-muted)');
+                    } else if (res.ok) {
+                        const data = await res.json();
+                        this.currentSha = data.sha;
+                        const text = Base64.decode(data.content.replace(/\n/g, ''));
+                        this.editor.value = text;
+                        this.originalContent = text;
+                        this.setStatus(`加载成功`);
+                        this.btnSave.style.color = '';
+                    } else {
+                        throw new Error();
+                    }
+                } catch (e) {
+                    if (e.name === 'AbortError') {
+                        this.setStatus('已取消', 'var(--text-muted)');
+                    } else {
+                        this.setStatus('网络异常', 'var(--danger-color)');
+                    }
+                } finally {
+                    this.editor.disabled = false;
+                    this.fetchController = null;
+                    if (this.workspace.classList.contains('split-mode')) this.updatePreview();
+                }
+            }
+
+            showCommitModal() {
+                if (!this.currentMode || this.editor.value === this.originalContent) return;
+
+                const differences = diffLines(this.originalContent, this.editor.value);
+                let diffHtml = '';
+                
+                differences.forEach(part => {
+                    const lines = part.value.replace(/\n$/, '').split('\n');
+                    const cls = part.added ? 'diff-add' : part.removed ? 'diff-remove' : 'diff-normal';
+                    const prefix = part.added ? '+' : part.removed ? '-' : ' ';
+                    
+                    lines.forEach(line => {
+                        const safeLine = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        diffHtml += `<div class="diff-line ${cls}">${prefix} ${safeLine}</div>`;
+                    });
+                });
+
+                this.diffView.innerHTML = diffHtml;
+
+                const msgTemplate = this.authConfig.commit_msg || 'Update {{yyyy-mm-dd hh:mm:ss}}';
+                const now = new Date();
+                const tzOffset = now.getTimezoneOffset() * 60000;
+                const localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, 19).replace('T', ' ');
+                
+                this.commitTitle.value = msgTemplate.replace('{{yyyy-mm-dd hh:mm:ss}}', localISOTime);
+                this.commitDesc.value = '';
+
+                this.commitModal.classList.add('active');
+            }
+
+            async executeCommit() {
+                if (this.fetchController) {
+                    this.fetchController.abort();
+                }
+                this.fetchController = new AbortController();
+
+                this.commitModal.classList.remove('active');
+                
+                const path = this.currentMode === 'public' ? this.authConfig.data_path : this.authConfig.private_path;
+                this.setStatus('保存中...', 'var(--timeline-accent)', true);
+                this.editor.disabled = true;
+                this.btnSave.disabled = true;
+
+                try {
+                    const contentB64 = Base64.encode(this.editor.value);
+                    const title = this.commitTitle.value.trim();
+                    const desc = this.commitDesc.value.trim();
+                    const commitMsg = desc ? `${title}\n\n${desc}` : title;
+
+                    const url = `https://api.github.com/repos/${this.authConfig.github_user}/${this.authConfig.github_repo}/contents/${path}`;
+                    
+                    const payload = {
+                        message: commitMsg,
+                        content: contentB64,
+                        committer: {
+                            name: this.authConfig.commit_user || 'Editor System',
+                            email: this.authConfig.commit_email || 'editor@local'
+                        }
+                    };
+                    
+                    if (this.currentSha) payload.sha = this.currentSha;
+
+                    const res = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Accept': 'application/vnd.github+json',
+                            'Authorization': `Bearer ${this.authConfig.github_token}`,
+                            'Content-Type': 'application/json',
+                            'X-GitHub-Api-Version': '2022-11-28'
+                        },
+                        body: JSON.stringify(payload),
+                        signal: this.fetchController.signal
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        this.currentSha = data.content.sha;
+                        this.originalContent = this.editor.value;
+                        this.setStatus('保存成功', 'var(--success-color)');
+                        this.btnSave.style.color = '';
+                        setTimeout(() => {
+                            if (this.statusEl.innerText === '保存成功') this.setStatus('就绪');
+                        }, 3000);
+                    } else {
+                        throw new Error();
+                    }
+                } catch (e) {
+                    if (e.name === 'AbortError') {
+                        this.setStatus('已取消', 'var(--text-muted)');
+                    } else {
+                        this.setStatus('保存失败', 'var(--danger-color)');
+                    }
+                } finally {
+                    this.editor.disabled = false;
+                    this.btnSave.disabled = false;
+                    this.fetchController = null;
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new EditorCore();
+        });
+    </script>
+</body>
+</html>

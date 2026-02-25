@@ -23,3 +23,5 @@ private_unread_empty_tip = ""
 
 load_delay = 800   # ms
 data_order = "asc" # [asc|desc]
+
+editor_config = "./editor.toml"

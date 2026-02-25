@@ -1,0 +1,10 @@
+github_user = "user"
+github_repo = "repo"
+github_token = "github_pat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+data_path = "data.txt"
+private_path = "private.txt"
+
+commit_msg = "web_editor: {{yyyy-mm-dd hh:mm:ss}}"
+commit_user = "Web Editor"
+commit_email = "example@mail.com"

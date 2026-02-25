@@ -204,8 +204,37 @@
             to { transform: scale(4); opacity: 0; }
         }
 
+        #editor-link {
+            position: fixed;
+            bottom: 2rem;
+            left: 2.5rem;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            opacity: 0;
+            visibility: hidden;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #editor-link.visible {
+            opacity: 0.15;
+            visibility: visible;
+        }
+
+        @media (hover: hover) {
+            #editor-link.visible:hover {
+                opacity: 0.8;
+                transform: scale(1.1) rotate(-10deg);
+            }
+        }
+
         @media (max-width: 600px) {
             #secret-petal { top: 1.5rem; left: 1.5rem; }
+            #editor-link { bottom: 1.5rem; left: 1.5rem; }
+            .corner-link { top: 1.5rem; right: 1.5rem; }
         }
 
         .corner-link {
@@ -224,10 +253,6 @@
         }
 
         .corner-link:hover { opacity: 0.8; }
-
-        @media (max-width: 600px) {
-            .corner-link { top: 1.5rem; right: 1.5rem; }
-        }
 
         .container {
             flex: 1;
@@ -723,6 +748,7 @@
     <div id="dream-transition"></div>
 
     <i id="secret-petal" class="ri-flower-fill"></i>
+    <a id="editor-link" href="editor.html" class="ri-quill-pen-line"></a>
     
     <div id="pwd-modal">
         <input type="text" id="pwd-input" placeholder="输入轻语解锁梦境..." autocomplete="off">
@@ -896,6 +922,16 @@
                                 this.rawPrivateData = (await pRes.text()).trim();
                                 this.petalBtn.classList.add('visible');
                                 this.initPrivateEvents();
+                            }
+                        } catch(e) {}
+                    }
+
+                    if (this.config.editor_config) {
+                        try {
+                            const eRes = await fetch(this.config.editor_config);
+                            if (eRes.ok) {
+                                const editorBtn = document.getElementById('editor-link');
+                                if (editorBtn) editorBtn.classList.add('visible');
                             }
                         } catch(e) {}
                     }
