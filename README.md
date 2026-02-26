@@ -8,8 +8,10 @@
 
 [![MIT License](https://img.shields.io/badge/License-MIT-pink.svg?style=flat-square)](./LICENSE)
 ![Vanilla JS](https://img.shields.io/badge/JavaScript-Vanilla-yellow?logo=javascript&style=flat-square)
+![End-to-End Encryption](https://img.shields.io/badge/🔒%20End--to--End-AES--GCM-blue?style=flat-square)  
 ![No Build](https://img.shields.io/badge/Build-None-success.svg?style=flat-square)
-
+![Deploy](https://img.shields.io/badge/Deploy-Shell_Script-blue.svg?style=flat-square&logo=gnubash&logoColor=white)
+![GitHub repo size](https://img.shields.io/github/repo-size/miniyu157/petal-note?style=flat-square&color=8e44ad&label=repo%20size)
 </div>
 
 ## 🌸 简介
@@ -20,80 +22,112 @@ Petal 是一个极简, 唯美, 无需任何构建工具链的纯前端日记/碎
 
 ### ✨ 特性
 
-* **自由随写**: 没有固定的时间戳格式与排序, 格式由你定义
-* **极尽纯粹**: 核心仅为 `index.html` 和 `config.toml`, 无主流框架依赖
 * **文件驱动**: 所有数据均为人类可读的 TOML, TXT, 日记源还可配置为网络 URL
-* **私密日记**: 可配置秘密时间线, 由 AES-GCM 驱动, 并且外观上拥有更加沉浸的氛围
+* **自由随写**: 没有固定的时间戳格式与排序, 格式由你定义
+* **隐私保障**: 敏感内容分发时采用端到端 AES-GCM 加密, 应用内解密
+* **丝滑书写**: 配置仓库鉴权文件即可在网页启动内置的编辑器
+* **私密日记**: 可配置秘密时间线, 外观上拥有更加沉浸的氛围
+* **特殊语法**: 支持 markdown 超链接与图片语法, 还支持简单的下划线, 删除线, 波浪线等语法
 * **标签系统**: 自动提取正文首行的 `#标签` 并渲染过滤导航组件
-* **极致响应**: 精心调校的动画与排版, 兼顾桌面端与移动端的完美触觉反馈
+* **体验优先**: 为人类优化交互体验, 例如未读系统, 鉴权记忆等
 
 ---
 
-## 🍃 部署与使用
+## 🌟 快速开始
 
-petal-note 准备了一个脚本, 在一个空文件夹内粘贴以下命令即可快速拉取最新骨架并生成基础的文件结构
+框架仓库提供了实用脚本, 在一个空文件夹内粘贴以下命令即可快速创建 petal-note 应用模板
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/create-petal-app.sh | bash -e
 ```
 
+> 会自动配置 .gitignore 忽略 *.html 或其它部署文件
+
 ### 方式一: ☘️ 传统静态托管
 
-将整个文件夹托管到任意静态服务平台, 如 Cloudflare Pages, Vercel, GitHub Pages, 甚至是一个普通的 Nginx 服务器
+将整个文件夹托管到任意静态服务平台, 如 Cloudflare Pages, Vercel, GitHub Pages, 甚至是一个普通的 Nginx 服务器, 保留稳定的 html 骨架
 
 ### 方式二: 🍀 内容与框架分离 (推荐, 保持最新)
 
 如果你希望外观和特性永远保持最新, 并与个人日记解耦
 
-1. 可选保留 `index.html`, 如果你想在本地预览, 可以手动运行下面的 Build command
-2. 在静态服务平台托管你的仓库
-3. 在部署设置中, 将 **Build command** 设置为:
+1. 在静态服务平台托管你的仓库, 无需放入 html 和任何加密文件
+2. 在部署设置中, 将 **Build command** 设置为:
 
     ```bash
-    curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/a6739b0/scripts/build.sh | bash -e
+    curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/ce399ea/scripts/build.sh | bash -e
     ```
 
-    [提交 a6739b0 - build.sh](https://github.com/miniyu157/petal-note/commit/a6739b0)
+    [提交 ce399ea - build.sh](https://github.com/miniyu157/petal-note/commit/ce399ea)
 
-4. 将构建输出目录设置为 `public`
+3. 将构建输出目录设置为 `public`
 
-这样, 每次推送日记时, 都会自动拉取并注入最新版本的 Petal Note 骨架, 个人内容仓库保持纯净
+这样, 你的仓库触发 `deploy` 时, 都会自动拉取并注入最新版本的 Petal Note 骨架, 同时会自动处理加密并分发, 均在 `config.toml` 中设置, 个人内容仓库保持纯净
 
-> 若想要仅更新骨架, 则手动触发一次 `Redeploy`
+> 若想要仅更新骨架, 手动运行一次 `Redeploy`
+
+---
+
+## 🦉 编辑器
+
+正确设置 `editor_config` 后, 将在页面左下角显示一个淡淡的编辑器入口按钮
+
+editor_config 的值应为 AES-GCM 加密的 toml 文件, 包含目标仓库信息, 帐号令牌,等, 目前只支持连接 github 仓库
+
+明文格式如下, 将在应用内解锁, 解锁成功后打开编辑器
+
+```toml
+github_user = "user"
+github_repo = "repo"
+github_token = "github_pat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+data_path = "data.txt"
+private_path = "private.txt"
+
+commit_msg = "web_editor: {{yyyy-mm-dd hh:mm:ss}}"
+commit_user = "Web Editor"
+commit_email = "example@mail.com"
+```
+
+其中 `data_path` 和 `private_path` 是数据文件位于远程仓库的路径
+
+编辑器预览
+
+![editor_preview](./public/assets/editor.png)
 
 ---
 
 ## 🐰 秘密时间线
 
-当设置 `private_source` 后即可生效
+当正确设置 `private_source` 后即可生效
 
 因为没有时间戳等约定, 秘密时间线与公开时间线相互独立. 秘密时间线通过 **AES-GCM** 驱动, 密语匹配成功即可进入
 
-个人仓库中无需手动上传加密文件, petal-note 提供了 `build.sh` 和 `cipher-thoughts.py` 等部署实用工具
+个人仓库中无需手动上传加密文件, petal-note 提供了 `build.sh` 和 `cipher-thoughts.py` 等实用分发工具
 
-它们会在静态托管平台部署时读取 `config.toml` 中 `private_source` 设置的文件名称, 然后尝试从仓库根目录找到 **同名的明文日记文件** 和 `.env` 中设置的密语,
-将日记加密自动生成到 `public/`, 所有过程文件不会暴露在你的网站上
+---
 
-### 个人仓库结构概览
+## 个人仓库结构概览
 
-秘密时间线文件, 包括 **.env**, **可以存储为明文**在你的个人仓库中, 只需在静态托管平台设置了根目录为 `public`
+需要加密的文件, 包括 **.env**, **都可以存储为明文**在你的个人仓库中, 只需在静态托管平台设置了根目录为 `public`
 
 > [!WARNING]
 > 不要将仓库设置为 public, 除非你想暴露所有的东西
 
 > [!TIP]
-> 如果不想让人轻易获取你的时间线, 可以根据个人情况为网站  
+> 如果不想让人轻易获取你的网站, 可以根据个人情况为网站  
 > 添加 `x-robots-tag: noindex, nofollow` 标记
 
 ```plaintext
-REPO
- ├── .env           // 秘密时间线的密语
- ├── private.txt    // 秘密时间线的明文文件
- └── public
-     ├── ...            // 其他资源文件
-     ├── config.toml    // 配置文件
-     ├── data.txt       // 公开的时间线文件
-     └── assets
+.
+├── .env              // 密语文件, 包含需要加密的文件的密码
+├── .gitignore
+├── editor.toml       // 明文, 账户令牌和仓库信息
+├── private.txt       // 明文, 秘密时间线
+└── public  
+    ├── config.toml   // 配置文件
+    ├── data.txt      // 公开时间线
+    └── assets        // 其它资源文件
          ├── favicon.ico    // 图标资源
          ├── font.woff2     // 字体
          └── ...jpg         // 其他资源文件
@@ -103,28 +137,50 @@ REPO
 
 ## 📝 数据格式参考
 
+### 🔒 .env
+
+```sh
+KEY_private_source="admin"
+KEY_editor_config="admin"
+PASSWORD=""
+```
+
+分发时优先使用 KEY_\<config_name\>, 否则回退到 PASSWORD
+
 ### ⚙️ config.toml
 
-用于定义站点的全局信息, 包括标题, 描述, 图标以及字体设置, 所有项均为可选  
-包括 `data_source` 以内的资源项目都可以设置为网络 URL, 运行时将自动拉取
+用于定义站点的全局信息, 所有项均为可选  
+包括 `data_source`, `private_source` 的资源可以设置为网络 URL, 运行时将自动拉取
 
 ```toml
 data_source = "./data.txt"
+
 private_source = "./private.txt"
+private_tip = "" # 回退: '输入轻语解锁梦境...'
+
+editor_config = "./editor.toml"
+editor_unlocktip= "" # 回退: '输入轻语解锁时序...'
+
+home_url = "https://github.com/miniyu157/petal-note"
+font = "./assets/font.ttf"
 
 title = "Petal"
-header_title = "Petal"
+header_title = "Petal Note"
 header_subtitle = """
-风吹落的花瓣, 和那些无处安放的碎碎念。
+风吹落的花瓣，和那些无处安放的碎碎念。
 """
-private_tip="输入轻语解锁梦境..."
-home_url = ""
-
 icon = "./assets/favicon.ico"
-font = "./assets/font.ttf"
 theme_color = "#FFB6C1"
+unread_empty_tip = "所有的花瓣都已读过了，去吹吹风吧。"
 
-load_delay = 800 # ms
+private_title = ""
+private_header_title = ""
+private_header_subtitle = ""
+private_icon = ""
+private_theme_color = ""
+private_unread_empty_tip = ""
+
+load_delay = 800   # ms
 data_order = "asc" # [asc|desc]
 ```
 
