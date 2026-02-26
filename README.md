@@ -161,6 +161,9 @@ data_source = "https://your-worker.workers.dev/data.txt"
 private_source = "https://your-worker.workers.dev/private.txt"
 ```
 
+> 这个示例中, 每次返回的 private.txt 都是不同的  
+> 也可以在数据仓库中设置一个 CI, 即推送后自动生成加密文件, 这样只需要编写极简的 worker 拉取内容即可
+
 ---
 
 ## 🦊 数据格式参考
