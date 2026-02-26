@@ -40,9 +40,12 @@ Petal Note
 更多信息，请查看 [仓库地址](https://github.com/miniyu157/petal-note?tab=readme-ov-file#-%E7%A7%98%E5%AF%86%E6%97%B6%E9%97%B4%E7%BA%BF)
 EOF
 
+exec 3< /dev/tty
 printf "初始化 git 仓库 ...\n"
 printf "是否创建推荐的 .gitignore 配置? (Y/n): "
-read -r answer
+
+read -u 3 -r answer || answer="Y"
+
 answer=${answer:-Y}
 [[ $answer =~ ^[Yy]$ ]] && {
     cat << 'EOF' > ".gitignore"
@@ -56,6 +59,7 @@ public/editor.toml
 public/private.txt
 EOF
 }
+exec 3<&-
 git init -b main > /dev/null 2>&1 || true
 git add . > /dev/null 2>&1 || true
 git commit -m "init petal note project" > /dev/null 2>&1 || true
