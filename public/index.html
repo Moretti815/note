@@ -231,6 +231,11 @@
             }
         }
 
+        #editor-link.visible.touched {
+            opacity: 0.8;
+            transform: scale(1.1) rotate(-10deg);
+        }
+
         @media (max-width: 600px) {
             #secret-petal { top: 1.5rem; left: 1.5rem; }
             #editor-link { bottom: 1.5rem; left: 1.5rem; }
@@ -748,7 +753,7 @@
     <div id="dream-transition"></div>
 
     <i id="secret-petal" class="ri-flower-fill"></i>
-    <a id="editor-link" href="editor.html" class="ri-quill-pen-line"></a>
+    <i id="editor-link" class="ri-quill-pen-line"></i>
     
     <div id="pwd-modal">
         <input type="text" id="pwd-input" placeholder="输入轻语解锁梦境..." autocomplete="off">
@@ -880,6 +885,8 @@
                 
                 this.isPrivateMode = false;
                 this.rawPrivateData = null;
+                this.rawEditorData = null;
+                this.unlockMode = null;
                 this.readHashes = new Set(JSON.parse(localStorage.getItem('dream_read_hashes') || '[]'));
             }
 
@@ -921,7 +928,6 @@
                             if (pRes.ok) {
                                 this.rawPrivateData = (await pRes.text()).trim();
                                 this.petalBtn.classList.add('visible');
-                                this.initPrivateEvents();
                             }
                         } catch(e) {}
                     }
@@ -930,11 +936,14 @@
                         try {
                             const eRes = await fetch(this.config.editor_config);
                             if (eRes.ok) {
+                                this.rawEditorData = (await eRes.text()).trim();
                                 const editorBtn = document.getElementById('editor-link');
                                 if (editorBtn) editorBtn.classList.add('visible');
                             }
                         } catch(e) {}
                     }
+                    
+                    this.initAuthEvents();
 
                     const dataSource = this.config.data_source;
                     if (!dataSource) throw new Error('Absolute source truth broken');
@@ -994,7 +1003,7 @@
                 setTimeout(() => this.el.classList.add('ready'), 50);
             }
 
-            initPrivateEvents() {
+            initAuthEvents() {
                 this.petalBtn.addEventListener('click', async () => {
                     this.petalBtn.classList.add('touched');
                     setTimeout(() => this.petalBtn.classList.remove('touched'), 400);
@@ -1005,11 +1014,35 @@
                         if (this.privateItems.length > 0) {
                             this.switchDreamMode(true);
                         } else {
+                            this.unlockMode = 'private';
+                            this.pwdInput.placeholder = this.config.private_tip || '输入轻语解锁梦境...';
                             this.pwdInput.value = '';
                             this.pwdModal.classList.add('active');
                         }
                     }
                 });
+
+                const editorBtn = document.getElementById('editor-link');
+                if (editorBtn) {
+                    editorBtn.addEventListener('click', async () => {
+                        editorBtn.classList.add('touched');
+                        setTimeout(() => editorBtn.classList.remove('touched'), 400);
+                        
+                        const savedPwd = sessionStorage.getItem('editor_pwd');
+                        if (savedPwd && this.rawEditorData) {
+                            const decrypted = await CryptoSys.decrypt(this.rawEditorData, savedPwd);
+                            if (decrypted) {
+                                window.location.href = 'editor.html';
+                                return;
+                            }
+                        }
+                        
+                        this.unlockMode = 'editor';
+                        this.pwdInput.placeholder = this.config.editor_unlocktip || '输入轻语解锁时序...';
+                        this.pwdInput.value = '';
+                        this.pwdModal.classList.add('active');
+                    });
+                }
 
                 this.pwdModal.addEventListener('click', (e) => {
                     if (e.target === this.pwdModal) this.pwdModal.classList.remove('active');
@@ -1017,13 +1050,23 @@
 
                 this.pwdInput.addEventListener('input', async (e) => {
                     const pwd = e.target.value;
-                    if (!pwd || !this.rawPrivateData) return;
+                    if (!pwd) return;
 
-                    const decrypted = await CryptoSys.decrypt(this.rawPrivateData, pwd);
-                    if (decrypted) {
-                        this.pwdInput.value = '';
-                        this.pwdModal.classList.remove('active');
-                        this.switchDreamMode(true, decrypted);
+                    if (this.unlockMode === 'private' && this.rawPrivateData) {
+                        const decrypted = await CryptoSys.decrypt(this.rawPrivateData, pwd);
+                        if (decrypted) {
+                            this.pwdInput.value = '';
+                            this.pwdModal.classList.remove('active');
+                            this.switchDreamMode(true, decrypted);
+                        }
+                    } else if (this.unlockMode === 'editor' && this.rawEditorData) {
+                        const decrypted = await CryptoSys.decrypt(this.rawEditorData, pwd);
+                        if (decrypted) {
+                            sessionStorage.setItem('editor_pwd', pwd);
+                            this.pwdInput.value = '';
+                            this.pwdModal.classList.remove('active');
+                            window.location.href = 'editor.html';
+                        }
                     }
                 });
 

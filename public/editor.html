@@ -53,54 +53,6 @@
             flex-direction: column;
         }
 
-        #pwd-modal {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-            z-index: 999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.5s ease;
-        }
-
-        #pwd-modal.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        #pwd-input {
-            background: transparent;
-            border: none;
-            background-image: linear-gradient(90deg, transparent, var(--timeline-accent), transparent);
-            background-size: 0px 2px;
-            background-position: center bottom;
-            background-repeat: no-repeat;
-            color: var(--text-main);
-            font-size: 1.2rem;
-            text-align: center;
-            padding: 0.5rem 1rem;
-            width: 280px;
-            outline: none;
-            font-family: inherit;
-            letter-spacing: 0.1em;
-            text-shadow: 0 0 12px rgb(216 140 154 / 0%);
-            transition: background-size 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-                        text-shadow 0.7s ease;
-        }
-
-        #pwd-input:focus {
-            background-size: 100% 2px;
-            text-shadow: 0 0 8px rgb(216 140 154 / 20%);
-        }
-
-        #pwd-input::placeholder {
-            color: var(--text-muted);
-            opacity: 0.6;
-            font-weight: 300;
-        }
-
         .toolbar {
             display: flex;
             justify-content: space-between;
@@ -531,10 +483,6 @@
 </head>
 <body>
 
-    <div id="pwd-modal">
-        <input type="text" id="pwd-input" placeholder="谋权篡位..." autocomplete="off">
-    </div>
-
     <div id="commit-modal">
         <div class="commit-box">
             <div class="commit-input-group">
@@ -556,7 +504,7 @@
             <button class="btn" id="btn-private" title="私有数据"><span>Private</span></button>
         </div>
         <div class="status-container">
-            <div id="status-msg">就绪</div>
+            <div id="status-msg">加载中</div>
             <button class="btn" id="btn-cancel" title="取消"><i class="ri-close-circle-line"></i></button>
         </div>
         <div class="tools-group">
@@ -630,8 +578,6 @@
 
         class EditorCore {
             constructor() {
-                this.pwdInput = document.getElementById('pwd-input');
-                this.pwdModal = document.getElementById('pwd-modal');
                 this.commitModal = document.getElementById('commit-modal');
                 this.commitTitle = document.getElementById('commit-title');
                 this.commitDesc = document.getElementById('commit-desc');
@@ -661,6 +607,11 @@
 
             async init() {
                 try {
+                    const pwd = sessionStorage.getItem('editor_pwd');
+                    if (!pwd) {
+                        window.location.href = 'index.html';
+                        return;
+                    }
                     const res = await fetch('config.toml');
                     if (!res.ok) throw new Error();
                     this.sysConfig = parse(await res.text());
@@ -668,9 +619,19 @@
                         this.setStatus('未配置鉴权文件', 'var(--danger-color)');
                         return;
                     }
-                    this.updateViewIcon();
-                    this.bindEvents();
-                    this.bindFormatters();
+                    const eRes = await fetch(this.sysConfig.editor_config);
+                    const raw = (await eRes.text()).trim();
+                    const decrypted = await CryptoSys.decrypt(raw, pwd);
+                    if (decrypted) {
+                        this.authConfig = parse(decrypted);
+                        this.updateViewIcon();
+                        this.bindEvents();
+                        this.bindFormatters();
+                        this.loadTarget('public');
+                    } else {
+                        sessionStorage.removeItem('editor_pwd');
+                        window.location.href = 'index.html';
+                    }
                 } catch (e) {
                     this.setStatus('配置解析失败', 'var(--danger-color)');
                 }
@@ -761,29 +722,6 @@
             }
 
             bindEvents() {
-                this.pwdInput.addEventListener('keydown', async (e) => {
-                    if (e.key === 'Enter') {
-                        const pwd = e.target.value;
-                        if (!pwd) return;
-                        this.setStatus('验证中...', 'var(--timeline-accent)', true);
-                        try {
-                            const res = await fetch(this.sysConfig.editor_config);
-                            const raw = (await res.text()).trim();
-                            const decrypted = await CryptoSys.decrypt(raw, pwd);
-                            if (decrypted) {
-                                this.authConfig = parse(decrypted);
-                                this.pwdModal.classList.add('hidden');
-                                this.setStatus('验证通过');
-                                this.loadTarget('public');
-                            } else {
-                                this.setStatus('密码错误', 'var(--danger-color)');
-                            }
-                        } catch(err) {
-                            this.setStatus('配置解析失败', 'var(--danger-color)');
-                        }
-                    }
-                });
-
                 this.btnCancel.addEventListener('click', () => {
                     if (this.fetchController) {
                         this.fetchController.abort();
