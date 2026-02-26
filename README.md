@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./public/favicon.png" alt="Petal Logo" width="120" />
+<img src="./public/assets/favicon.png" alt="Petal Logo" width="120" />
 
 # Petal Note
 
