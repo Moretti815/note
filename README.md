@@ -107,7 +107,7 @@ commit_email = "example@mail.com"
 
 ---
 
-## 个人仓库结构概览
+## 🐈 个人仓库结构概览
 
 需要加密的文件, 包括 **.env**, **都可以存储为明文**在你的个人仓库中, 只需在静态托管平台设置了根目录为 `public`
 
@@ -135,7 +135,33 @@ commit_email = "example@mail.com"
 
 ---
 
-## 📝 数据格式参考
+## 🦅 进阶部署指南
+
+如果你不想每次写日记都触发构建，可以将托管仓库与数据仓库分离, 使用 **Cloudflare Workers** 作为中枢代理
+
+在 Cloudflare Worker 控制台的 `Settings -> Variables` 中添加以下变量
+
+| 变量名 | 类型 | 说明 | 示例 |
+| --- | --- | --- | --- |
+| **`GITHUB_TOKEN`** | **机密 (Secret)** | GitHub 访问令牌 (PAT) | `github_pat_...` |
+| `GITHUB_USER` | 纯文本 | GitHub 用户名 | `miniyu157` |
+| `GITHUB_REPO` | 纯文本 | 存放数据的私有仓库名 | `my-private-thoughts` |
+| `DATA_PATH` | 纯文本 | 公开日记在仓库中的路径 | `data.txt` |
+| `PRIVATE_PATH` | 纯文本 | 私密日记在仓库中的路径 | `private.txt` |
+| **`AES_PASSWORD`** | **机密 (Secret)** | 你的私密日记解密密码 (用于云端加密) | `private.txt 密码` |
+
+[worker.js 示例代码](./public/assets/worker.js)
+
+配置完成后, 在 config.toml 中直接将数据源指向你的 Worker 地址即可：
+
+```toml
+data_source = "https://your-worker.workers.dev/data.txt"
+private_source = "https://your-worker.workers.dev/private.txt"
+```
+
+---
+
+## 🦊 数据格式参考
 
 ### 🔒 .env
 
