@@ -43,7 +43,7 @@ Petal 是一个极简, 唯美, 无需任何构建工具链的纯前端日记/碎
 curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/create-petal-app.sh | bash -e
 ```
 
-> 会自动配置 .gitignore 忽略 *.html 或其它部署文件
+> 可选自动配置 .gitignore 忽略 *.html 或其它部署文件
 
 ### 方式一: ☘️ 传统静态托管
 
