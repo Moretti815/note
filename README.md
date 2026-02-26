@@ -11,7 +11,9 @@
 ![End-to-End Encryption](https://img.shields.io/badge/🔒%20End--to--End-AES--GCM-blue?style=flat-square)  
 ![No Build](https://img.shields.io/badge/Build-None-success.svg?style=flat-square)
 ![Deploy](https://img.shields.io/badge/Deploy-Shell_Script-blue.svg?style=flat-square&logo=gnubash&logoColor=white)
+![Serverless](https://img.shields.io/badge/Architecture-Serverless-orange?style=flat-square&logo=serverless)  
 ![GitHub repo size](https://img.shields.io/github/repo-size/miniyu157/petal-note?style=flat-square&color=8e44ad&label=repo%20size)
+![GitHub stars](https://img.shields.io/github/stars/miniyu157/petal-note?style=flat-square&color=f1c40f)
 </div>
 
 ## 🌸 简介
