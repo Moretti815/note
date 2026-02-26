@@ -37,7 +37,9 @@ Petal 是一个极简, 唯美, 无需任何构建工具链的纯前端日记/碎
 
 ## 🌟 快速开始
 
-框架仓库提供了实用脚本, 在一个空文件夹内粘贴以下命令即可快速创建 petal-note 应用模板
+无论是哪种部署方式，第一步都是在本地初始化你的个人配置和数据源
+
+在一个空文件夹内，运行以下命令创建 Petal Note 数据模板
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/create-petal-app.sh | bash -e
