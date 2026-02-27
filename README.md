@@ -145,26 +145,86 @@ commit_email = "example@mail.com"
 
 在 Cloudflare Worker 控制台的 `Settings -> Variables` 中添加以下变量
 
-| 变量名 | 类型 | 说明 | 示例 |
-| --- | --- | --- | --- |
-| **`GITHUB_TOKEN`** | **机密 (Secret)** | GitHub 访问令牌 (PAT) | `github_pat_...` |
-| `GITHUB_USER` | 纯文本 | GitHub 用户名 | `miniyu157` |
-| `GITHUB_REPO` | 纯文本 | 存放数据的私有仓库名 | `my-private-thoughts` |
-| `DATA_PATH` | 纯文本 | 公开日记在仓库中的路径 | `data.txt` |
-| `PRIVATE_PATH` | 纯文本 | 私密日记在仓库中的路径 | `private.txt` |
-| **`AES_PASSWORD`** | **机密 (Secret)** | 你的私密日记解密密码 (用于云端加密) | `private.txt 密码` |
+* **GITHUB_TOKEN**: GitHub 访问令牌 (PAT)
 
-[worker.js 示例代码](./public/assets/worker.js)
+  *示例*
+
+  ```plaintext
+  github_pat_xxxxxxxxx
+  ```
+
+> [!WARNING]
+> 令牌使用 [Fine-grained tokens](https://github.com/settings/personal-access-tokens) 生成, 并在此处设置为 **机密**
+
+* **ENCRYPT_MAP**: AES-GCM 密码和文件映射字典
+
+  *示例*
+
+  ```json
+  {
+    "private.txt": "your_private_password",
+    "editor.toml": "your_editor_password"
+  }
+  ```
+
+> [!WARNING]
+> 文件路径直接对应 github 仓库路径, 务必将敏感文件添加到字典, 字典外的其余文件均明文返回  
+> 该 json 应设置为 **机密**, 而不是 json
+
+* **GITHUB_USER**: Github 用户名
+* **GITHUB_REPO**: 数据仓库的私有仓库名
+
+以下为 worker.js, 根据名单机制返回仓库文件
+
+```javascript
+export default {
+  async fetch(r, e) {
+    const h = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET, OPTIONS", "Content-Type": "text/plain;charset=UTF-8" };
+    if (r.method === "OPTIONS") return new Response(null, { headers: h });
+
+    const p = new URL(r.url).pathname.slice(1);
+    if (!p) return new Response("Please specify a file path", { status: 400, headers: h });
+
+    const f = async (t) => {
+      const s = await fetch(`https://api.github.com/repos/${e.GITHUB_USER}/${e.GITHUB_REPO}/contents/${t}`, {
+        headers: { Authorization: `Bearer ${e.GITHUB_TOKEN}`, Accept: "application/vnd.github.v3.raw", "User-Agent": "CF-Worker" }
+      });
+      if (!s.ok) throw new Error(s.status === 404 ? "Not Found" : `Failed to fetch ${t}: ${s.status} ${s.statusText}`);
+      return await s.text();
+    };
+
+    const c = async (t, k) => {
+      const n = new TextEncoder(), d = await crypto.subtle.digest("SHA-256", n.encode(k));
+      const y = await crypto.subtle.importKey("raw", d, { name: "AES-GCM" }, false, ["encrypt"]);
+      const i = crypto.getRandomValues(new Uint8Array(12));
+      const b = await crypto.subtle.encrypt({ name: "AES-GCM", iv: i }, y, n.encode(t));
+      const a = new Uint8Array(b), o = new Uint8Array(12 + a.length);
+      o.set(i); o.set(a, 12);
+      return btoa(o.reduce((x, v) => x + String.fromCharCode(v), ""));
+    };
+
+    try {
+      const t = await f(p);
+      let m = {};
+      if (e.ENCRYPT_MAP) try { m = JSON.parse(e.ENCRYPT_MAP); } catch (_) { }
+      return new Response(m[p] ? await c(t, m[p]) : t, { headers: h });
+    } catch (x) {
+      return new Response(x.message, { status: x.message === "Not Found" ? 404 : 500, headers: h });
+    }
+  }
+};
+```
 
 配置完成后, 在 config.toml 中直接将数据源指向你的 Worker 地址即可：
 
 ```toml
 data_source = "https://your-worker.workers.dev/data.txt"
 private_source = "https://your-worker.workers.dev/private.txt"
+editor_config = "https://your-worker.workers.dev/editor.toml"
 ```
 
-> 这个示例中, 每次返回的 private.txt 都是不同的  
-> 也可以在数据仓库中设置一个 CI, 即推送后自动生成加密文件, 这样只需要编写极简的 worker 拉取内容即可
+> 每次返回的加密文件都是不同的  
+> 也可以在数据仓库中设置一个 Github Actions, 即推送后自动生成加密文件, 这样可以节省 cloudflare cpu 时间
 
 ---
 
@@ -178,7 +238,7 @@ KEY_editor_config="admin"
 PASSWORD=""
 ```
 
-分发时优先使用 KEY_\<config_name\>, 否则回退到 PASSWORD
+Build Command 分发时优先使用 KEY_\<config_name\>, 否则回退到 PASSWORD
 
 ### ⚙️ config.toml
 
