@@ -230,6 +230,40 @@ editor_config = "https://your-worker.workers.dev/editor.toml"
 完成这一步后, 你的托管仓库就非常干净了, 只有一个 `config.toml` 和可选的资源文件  
 资源文件也可以放进数据仓库或者 cloudflare R2 存储桶等远程方案
 
+**但似乎无法做到每次写日记时拉取最新骨架了**, 因为只有所有者能够设置骨架更新时触发静态托管平台的钩子  
+如果让数据仓库和托管仓库在一起, 同时设置 worker, 但那样就可以直接通过 worker 获取任意明文了  
+*手动点 `Redeploy`? 绝对不行*
+
+**解决方案**: 在数据仓库中, 设置一个 CI, 当你的日记更新时自动触发静态托管平台的 Deploy Hook
+
+创建文件 `.github/workflows/deploy.yml` 写入以下内容
+
+```yml
+name: Trigger Pages Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Webhook
+        run: curl -s -X POST "${{ secrets.DEPLOY_HOOK }}" > /dev/null
+```
+
+同时在仓库设置中, 进入 `Secrets and variables` 章节下的 `Actions`, 或者直接在浏览器的地址栏追加 `/settings/secrets/actions`
+
+创建一个机密变量 `DEPLOY_HOOK`, 填入你在静态托管平台上拿到的 URL
+
+完成以上步骤, 即可在数据仓库的内容更新时, 自动拉取最新的 petal-note 骨架  
+同时只需要在网页中打开编辑器, 点点保存, 前端即可立即更新日记
+
+**那么恭喜你, 已经完全应用了无服务器架构的玩法, 享受它!**
+
 ---
 
 ## 🦊 数据格式参考
