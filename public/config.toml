@@ -4,7 +4,7 @@ private_source = "./private.txt"
 private_tip = "" # 回退: '输入轻语解锁梦境...'
 
 editor_config = "./editor.toml"
-editor_unlocktip= "" # 回退: '输入轻语解锁时序...'
+editor_unlocktip = "" # 回退: '输入轻语解锁时序...'
 
 home_url = "https://github.com/miniyu157/petal-note"
 font = "./assets/font.ttf"

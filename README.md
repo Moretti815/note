@@ -25,12 +25,12 @@ Petal 是一个极简, 唯美, 无需任何构建工具链的纯前端日记/碎
 ### ✨ 特性
 
 * **文件驱动**: 所有数据均为人类可读的 TOML, TXT
-* **无服务器**: 通过组合 cloudflare workers, R2, 将数据源设置为远程 URL, 即可实现非常丝滑的书写体验
+* **无服务器**: 通过组合 Cloudflare Workers 与 R2, 将数据源设置为远程 URL, 即可实现非常丝滑的书写体验
 * **自由随写**: 没有固定的时间戳格式与排序, 格式由你定义
 * **隐私保障**: 敏感内容分发时采用端到端 AES-GCM 加密, 应用内解密
 * **丝滑书写**: 配置仓库鉴权文件即可在网页启动内置的编辑器
 * **私密日记**: 可配置秘密时间线, 外观上拥有更加沉浸的氛围
-* **特殊语法**: 支持 markdown 超链接与图片语法, 还支持简单的下划线, 删除线, 波浪线等语法
+* **特殊语法**: 支持 Markdown 超链接与图片语法, 还支持简单的下划线, 删除线, 波浪线等语法
 * **标签系统**: 自动提取正文首行的 `#标签` 并渲染过滤导航组件
 * **体验优先**: 为人类优化交互体验, 例如未读系统, 鉴权记忆等
 
@@ -50,13 +50,13 @@ curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/c
 
 ### 方式一: ☘️ 传统静态托管
 
-将整个文件夹托管到任意静态服务平台, 如 Cloudflare Pages, Vercel, GitHub Pages, 甚至是一个普通的 Nginx 服务器, 保留稳定的 html 骨架
+将整个文件夹托管到任意静态服务平台, 如 Cloudflare Pages, Vercel, GitHub Pages, 保留稳定的 HTML 骨架
 
 ### 方式二: 🍀 内容与框架分离 (推荐, 保持最新)
 
 如果你希望外观和特性永远保持最新, 并与个人日记解耦
 
-1. 在静态服务平台托管你的仓库, 无需放入 html 和任何加密文件
+1. 在静态服务平台托管你的仓库, 无需放入 HTML 和任何加密文件
 2. 在部署设置中, 将 **Build command** 设置为:
 
     ```bash
@@ -67,7 +67,7 @@ curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/c
 
 3. 将构建输出目录设置为 `public`
 
-这样, 你的仓库触发 `deploy` 时, 都会自动拉取并注入最新版本的 Petal Note 骨架, 同时会自动处理加密并分发, 均在 `config.toml` 中设置, 个人内容仓库保持纯净
+这样, 你的仓库触发 `Deploy` 时, 都会自动拉取并注入最新版本的 Petal Note 骨架, 同时会自动处理加密并分发, 均在 `config.toml` 中设置, 个人内容仓库保持纯净
 
 > 若想要仅更新骨架, 手动运行一次 `Redeploy`
 
@@ -77,7 +77,7 @@ curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/c
 
 正确设置 `editor_config` 后, 将在页面左下角显示一个淡淡的编辑器入口按钮
 
-editor_config 的值应为 AES-GCM 加密的 toml 文件, 包含目标仓库信息, 帐号令牌,等, 目前只支持连接 github 仓库
+editor_config 的值应为 AES-GCM 加密的 toml 文件, 包含目标仓库信息, 帐号令牌等, 目前只支持连接 GitHub 仓库
 
 明文格式如下, 将在应用内解锁, 解锁成功后打开编辑器
 
@@ -114,7 +114,7 @@ commit_email = "example@mail.com"
 
 ## 🐈 个人仓库结构概览
 
-需要加密的文件, 包括 **.env**, **都可以存储为明文**在你的个人仓库中, 只需在静态托管平台设置了根目录为 `public`
+需要加密的文件, 例如 `.env` `private.txt`, **都可以存储为明文**在你的个人仓库中, 只需在静态托管平台设置了根目录为 `public`
 
 > [!WARNING]
 > 不要将仓库设置为 public, 除非你想暴露所有的东西
@@ -142,7 +142,7 @@ commit_email = "example@mail.com"
 
 ## 🦅 进阶部署指南
 
-利用 config.toml 支持 URL 的特性, 可以配置书写完成后数据即刻刷新, 并且不会触发频繁的 deploy  
+利用 config.toml 支持 URL 的特性, 可以配置书写完成后数据即刻刷新, 并且不会触发频繁的 Deploy  
 需要将 **托管仓库** 与 **数据仓库** 分离, 使用 **Cloudflare Workers** 作为中枢代理
 
 在 Cloudflare Worker 控制台的 `Settings -> Variables` 中添加以下变量
@@ -170,10 +170,10 @@ commit_email = "example@mail.com"
   ```
 
 > [!WARNING]
-> 文件路径直接对应 github 仓库路径, 务必将敏感文件添加到字典, 字典外的其余文件均明文返回  
-> 该 json 应设置为 **机密**, 而不是 json
+> 文件路径直接对应 GitHub 仓库路径, 务必将敏感文件添加到字典, 字典外的其余文件均明文返回  
+> 该 JSON 应设置为 **机密**
 
-* **GITHUB_USER**: Github 用户名
+* **GITHUB_USER**: GitHub 用户名
 * **GITHUB_REPO**: 数据仓库的私有仓库名
 
 以下为 worker.js, 直接返回仓库文件, 并根据字典名单机制进行加密
@@ -226,7 +226,7 @@ editor_config = "https://your-worker.workers.dev/editor.toml"
 ```
 
 > 每次返回的加密文件都是不同的  
-> 也可以在数据仓库中设置一个 Github Actions, 即推送后自动生成加密文件, 这样可以节省 cloudflare cpu 时间, ~~虽然似乎没有必要这样做~~
+> 也可以在数据仓库中设置一个 GitHub Actions, 即推送后自动生成加密文件, 这样可以节省 cloudflare cpu 时间, ~~虽然似乎没有必要这样做~~
 
 完成这一步后, 你的托管仓库就非常干净了, 仓库升级为统一调度中心, 核心仅一个 `config.toml`  
 资源文件也可以放进任何位置, 推荐使用 **Cloudflare R2** 进行存储
@@ -280,7 +280,7 @@ private_source = "./private.txt"
 private_tip = "" # 回退: '输入轻语解锁梦境...'
 
 editor_config = "./editor.toml"
-editor_unlocktip= "" # 回退: '输入轻语解锁时序...'
+editor_unlocktip = "" # 回退: '输入轻语解锁时序...'
 
 home_url = "https://github.com/miniyu157/petal-note"
 font = "./assets/font.ttf"
