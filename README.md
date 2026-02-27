@@ -174,7 +174,7 @@ commit_email = "example@mail.com"
 * **GITHUB_USER**: Github 用户名
 * **GITHUB_REPO**: 数据仓库的私有仓库名
 
-以下为 worker.js, 根据名单机制返回仓库文件
+以下为 worker.js, 直接返回仓库文件, 并根据字典名单机制进行加密
 
 ```javascript
 export default {
