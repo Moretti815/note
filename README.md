@@ -183,7 +183,7 @@ export default {
     const h = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET, OPTIONS", "Content-Type": "text/plain;charset=UTF-8" };
     if (r.method === "OPTIONS") return new Response(null, { headers: h });
 
-    const p = new URL(r.url).pathname.slice(1);
+    const p = new URL(r.url).pathname.replace(/\/+/g, '/').slice(1);
     if (!p) return new Response("Please specify a file path", { status: 400, headers: h });
 
     const f = async (t) => {
