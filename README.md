@@ -225,10 +225,20 @@ editor_config = "https://your-worker.workers.dev/editor.toml"
 ```
 
 > 每次返回的加密文件都是不同的  
-> 也可以在数据仓库中设置一个 Github Actions, 即推送后自动生成加密文件, 这样可以节省 cloudflare cpu 时间
+> 也可以在数据仓库中设置一个 Github Actions, 即推送后自动生成加密文件, 这样可以节省 cloudflare cpu 时间, ~~虽然似乎没有必要这样做~~
 
-完成这一步后, 你的托管仓库就非常干净了, 只有一个 `config.toml` 和可选的资源文件  
-资源文件也可以放进数据仓库或者 cloudflare R2 存储桶等远程方案
+完成这一步后, 你的托管仓库就非常干净了, 仓库升级为统一调度中心, 核心仅一个 `config.toml`  
+资源文件也可以放进任何位置, 推荐使用 **Cloudflare R2** 进行存储
+
+```plaintext
+.
+└── public
+    └── config.toml
+         ↑
+      icon = "https://your-r2.com/favicon.ico"     # 云存储
+      font = "https://your-worker.com/font.woff2"  # 存储在数据仓库, 通过 worker 读取
+      res_config = "./assets/file.ext"             # 存储在托管仓库
+```
 
 **但似乎无法做到每次写日记时拉取最新骨架了**, 因为只有所有者能够设置骨架更新时触发静态托管平台的钩子  
 如果让数据仓库和托管仓库在一起, 同时设置 worker, 但那样就可以直接通过 worker 获取任意明文了  
