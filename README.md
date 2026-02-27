@@ -244,7 +244,8 @@ editor_config = "https://your-worker.workers.dev/editor.toml"
 **但似乎无法做到每次写日记时拉取最新骨架了**, 因为只有 petal-note 仓库所有者能够设置骨架更新时触发静态托管平台的钩子  
 *手动点 `Redeploy`? 绝对不行*
 
-> [!WARNING] 如果让数据仓库和托管仓库在一起, 同时设置 worker  
+> [!WARNING]
+> 如果让数据仓库和托管仓库在一起, 同时设置 worker  
 > 但那样就可以直接通过 worker 获取任意明文了
 
 **解决方案**: 在你的静态平台上拿到一个触发 Deploy 的钩子, 然后在任意位置设置定时任务, 即可保持骨架自动更新
