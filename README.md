@@ -4,7 +4,7 @@
 
 # Petal Note
 
-*风吹落的花瓣, 和那些无处安放的碎碎念。*
+*风吹落的花瓣，和那些无处安放的碎碎念。*
 
 [![MIT License](https://img.shields.io/badge/License-MIT-pink.svg?style=flat-square)](./LICENSE)
 ![Vanilla JS](https://img.shields.io/badge/JavaScript-Vanilla-yellow?logo=javascript&style=flat-square)
@@ -18,7 +18,7 @@
 
 ## 🌸 简介
 
-Petal 是一个极简, 唯美, 无需任何构建工具链的纯前端日记/碎碎念框架。没有冗余的依赖, 只需最纯粹的 HTML, TXT 和 TOML, 即可在任何支持静态托管的平台上部署。
+Petal 是一个极简、唯美、无需任何构建工具链的纯前端日记/碎碎念框架。没有冗余的依赖，只需最纯粹的 HTML、TXT 和 TOML，即可在任何支持静态托管的平台上部署。
 
 **🌸 [Live Demo](https://petal-note.vercel.app/) 🌸**
 
@@ -65,7 +65,7 @@ curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/c
 
     [提交 ce399ea - build.sh](https://github.com/miniyu157/petal-note/commit/ce399ea)
 
-3. 将构建输出目录设置为 `public`
+3. 将构建输出目录 **Output Directory** 设置为 `public`
 
 这样, 你的仓库触发 `Deploy` 时, 都会自动拉取并注入最新版本的 Petal Note 骨架, 同时会自动处理加密并分发, 均在 `config.toml` 中设置, 个人内容仓库保持纯净
 
@@ -77,7 +77,7 @@ curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/c
 
 正确设置 `editor_config` 后, 将在页面左下角显示一个淡淡的编辑器入口按钮
 
-editor_config 的值应为 AES-GCM 加密的 toml 文件, 包含目标仓库信息, 帐号令牌等, 目前只支持连接 GitHub 仓库
+editor_config 的值应为 AES-GCM 加密的 TOML 文件, 包含目标仓库信息, 帐号令牌等, 目前只支持连接 GitHub 仓库
 
 明文格式如下, 将在应用内解锁, 解锁成功后打开编辑器
 
@@ -156,7 +156,7 @@ commit_email = "example@mail.com"
   ```
 
 > [!WARNING]
-> 令牌使用 [Fine-grained tokens](https://github.com/settings/personal-access-tokens) 生成, 并在此处设置为 **机密**
+> 令牌使用 **[Fine-grained personal access tokens](https://github.com/settings/personal-access-tokens)** 生成, 并在此处设置为 **机密**
 
 * **ENCRYPT_MAP**: AES-GCM 密码和文件映射字典
 
@@ -283,7 +283,7 @@ editor_config = "./editor.toml"
 editor_unlocktip = "" # 回退: '输入轻语解锁时序...'
 
 home_url = "https://github.com/miniyu157/petal-note"
-font = "./assets/font.ttf"
+font = "./assets/font.woff2"
 
 title = "Petal"
 header_title = "Petal Note"
