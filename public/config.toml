@@ -7,7 +7,7 @@ editor_config = "./editor.toml"
 editor_unlocktip = "" # 回退: '输入轻语解锁时序...'
 
 home_url = "https://github.com/miniyu157/petal-note"
-font = "./assets/font.ttf"
+font = "./assets/font.woff2"
 
 title = "Petal"
 header_title = "Petal Note"
