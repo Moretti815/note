@@ -106,29 +106,6 @@
             pointer-events: none;
         }
 
-        .status-container {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        #status-msg {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            letter-spacing: 0.05em;
-            transition: color 0.3s ease;
-        }
-
-        #btn-cancel {
-            display: none;
-            padding: 0.2rem;
-            color: var(--danger-color);
-        }
-
-        #btn-cancel:hover {
-            background: rgb(229 152 155 / 15%);
-        }
-
         .workspace {
             flex: 1;
             display: flex;
@@ -147,6 +124,7 @@
             display: flex;
             flex-direction: column;
             padding: 0;
+            position: relative;
         }
 
         .format-bar {
@@ -158,6 +136,7 @@
             border-bottom: 1px dashed rgb(216 140 154 / 20%);
             align-items: center;
             flex-shrink: 0;
+            position: relative;
         }
 
         .fmt-btn {
@@ -411,8 +390,29 @@
         .diff-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-end;
             margin-bottom: -0.5rem;
+            border-bottom: 1px dashed rgb(216 140 154 / 30%);
+            padding-bottom: 0.5rem;
+        }
+
+        .diff-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .diff-tab {
+            padding: 0.3rem 0.8rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .diff-tab.active {
+            background: rgb(216 140 154 / 15%);
+            color: var(--rose-ellipsis);
         }
 
         .diff-nav {
@@ -426,6 +426,7 @@
         }
 
         .diff-container {
+            position: relative;
             border-radius: 6px;
             background: rgb(0 0 0 / 2%);
             border: 1px solid rgb(0 0 0 / 5%);
@@ -438,8 +439,16 @@
             scroll-behavior: smooth;
         }
 
+        .diff-chunk {
+            border-left: 3px solid var(--timeline-accent);
+            padding-left: 0.5rem;
+            margin: 0.4rem 0;
+            background: rgb(255 255 255 / 40%);
+            border-radius: 0 4px 4px 0;
+        }
+
         .diff-line {
-            padding: 0.1rem 1rem;
+            padding: 0.1rem 0.5rem;
             white-space: pre-wrap;
             word-break: break-all;
         }
@@ -479,13 +488,167 @@
             box-shadow: 0 6px 15px rgb(244 194 194 / 40%);
         }
 
-        @keyframes pulse-status {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
+        .bottom-area {
+            position: relative;
+            flex-shrink: 0;
         }
 
-        .loading {
-            animation: pulse-status 1.5s infinite;
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.4rem 1.5rem;
+            background: rgb(253 251 251 / 80%);
+            backdrop-filter: blur(12px);
+            border-top: 1px dashed rgb(216 140 154 / 30%);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            z-index: 20;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            padding: 0.2rem 0;
+        }
+
+        .status-left:hover {
+            color: var(--text-main);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .bg-info { background: var(--text-muted); }
+        .bg-success { background: var(--success-color); }
+        .bg-error { background: var(--danger-color); }
+
+        @keyframes pulse-indicator {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0.5; }
+        }
+
+        .loading-pulse {
+            animation: pulse-indicator 1.2s infinite ease-in-out;
+            background: var(--timeline-accent);
+        }
+
+        .btn-cancel-sm {
+            padding: 0;
+            font-size: 1.1rem;
+            color: var(--danger-color);
+            display: none;
+        }
+
+        .console-panel {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            width: 450px;
+            max-width: 100vw;
+            height: 350px;
+            background: rgb(253 251 251 / 90%);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid rgb(255 255 255 / 80%);
+            border-right: 1px solid rgb(255 255 255 / 80%);
+            border-radius: 0 12px 0 0;
+            box-shadow: 4px -4px 15px rgb(0 0 0 / 3%);
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            z-index: 15;
+        }
+
+        .console-panel.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
+            border-bottom: 1px dashed rgb(216 140 154 / 20%);
+            font-size: 0.85rem;
+            font-family: system-ui, sans-serif;
+            color: var(--text-main);
+        }
+
+        .console-logs {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.8rem 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .log-item {
+            padding: 0.4rem 1.2rem;
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-start;
+            word-break: break-all;
+        }
+
+        .log-item.type-info { color: var(--text-main); }
+        .log-item.type-success { color: #4a5d3c; background: rgb(181 201 154 / 15%); }
+        .log-item.type-error { color: #9c4b4e; background: rgb(229 152 155 / 10%); }
+
+        .log-time {
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .tag-dropdown {
+            position: absolute;
+            background: var(--card-bg-blur);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgb(255 255 255 / 80%);
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgb(0 0 0 / 5%);
+            z-index: 100;
+            max-height: 220px;
+            min-width: 120px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            padding: 0.4rem;
+        }
+
+        .tag-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tag-item {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border-radius: 4px;
+            color: var(--text-main);
+            font-family: system-ui, sans-serif;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .tag-item:hover {
+            background: rgb(216 140 154 / 15%);
+            color: var(--rose-ellipsis);
         }
     </style>
 </head>
@@ -498,13 +661,17 @@
                 <textarea id="commit-desc" class="modal-field" placeholder="补充详细描述..."></textarea>
             </div>
             <div class="diff-header">
-                <span style="font-size: 0.85rem; color: var(--text-muted);">差异对比</span>
+                <div class="diff-tabs" id="diff-tabs">
+                    <div class="diff-tab" id="diff-tab-public" data-target="public">Public</div>
+                    <div class="diff-tab" id="diff-tab-private" data-target="private">Private</div>
+                </div>
                 <div class="diff-nav">
                     <button class="btn" id="btn-diff-prev" title="上一处"><i class="ri-arrow-up-s-line"></i></button>
                     <button class="btn" id="btn-diff-next" title="下一处"><i class="ri-arrow-down-s-line"></i></button>
                 </div>
             </div>
-            <div class="diff-container" id="diff-view"></div>
+            <div class="diff-container" id="diff-view-public" style="display: none;"></div>
+            <div class="diff-container" id="diff-view-private" style="display: none;"></div>
             <div class="modal-actions">
                 <button class="btn" id="btn-commit-cancel">取消</button>
                 <button class="btn-solid" id="btn-commit-confirm">保存</button>
@@ -537,10 +704,6 @@
             <button class="btn" id="btn-public" title="公开数据"><span>Public</span></button>
             <button class="btn" id="btn-private" title="私有数据"><span>Private</span></button>
         </div>
-        <div class="status-container">
-            <div id="status-msg">加载中</div>
-            <button class="btn" id="btn-cancel" title="取消"><i class="ri-close-circle-line"></i></button>
-        </div>
         <div class="tools-group">
             <button class="btn" id="btn-split" title="预览切换"><i class="ri-layout-column-line"></i></button>
             <button class="btn" id="btn-save" title="保存"><i class="ri-save-3-line"></i></button>
@@ -562,14 +725,32 @@
                 <button class="fmt-btn fmt-action" data-type="link" data-prefix="![" data-suffix="]()" title="图片"><i class="ri-image-line"></i></button>
                 <button class="fmt-btn" id="btn-upload-img" title="上传图片"><i class="ri-image-add-line"></i></button>
                 <input type="file" id="file-upload-input" accept="image/*" style="display: none;">
-                <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="#" data-suffix="" title="标签"><i class="ri-hashtag"></i></button>
+                <button class="fmt-btn" id="btn-tag" title="标签"><i class="ri-hashtag"></i></button>
                 <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="---" data-suffix="" title="分割线"><i class="ri-separator"></i></button>
                 <div class="fmt-divider"></div>
                 <button class="fmt-btn" id="btn-locate" title="定位预览位置"><i class="ri-crosshair-2-line"></i></button>
             </div>
             <textarea id="editor" spellcheck="false"></textarea>
+            <div id="tag-dropdown" class="tag-dropdown"></div>
         </div>
         <div class="pane" id="preview"></div>
+    </div>
+
+    <div class="bottom-area">
+        <div class="console-panel" id="console-panel">
+            <div class="console-header">
+                <span>运行日志</span>
+                <button class="btn" id="btn-clear-console" title="清空"><i class="ri-delete-bin-line"></i></button>
+            </div>
+            <div class="console-logs" id="console-logs"></div>
+        </div>
+        <div class="status-bar" id="status-bar">
+            <div class="status-left" id="btn-console-toggle">
+                <div class="status-indicator bg-info" id="status-indicator"></div>
+                <span id="status-msg">初始化...</span>
+            </div>
+            <button class="btn btn-cancel-sm" id="btn-cancel" title="取消请求"><i class="ri-close-circle-line"></i></button>
+        </div>
     </div>
 
     <script type="module">
@@ -618,7 +799,12 @@
                 this.commitModal = document.getElementById('commit-modal');
                 this.commitTitle = document.getElementById('commit-title');
                 this.commitDesc = document.getElementById('commit-desc');
-                this.diffView = document.getElementById('diff-view');
+                
+                this.diffViewPub = document.getElementById('diff-view-public');
+                this.diffViewPriv = document.getElementById('diff-view-private');
+                this.diffTabs = document.getElementById('diff-tabs');
+                this.tabPub = document.getElementById('diff-tab-public');
+                this.tabPriv = document.getElementById('diff-tab-private');
                 
                 this.uploadModal = document.getElementById('upload-modal');
                 this.uploadPath = document.getElementById('upload-path');
@@ -626,30 +812,68 @@
                 this.editor = document.getElementById('editor');
                 this.preview = document.getElementById('preview');
                 this.workspace = document.getElementById('workspace');
-                this.statusEl = document.getElementById('status-msg');
-                this.btnCancel = document.getElementById('btn-cancel');
                 
+                this.btnCancel = document.getElementById('btn-cancel');
                 this.btnBack = document.getElementById('btn-back');
                 this.btnPub = document.getElementById('btn-public');
                 this.btnPriv = document.getElementById('btn-private');
                 this.btnSplit = document.getElementById('btn-split');
                 this.btnSave = document.getElementById('btn-save');
+                this.btnTag = document.getElementById('btn-tag');
+                this.tagDropdown = document.getElementById('tag-dropdown');
+
+                this.consolePanel = document.getElementById('console-panel');
+                this.consoleLogs = document.getElementById('console-logs');
+                this.btnConsoleToggle = document.getElementById('btn-console-toggle');
+                this.statusMsg = document.getElementById('status-msg');
+                this.statusIndicator = document.getElementById('status-indicator');
 
                 this.sysConfig = null;
                 this.authConfig = null;
                 this.currentMode = null; 
-                this.currentSha = null;
-                this.originalContent = '';
                 this.fetchController = null;
                 
                 this.pendingUploadFile = null;
                 this.savedSelection = null;
                 this.isManualUpload = false;
                 
+                this.modesToCommit = [];
+                this.activeDiffView = null;
                 this.diffNodes = [];
                 this.currentDiffIndex = 0;
 
+                this.docs = {
+                    public: { content: '', original: '', sha: null, loaded: false },
+                    private: { content: '', original: '', sha: null, loaded: false }
+                };
+
                 this.init();
+            }
+
+            log(msg, type = 'info', loading = false) {
+                const time = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+                const iconMap = {
+                    info: 'ri-information-line',
+                    success: 'ri-check-line',
+                    error: 'ri-error-warning-line'
+                };
+
+                const logEl = document.createElement('div');
+                logEl.className = `log-item type-${type}`;
+                logEl.innerHTML = `<span class="log-time">[${time}]</span> <i class="${iconMap[type]}"></i> <span class="log-msg">${msg}</span>`;
+                this.consoleLogs.appendChild(logEl);
+                this.consoleLogs.scrollTop = this.consoleLogs.scrollHeight;
+
+                this.statusMsg.innerText = msg;
+                this.statusIndicator.className = `status-indicator bg-${type}`;
+
+                if (loading) {
+                    this.statusIndicator.classList.add('loading-pulse');
+                    this.btnCancel.style.display = 'block';
+                } else {
+                    this.statusIndicator.classList.remove('loading-pulse');
+                    this.btnCancel.style.display = 'none';
+                }
             }
 
             async init() {
@@ -659,18 +883,24 @@
                         window.location.href = 'index.html';
                         return;
                     }
+                    this.log('正在加载系统配置...', 'info', true);
                     const res = await fetch('config.toml');
-                    if (!res.ok) throw new Error();
+                    if (!res.ok) throw new Error('config.toml load failed');
                     this.sysConfig = parse(await res.text());
+                    
                     if (!this.sysConfig.editor_config) {
-                        this.setStatus('未配置鉴权文件', 'var(--danger-color)');
+                        this.log('未配置鉴权文件', 'error');
                         return;
                     }
+
+                    this.log('正在解密鉴权配置...', 'info', true);
                     const eRes = await fetch(this.sysConfig.editor_config);
                     const raw = (await eRes.text()).trim();
                     const decrypted = await CryptoSys.decrypt(raw, pwd);
+                    
                     if (decrypted) {
                         this.authConfig = parse(decrypted);
+                        this.log('配置就绪', 'success');
                         this.updateViewIcon();
                         this.bindEvents();
                         this.bindFormatters();
@@ -680,19 +910,7 @@
                         window.location.href = 'index.html';
                     }
                 } catch (e) {
-                    this.setStatus('配置解析失败', 'var(--danger-color)');
-                }
-            }
-
-            setStatus(msg, color = 'var(--text-muted)', loading = false) {
-                this.statusEl.innerText = msg;
-                this.statusEl.style.color = color;
-                if (loading) {
-                    this.statusEl.classList.add('loading');
-                    this.btnCancel.style.display = 'block';
-                } else {
-                    this.statusEl.classList.remove('loading');
-                    this.btnCancel.style.display = 'none';
+                    this.log(`初始化失败: ${e.message || '未知错误'}`, 'error');
                 }
             }
 
@@ -704,6 +922,21 @@
                 } else {
                     icon.className = 'ri-layout-column-line';
                 }
+            }
+
+            checkDirty() {
+                if (this.currentMode) {
+                    this.docs[this.currentMode].content = this.editor.value;
+                }
+                const isDirty = Object.values(this.docs).some(doc => doc.loaded && doc.content !== doc.original);
+                this.btnSave.style.color = isDirty ? 'var(--rose-ellipsis)' : '';
+            }
+
+            hasUnsavedChanges() {
+                if (this.currentMode) {
+                    this.docs[this.currentMode].content = this.editor.value;
+                }
+                return Object.values(this.docs).some(doc => doc.loaded && doc.content !== doc.original);
             }
 
             bindFormatters() {
@@ -721,7 +954,7 @@
 
                 document.getElementById('btn-locate').addEventListener('click', (e) => {
                     e.preventDefault();
-                    if (!this.workspace.classList.contains('split-mode')) {
+                    if (!this.workspace.classList.contains('split-mode') && window.innerWidth <= 768) {
                         this.workspace.classList.add('split-mode');
                         this.updateViewIcon();
                         this.updatePreview();
@@ -758,7 +991,7 @@
                         if (type === 'link') {
                             const pos = start + pre.length + selected.length + 2;
                             this.editor.setSelectionRange(pos, pos);
-                        } else if (!selected && type === 'wrap') {
+                        } else if (!selected && type === 'wrap' && pre !== '---') {
                             const pos = start + pre.length;
                             this.editor.setSelectionRange(pos, pos);
                         }
@@ -769,15 +1002,26 @@
             }
 
             bindEvents() {
-                this.btnCancel.addEventListener('click', () => {
+                this.btnConsoleToggle.addEventListener('click', () => {
+                    this.consolePanel.classList.toggle('active');
+                });
+
+                document.getElementById('btn-clear-console').addEventListener('click', () => {
+                    this.consoleLogs.innerHTML = '';
+                    this.log('控制台已清空', 'info');
+                });
+
+                this.btnCancel.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     if (this.fetchController) {
                         this.fetchController.abort();
                         this.fetchController = null;
+                        this.log('用户取消了请求', 'info');
                     }
                 });
 
                 this.btnBack.addEventListener('click', () => {
-                    if (this.editor.value !== this.originalContent) {
+                    if (this.hasUnsavedChanges()) {
                         if (!confirm('当前有未保存的修改，确定要离开吗？')) return;
                     }
                     window.location.href = 'index.html';
@@ -797,7 +1041,7 @@
 
                 window.addEventListener('resize', () => {
                     this.updateViewIcon();
-                    if (window.innerWidth > 768 && this.editor.value !== this.originalContent) {
+                    if (window.innerWidth > 768 && this.editor.value !== this.docs[this.currentMode].original) {
                         this.updatePreview();
                     }
                 });
@@ -823,14 +1067,13 @@
                 });
 
                 this.editor.addEventListener('input', () => {
+                    if (this.currentMode) {
+                        this.docs[this.currentMode].content = this.editor.value;
+                    }
                     if (this.workspace.classList.contains('split-mode') || window.innerWidth > 768) {
                         this.updatePreview();
                     }
-                    if (this.editor.value !== this.originalContent) {
-                        this.btnSave.style.color = 'var(--rose-ellipsis)';
-                    } else {
-                        this.btnSave.style.color = '';
-                    }
+                    this.checkDirty();
                 });
 
                 this.editor.addEventListener('paste', (e) => {
@@ -859,6 +1102,9 @@
                 document.getElementById('btn-commit-confirm').addEventListener('click', () => {
                     this.executeCommit();
                 });
+
+                this.tabPub.addEventListener('click', () => this.switchDiffTab('public'));
+                this.tabPriv.addEventListener('click', () => this.switchDiffTab('private'));
 
                 document.getElementById('btn-diff-prev').addEventListener('click', () => {
                     if (!this.diffNodes || this.diffNodes.length === 0) return;
@@ -908,29 +1154,105 @@
                 document.getElementById('btn-upload-copy').addEventListener('click', () => {
                     const link = document.getElementById('upload-result-link').value;
                     navigator.clipboard.writeText(link).then(() => {
-                        this.setStatus('已复制到剪贴板', 'var(--success-color)');
+                        this.log('已复制链接到剪贴板', 'success');
                         this.uploadModal.classList.remove('active');
                         this.editor.focus();
                         if (this.savedSelection) {
                             this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
                         }
                     }).catch(() => {
-                        this.setStatus('复制失败', 'var(--danger-color)');
+                        this.log('复制链接失败', 'error');
                     });
                 });
 
+                this.btnTag.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const start = this.editor.selectionStart;
+                    const end = this.editor.selectionEnd;
+                    if (!document.execCommand('insertText', false, '#')) {
+                        this.editor.setRangeText('#', start, end, 'end');
+                    }
+                    this.editor.dispatchEvent(new Event('input'));
+                    this.showTagDropdown();
+                });
+
+                this.tagDropdown.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('tag-item')) {
+                        const tagText = e.target.dataset.tag;
+                        this.editor.focus();
+                        if (!document.execCommand('insertText', false, tagText + ' ')) {
+                            const start = this.editor.selectionStart;
+                            this.editor.setRangeText(tagText + ' ', start, start, 'end');
+                        }
+                        this.editor.dispatchEvent(new Event('input'));
+                        this.tagDropdown.classList.remove('active');
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('#tag-dropdown') && !e.target.closest('#btn-tag')) {
+                        this.tagDropdown.classList.remove('active');
+                    }
+                    if (!e.target.closest('#console-panel') && !e.target.closest('#status-bar')) {
+                        this.consolePanel.classList.remove('active');
+                    }
+                });
+
                 window.addEventListener('beforeunload', (e) => {
-                    if (this.editor.value !== this.originalContent) {
+                    if (this.hasUnsavedChanges()) {
                         e.preventDefault();
                         e.returnValue = '';
                     }
                 });
             }
 
+            showTagDropdown() {
+                const tags = new Set();
+                const content = this.editor.value;
+                if (!content) return;
+
+                const blocks = content.split('\n---\n').map(b => b.trim()).filter(Boolean);
+                blocks.forEach(block => {
+                    const lines = block.split('\n');
+                    if (lines.length >= 2) {
+                        const tagLine = lines[1];
+                        const matches = tagLine.match(/#([^\s#]+)/g) || [];
+                        matches.forEach(m => tags.add(m.substring(1)));
+                    }
+                });
+
+                if (tags.size === 0) return;
+
+                const rect = this.btnTag.getBoundingClientRect();
+                const containerRect = document.getElementById('editor-pane').getBoundingClientRect();
+                
+                this.tagDropdown.innerHTML = Array.from(tags).map(t => `<div class="tag-item" data-tag="${t}">${t}</div>`).join('');
+                this.tagDropdown.style.top = `${rect.bottom - containerRect.top + 5}px`;
+                this.tagDropdown.style.left = `${rect.left - containerRect.left}px`;
+                this.tagDropdown.classList.add('active');
+            }
+
+            switchDiffTab(mode) {
+                this.tabPub.classList.toggle('active', mode === 'public');
+                this.tabPriv.classList.toggle('active', mode === 'private');
+                
+                this.diffViewPub.style.display = mode === 'public' ? 'block' : 'none';
+                this.diffViewPriv.style.display = mode === 'private' ? 'block' : 'none';
+
+                this.activeDiffView = mode === 'public' ? this.diffViewPub : this.diffViewPriv;
+                this.diffNodes = Array.from(this.activeDiffView.querySelectorAll('.diff-chunk'));
+                this.currentDiffIndex = 0;
+                
+                if (this.diffNodes.length > 0) {
+                    setTimeout(() => this.scrollToDiff(0), 50);
+                }
+            }
+
             scrollToDiff(index) {
-                if (!this.diffNodes || !this.diffNodes[index]) return;
+                if (!this.diffNodes || !this.diffNodes[index] || !this.activeDiffView) return;
                 const node = this.diffNodes[index];
-                this.diffView.scrollTop = node.offsetTop - this.diffView.offsetTop - 20;
+                this.activeDiffView.scrollTop = node.offsetTop - 20;
             }
 
             prepareUpload(file, isManual = false) {
@@ -987,7 +1309,7 @@
                 const fileToUpload = this.pendingUploadFile;
                 
                 this.pendingUploadFile = null;
-                this.setStatus('上传图片中...', 'var(--timeline-accent)', true);
+                this.log(`准备上传图片: ${cleanPath}`, 'info', true);
                 
                 try {
                     const apiUrl = (this.authConfig.api_url || '').replace(/\/$/, '');
@@ -1002,7 +1324,7 @@
                     });
 
                     if (res.ok) {
-                        this.setStatus('图片上传成功', 'var(--success-color)');
+                        this.log(`图片上传成功: ${cleanPath}`, 'success');
                         
                         if (this.isManualUpload) {
                             document.getElementById('upload-input-group').style.display = 'none';
@@ -1026,15 +1348,12 @@
                                 this.editor.setRangeText(insertText, this.editor.selectionStart, this.editor.selectionEnd, 'end');
                             }
                             this.editor.dispatchEvent(new Event('input'));
-                            setTimeout(() => {
-                                if (this.statusEl.innerText === '图片上传成功') this.setStatus('就绪');
-                            }, 3000);
                         }
                     } else {
-                        throw new Error();
+                        throw new Error(`HTTP Error: ${res.status}`);
                     }
                 } catch (e) {
-                    this.setStatus('图片上传失败', 'var(--danger-color)');
+                    this.log(`图片上传失败: ${e.message}`, 'error');
                 }
             }
 
@@ -1125,8 +1444,8 @@
             }
 
             async loadTarget(mode) {
-                if (this.editor.value !== this.originalContent) {
-                    if (!confirm('当前有未保存的修改，确定要切换吗？')) return;
+                if (this.currentMode) {
+                    this.docs[this.currentMode].content = this.editor.value;
                 }
 
                 if (this.fetchController) {
@@ -1137,16 +1456,23 @@
                 this.currentMode = mode;
                 this.btnPub.classList.toggle('active', mode === 'public');
                 this.btnPriv.classList.toggle('active', mode === 'private');
+
+                if (this.docs[mode].loaded) {
+                    this.editor.value = this.docs[mode].content;
+                    if (this.workspace.classList.contains('split-mode') || window.innerWidth > 768) {
+                        this.updatePreview();
+                    }
+                    this.checkDirty();
+                    return;
+                }
                 
                 const path = mode === 'public' ? this.authConfig.data_path : this.authConfig.private_path;
                 if (!path) {
-                    this.setStatus(`配置路径不存在`);
-                    this.editor.value = '';
-                    this.originalContent = '';
+                    this.log(`未配置 ${mode} 路径`, 'error');
                     return;
                 }
 
-                this.setStatus('加载中...', 'var(--timeline-accent)', true);
+                this.log(`正在从远端拉取 ${mode} 数据...`, 'info', true);
                 this.editor.disabled = true;
 
                 try {
@@ -1161,58 +1487,94 @@
                     });
 
                     if (res.status === 404) {
-                        this.currentSha = null;
+                        this.docs[mode] = { content: '', original: '', sha: null, loaded: true };
                         this.editor.value = '';
-                        this.originalContent = '';
-                        this.setStatus(`未找到${mode === 'public' ? '公开' : '私有'}数据`, 'var(--text-muted)');
+                        this.log(`未找到 ${mode} 数据，已创建新档`, 'info');
                     } else if (res.ok) {
                         const data = await res.json();
-                        this.currentSha = data.sha;
                         const text = Base64.decode(data.content.replace(/\n/g, ''));
+                        this.docs[mode] = { content: text, original: text, sha: data.sha, loaded: true };
                         this.editor.value = text;
-                        this.originalContent = text;
-                        this.setStatus(`加载成功`);
-                        this.btnSave.style.color = '';
+                        this.log(`${mode} 数据加载完成`, 'success');
                     } else {
-                        throw new Error();
+                        throw new Error(`HTTP Error: ${res.status}`);
                     }
                 } catch (e) {
-                    if (e.name === 'AbortError') {
-                        this.setStatus('已取消', 'var(--text-muted)');
-                    } else {
-                        this.setStatus('网络异常', 'var(--danger-color)');
-                    }
+                    if (e.name === 'AbortError') return;
+                    this.log(`${mode} 数据拉取失败: ${e.message}`, 'error');
                 } finally {
                     this.editor.disabled = false;
                     this.fetchController = null;
-                    if (this.workspace.classList.contains('split-mode') || window.innerWidth > 768) this.updatePreview();
+                    if (this.workspace.classList.contains('split-mode') || window.innerWidth > 768) {
+                        this.updatePreview();
+                    }
+                    this.checkDirty();
                 }
             }
 
-            showCommitModal() {
-                if (!this.currentMode || this.editor.value === this.originalContent) return;
+            genDiffHtml(original, content) {
+                const differences = diffLines(original, content);
+                let html = '';
+                let chunkHtml = '';
+                let inChunk = false;
 
-                const differences = diffLines(this.originalContent, this.editor.value);
-                let diffHtml = '';
-                
                 differences.forEach(part => {
                     const lines = part.value.replace(/\n$/, '').split('\n');
-                    const cls = part.added ? 'diff-add' : part.removed ? 'diff-remove' : 'diff-normal';
-                    const prefix = part.added ? '+' : part.removed ? '-' : ' ';
-                    
-                    lines.forEach(line => {
-                        const safeLine = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                        diffHtml += `<div class="diff-line ${cls}">${prefix} ${safeLine}</div>`;
-                    });
+                    if (part.added || part.removed) {
+                        if (!inChunk) {
+                            inChunk = true;
+                            chunkHtml = '<div class="diff-chunk">';
+                        }
+                        const cls = part.added ? 'diff-add' : 'diff-remove';
+                        const prefix = part.added ? '+' : '-';
+                        lines.forEach(line => {
+                            const safeLine = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                            chunkHtml += `<div class="diff-line ${cls}">${prefix} ${safeLine}</div>`;
+                        });
+                    } else {
+                        if (inChunk) {
+                            chunkHtml += '</div>';
+                            html += chunkHtml;
+                            inChunk = false;
+                        }
+                        lines.forEach(line => {
+                            const safeLine = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                            html += `<div class="diff-line diff-normal">  ${safeLine}</div>`;
+                        });
+                    }
                 });
 
-                this.diffView.innerHTML = diffHtml;
-
-                this.diffNodes = Array.from(this.diffView.querySelectorAll('.diff-add, .diff-remove'));
-                this.currentDiffIndex = 0;
-                if (this.diffNodes.length > 0) {
-                    setTimeout(() => this.scrollToDiff(0), 100);
+                if (inChunk) {
+                    chunkHtml += '</div>';
+                    html += chunkHtml;
                 }
+                return html;
+            }
+
+            showCommitModal() {
+                if (this.currentMode) {
+                    this.docs[this.currentMode].content = this.editor.value;
+                }
+
+                const pubDirty = this.docs.public.loaded && this.docs.public.content !== this.docs.public.original;
+                const privDirty = this.docs.private.loaded && this.docs.private.content !== this.docs.private.original;
+
+                if (!pubDirty && !privDirty) return;
+
+                this.modesToCommit = [];
+                if (pubDirty) this.modesToCommit.push('public');
+                if (privDirty) this.modesToCommit.push('private');
+
+                if (pubDirty) this.diffViewPub.innerHTML = this.genDiffHtml(this.docs.public.original, this.docs.public.content);
+                if (privDirty) this.diffViewPriv.innerHTML = this.genDiffHtml(this.docs.private.original, this.docs.private.content);
+
+                this.diffTabs.style.display = (pubDirty && privDirty) ? 'flex' : 'none';
+                this.tabPub.style.display = pubDirty ? 'block' : 'none';
+                this.tabPriv.style.display = privDirty ? 'block' : 'none';
+
+                let defaultMode = pubDirty ? 'public' : 'private';
+                if (pubDirty && privDirty) defaultMode = this.currentMode;
+                this.switchDiffTab(defaultMode);
 
                 const msgTemplate = this.authConfig.commit_msg || 'Update {{yyyy-mm-dd hh:mm:ss}}';
                 const now = new Date();
@@ -1232,65 +1594,66 @@
                 this.fetchController = new AbortController();
 
                 this.commitModal.classList.remove('active');
-                
-                const path = this.currentMode === 'public' ? this.authConfig.data_path : this.authConfig.private_path;
-                this.setStatus('保存中...', 'var(--timeline-accent)', true);
                 this.editor.disabled = true;
                 this.btnSave.disabled = true;
 
+                const title = this.commitTitle.value.trim();
+                const desc = this.commitDesc.value.trim();
+                const commitMsg = desc ? `${title}\n\n${desc}` : title;
+
                 try {
-                    const contentB64 = Base64.encode(this.editor.value);
-                    const title = this.commitTitle.value.trim();
-                    const desc = this.commitDesc.value.trim();
-                    const commitMsg = desc ? `${title}\n\n${desc}` : title;
+                    for (const mode of this.modesToCommit) {
+                        this.log(`正在同步 ${mode} 数据至远端...`, 'info', true);
+                        const path = mode === 'public' ? this.authConfig.data_path : this.authConfig.private_path;
+                        const contentB64 = Base64.encode(this.docs[mode].content);
 
-                    const url = `https://api.github.com/repos/${this.authConfig.github_user}/${this.authConfig.github_repo}/contents/${path}`;
-                    
-                    const payload = {
-                        message: commitMsg,
-                        content: contentB64,
-                        committer: {
-                            name: this.authConfig.commit_user || 'Editor System',
-                            email: this.authConfig.commit_email || 'editor@local'
+                        const payload = {
+                            message: commitMsg,
+                            content: contentB64,
+                            committer: {
+                                name: this.authConfig.commit_user || 'Editor System',
+                                email: this.authConfig.commit_email || 'editor@local'
+                            }
+                        };
+                        
+                        if (this.docs[mode].sha) payload.sha = this.docs[mode].sha;
+
+                        const url = `https://api.github.com/repos/${this.authConfig.github_user}/${this.authConfig.github_repo}/contents/${path}`;
+                        
+                        const res = await fetch(url, {
+                            method: 'PUT',
+                            headers: {
+                                'Accept': 'application/vnd.github+json',
+                                'Authorization': `Bearer ${this.authConfig.github_token}`,
+                                'Content-Type': 'application/json',
+                                'X-GitHub-Api-Version': '2022-11-28'
+                            },
+                            body: JSON.stringify(payload),
+                            signal: this.fetchController.signal
+                        });
+
+                        if (res.ok) {
+                            const data = await res.json();
+                            this.docs[mode].sha = data.content.sha;
+                            this.docs[mode].original = this.docs[mode].content;
+                            this.log(`保存成功: ${mode} 数据已同步`, 'success');
+                        } else {
+                            throw new Error(`HTTP Error: ${res.status} when saving ${mode}`);
                         }
-                    };
-                    
-                    if (this.currentSha) payload.sha = this.currentSha;
-
-                    const res = await fetch(url, {
-                        method: 'PUT',
-                        headers: {
-                            'Accept': 'application/vnd.github+json',
-                            'Authorization': `Bearer ${this.authConfig.github_token}`,
-                            'Content-Type': 'application/json',
-                            'X-GitHub-Api-Version': '2022-11-28'
-                        },
-                        body: JSON.stringify(payload),
-                        signal: this.fetchController.signal
-                    });
-
-                    if (res.ok) {
-                        const data = await res.json();
-                        this.currentSha = data.content.sha;
-                        this.originalContent = this.editor.value;
-                        this.setStatus('保存成功', 'var(--success-color)');
-                        this.btnSave.style.color = '';
-                        setTimeout(() => {
-                            if (this.statusEl.innerText === '保存成功') this.setStatus('就绪');
-                        }, 3000);
-                    } else {
-                        throw new Error();
                     }
                 } catch (e) {
-                    if (e.name === 'AbortError') {
-                        this.setStatus('已取消', 'var(--text-muted)');
-                    } else {
-                        this.setStatus('保存失败', 'var(--danger-color)');
+                    if (e.name !== 'AbortError') {
+                        this.log(`保存中断: ${e.message}`, 'error');
                     }
                 } finally {
                     this.editor.disabled = false;
                     this.btnSave.disabled = false;
                     this.fetchController = null;
+                    
+                    if (this.currentMode) {
+                        this.editor.value = this.docs[this.currentMode].content;
+                    }
+                    this.checkDirty();
                 }
             }
         }
