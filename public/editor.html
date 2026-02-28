@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>内容编辑器</title>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.9.1/fonts/remixicon.min.css" rel="stylesheet">
     <style>
@@ -62,6 +62,7 @@
             backdrop-filter: blur(12px);
             border-bottom: 1px solid rgb(255 255 255 / 40%);
             z-index: 10;
+            flex-shrink: 0;
         }
 
         .tools-group {
@@ -194,13 +195,38 @@
         }
 
         @media (max-width: 768px) {
-            .toolbar { padding: 0.8rem 1rem; }
-            .format-bar { padding: 0.6rem 1rem; }
-            #editor { padding: 1.2rem 1.2rem; }
-            #preview { padding: 1.2rem 1.2rem; }
-            
-            #editor-pane { display: flex; width: 100%; flex: 1; }
-            #preview { display: none; width: 100%; flex: 1; }
+            .toolbar { 
+                padding: 0.8rem 1rem; 
+            }
+            #editor-pane { 
+                display: flex; 
+                flex-direction: column; 
+                width: 100%; 
+                flex: 1; 
+            }
+            .format-bar { 
+                order: 2; 
+                border-bottom: none;
+                border-top: 1px dashed rgb(216 140 154 / 20%);
+                padding: 0.5rem 1rem;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .format-bar::-webkit-scrollbar {
+                display: none;
+            }
+            #editor { 
+                order: 1; 
+                padding: 1.2rem 1.2rem; 
+            }
+            #preview { 
+                padding: 1.2rem 1.2rem; 
+                display: none; 
+                width: 100%; 
+                flex: 1; 
+            }
             .split-mode #editor-pane { display: none; }
             .split-mode #preview { display: block; }
         }
@@ -498,6 +524,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 0.4rem 1.5rem;
+            padding-bottom: max(0.4rem, env(safe-area-inset-bottom));
             background: rgb(253 251 251 / 80%);
             backdrop-filter: blur(12px);
             border-top: 1px dashed rgb(216 140 154 / 30%);
@@ -513,6 +540,8 @@
             cursor: pointer;
             transition: color 0.2s;
             padding: 0.2rem 0;
+            flex: 1;
+            min-width: 0;
         }
 
         .status-left:hover {
@@ -523,6 +552,13 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        #status-msg {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .bg-info { background: var(--text-muted); }
@@ -545,6 +581,8 @@
             font-size: 1.1rem;
             color: var(--danger-color);
             display: none;
+            flex-shrink: 0;
+            margin-left: 0.5rem;
         }
 
         .console-panel {
