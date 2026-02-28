@@ -78,7 +78,7 @@
             cursor: pointer;
             padding: 0.4rem;
             border-radius: 6px;
-            transition: all 0.3s ease;
+            transition: background 0.3s ease, color 0.3s ease;
             display: flex;
             align-items: center;
             gap: 0.4rem;
@@ -141,7 +141,6 @@
             height: 100%;
             overflow-y: auto;
             scrollbar-gutter: stable;
-            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         #editor-pane {
@@ -152,17 +151,13 @@
 
         .format-bar {
             display: flex;
+            flex-wrap: wrap;
             gap: 0.4rem;
             padding: 0.6rem 1.5rem;
             background: rgb(253 251 251 / 40%);
             border-bottom: 1px dashed rgb(216 140 154 / 20%);
             align-items: center;
-            overflow-x: auto;
             flex-shrink: 0;
-        }
-
-        .format-bar::-webkit-scrollbar {
-            height: 0;
         }
 
         .fmt-btn {
@@ -172,7 +167,7 @@
             cursor: pointer;
             padding: 0.35rem 0.5rem;
             border-radius: 4px;
-            transition: all 0.2s;
+            transition: background 0.2s, color 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -208,29 +203,27 @@
 
         #preview {
             background: rgb(253 251 251 / 60%);
-            border-left: 1px dashed rgb(216 140 154 / 30%);
-            display: none;
             scroll-behavior: smooth;
             padding: 1.5rem 2rem;
-        }
-
-        .split-mode #preview {
-            display: block;
+            display: none;
         }
 
         @media (min-width: 769px) {
-            .split-mode #editor-pane { width: 50%; flex: none; }
-            .split-mode #preview { width: 50%; flex: none; }
+            #btn-split { display: none !important; }
+            #editor-pane { width: 50%; flex: none; display: flex; }
+            #preview { width: 50%; flex: none; display: block; border-left: 1px dashed rgb(216 140 154 / 30%); }
         }
 
         @media (max-width: 768px) {
             .toolbar { padding: 0.8rem 1rem; }
             .format-bar { padding: 0.6rem 1rem; }
             #editor { padding: 1.2rem 1.2rem; }
-            #preview { padding: 1.2rem 1.2rem; border-left: none; }
+            #preview { padding: 1.2rem 1.2rem; }
             
+            #editor-pane { display: flex; width: 100%; flex: 1; }
+            #preview { display: none; width: 100%; flex: 1; }
             .split-mode #editor-pane { display: none; }
-            .split-mode #preview { width: 100%; flex: 1; }
+            .split-mode #preview { display: block; }
         }
 
         .preview-item {
@@ -361,7 +354,7 @@
             align-items: center;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
 
         .modal-overlay.active {
@@ -380,12 +373,6 @@
             display: flex;
             flex-direction: column;
             gap: 1.2rem;
-            transform: translateY(20px);
-            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .modal-overlay.active .modal-box {
-            transform: translateY(0);
         }
 
         .modal-box.sm {
@@ -421,6 +408,23 @@
             min-height: 80px;
         }
 
+        .diff-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: -0.5rem;
+        }
+
+        .diff-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .diff-nav .btn {
+            padding: 0.2rem;
+            font-size: 1.2rem;
+        }
+
         .diff-container {
             border-radius: 6px;
             background: rgb(0 0 0 / 2%);
@@ -431,6 +435,7 @@
             font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
             font-size: 0.85rem;
             line-height: 1.5;
+            scroll-behavior: smooth;
         }
 
         .diff-line {
@@ -465,13 +470,12 @@
             cursor: pointer;
             font-size: 0.95rem;
             font-family: inherit;
-            transition: all 0.3s ease;
+            transition: opacity 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 4px 10px rgb(244 194 194 / 30%);
         }
 
         .btn-solid:hover {
             opacity: 0.9;
-            transform: translateY(-1px);
             box-shadow: 0 6px 15px rgb(244 194 194 / 40%);
         }
 
@@ -493,6 +497,13 @@
                 <input type="text" id="commit-title" class="modal-field" placeholder="摘要">
                 <textarea id="commit-desc" class="modal-field" placeholder="补充详细描述..."></textarea>
             </div>
+            <div class="diff-header">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">差异对比</span>
+                <div class="diff-nav">
+                    <button class="btn" id="btn-diff-prev" title="上一处"><i class="ri-arrow-up-s-line"></i></button>
+                    <button class="btn" id="btn-diff-next" title="下一处"><i class="ri-arrow-down-s-line"></i></button>
+                </div>
+            </div>
             <div class="diff-container" id="diff-view"></div>
             <div class="modal-actions">
                 <button class="btn" id="btn-commit-cancel">取消</button>
@@ -503,12 +514,19 @@
 
     <div id="upload-modal" class="modal-overlay">
         <div class="modal-box sm">
-            <div class="modal-input-group">
+            <div id="upload-input-group" class="modal-input-group">
                 <input type="text" id="upload-path" class="modal-field" placeholder="文件路径">
             </div>
-            <div class="modal-actions">
+            <div id="upload-result-group" class="modal-input-group" style="display: none;">
+                <input type="text" id="upload-result-link" class="modal-field" readonly>
+            </div>
+            <div class="modal-actions" id="upload-actions-default">
                 <button class="btn" id="btn-upload-cancel">取消</button>
                 <button class="btn-solid" id="btn-upload-confirm">上传</button>
+            </div>
+            <div class="modal-actions" id="upload-actions-copy" style="display: none;">
+                <button class="btn" id="btn-upload-close">关闭</button>
+                <button class="btn-solid" id="btn-upload-copy">复制链接</button>
             </div>
         </div>
     </div>
@@ -545,6 +563,7 @@
                 <button class="fmt-btn" id="btn-upload-img" title="上传图片"><i class="ri-image-add-line"></i></button>
                 <input type="file" id="file-upload-input" accept="image/*" style="display: none;">
                 <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="#" data-suffix="" title="标签"><i class="ri-hashtag"></i></button>
+                <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="---" data-suffix="" title="分割线"><i class="ri-separator"></i></button>
                 <div class="fmt-divider"></div>
                 <button class="fmt-btn" id="btn-locate" title="定位预览位置"><i class="ri-crosshair-2-line"></i></button>
             </div>
@@ -625,6 +644,10 @@
                 
                 this.pendingUploadFile = null;
                 this.savedSelection = null;
+                this.isManualUpload = false;
+                
+                this.diffNodes = [];
+                this.currentDiffIndex = 0;
 
                 this.init();
             }
@@ -772,7 +795,12 @@
                     }
                 });
 
-                window.addEventListener('resize', () => this.updateViewIcon());
+                window.addEventListener('resize', () => {
+                    this.updateViewIcon();
+                    if (window.innerWidth > 768 && this.editor.value !== this.originalContent) {
+                        this.updatePreview();
+                    }
+                });
 
                 this.preview.addEventListener('click', (e) => {
                     const link = e.target.closest('a.card-link');
@@ -795,7 +823,7 @@
                 });
 
                 this.editor.addEventListener('input', () => {
-                    if (this.workspace.classList.contains('split-mode')) {
+                    if (this.workspace.classList.contains('split-mode') || window.innerWidth > 768) {
                         this.updatePreview();
                     }
                     if (this.editor.value !== this.originalContent) {
@@ -812,12 +840,12 @@
                         if (items[i].type.indexOf('image') !== -1) {
                             e.preventDefault();
                             const file = items[i].getAsFile();
-                            this.prepareUpload(file);
+                            this.prepareUpload(file, false);
                             hasImage = true;
                             break;
                         }
                     }
-                    if (!hasImage && this.workspace.classList.contains('split-mode')) {
+                    if (!hasImage && (this.workspace.classList.contains('split-mode') || window.innerWidth > 768)) {
                         setTimeout(() => this.updatePreview(), 0);
                     }
                 });
@@ -832,6 +860,18 @@
                     this.executeCommit();
                 });
 
+                document.getElementById('btn-diff-prev').addEventListener('click', () => {
+                    if (!this.diffNodes || this.diffNodes.length === 0) return;
+                    this.currentDiffIndex = (this.currentDiffIndex - 1 + this.diffNodes.length) % this.diffNodes.length;
+                    this.scrollToDiff(this.currentDiffIndex);
+                });
+
+                document.getElementById('btn-diff-next').addEventListener('click', () => {
+                    if (!this.diffNodes || this.diffNodes.length === 0) return;
+                    this.currentDiffIndex = (this.currentDiffIndex + 1) % this.diffNodes.length;
+                    this.scrollToDiff(this.currentDiffIndex);
+                });
+
                 document.getElementById('btn-upload-img').addEventListener('click', (e) => {
                     e.preventDefault();
                     document.getElementById('file-upload-input').click();
@@ -839,7 +879,7 @@
 
                 document.getElementById('file-upload-input').addEventListener('change', (e) => {
                     if (e.target.files && e.target.files[0]) {
-                        this.prepareUpload(e.target.files[0]);
+                        this.prepareUpload(e.target.files[0], true);
                         e.target.value = '';
                     }
                 });
@@ -857,6 +897,28 @@
                     this.executeUpload();
                 });
 
+                document.getElementById('btn-upload-close').addEventListener('click', () => {
+                    this.uploadModal.classList.remove('active');
+                    this.editor.focus();
+                    if (this.savedSelection) {
+                        this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
+                    }
+                });
+
+                document.getElementById('btn-upload-copy').addEventListener('click', () => {
+                    const link = document.getElementById('upload-result-link').value;
+                    navigator.clipboard.writeText(link).then(() => {
+                        this.setStatus('已复制到剪贴板', 'var(--success-color)');
+                        this.uploadModal.classList.remove('active');
+                        this.editor.focus();
+                        if (this.savedSelection) {
+                            this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
+                        }
+                    }).catch(() => {
+                        this.setStatus('复制失败', 'var(--danger-color)');
+                    });
+                });
+
                 window.addEventListener('beforeunload', (e) => {
                     if (this.editor.value !== this.originalContent) {
                         e.preventDefault();
@@ -865,12 +927,24 @@
                 });
             }
 
-            prepareUpload(file) {
+            scrollToDiff(index) {
+                if (!this.diffNodes || !this.diffNodes[index]) return;
+                const node = this.diffNodes[index];
+                this.diffView.scrollTop = node.offsetTop - this.diffView.offsetTop - 20;
+            }
+
+            prepareUpload(file, isManual = false) {
+                this.isManualUpload = isManual;
                 this.savedSelection = {
                     start: this.editor.selectionStart,
                     end: this.editor.selectionEnd
                 };
                 this.pendingUploadFile = file;
+
+                document.getElementById('upload-input-group').style.display = 'flex';
+                document.getElementById('upload-result-group').style.display = 'none';
+                document.getElementById('upload-actions-default').style.display = 'flex';
+                document.getElementById('upload-actions-copy').style.display = 'none';
 
                 let ext = 'png';
                 if (file.name) {
@@ -906,27 +980,13 @@
                 const path = this.uploadPath.value.trim();
                 if (!path) return;
 
-                this.uploadModal.classList.remove('active');
-                
                 const domain = (this.authConfig.img_domain || '').replace(/\/$/, '');
                 const cleanPath = path.replace(/^\//, '');
                 const fullUrl = domain ? `${domain}/${cleanPath}` : cleanPath;
-
                 const insertText = `![${this.pendingUploadFile.name}](${fullUrl})`;
-
-                this.editor.focus();
-                if (this.savedSelection) {
-                    this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
-                }
-
-                if (!document.execCommand('insertText', false, insertText)) {
-                    this.editor.setRangeText(insertText, this.editor.selectionStart, this.editor.selectionEnd, 'end');
-                }
-                this.editor.dispatchEvent(new Event('input'));
-
                 const fileToUpload = this.pendingUploadFile;
+                
                 this.pendingUploadFile = null;
-
                 this.setStatus('上传图片中...', 'var(--timeline-accent)', true);
                 
                 try {
@@ -943,9 +1003,33 @@
 
                     if (res.ok) {
                         this.setStatus('图片上传成功', 'var(--success-color)');
-                        setTimeout(() => {
-                            if (this.statusEl.innerText === '图片上传成功') this.setStatus('就绪');
-                        }, 3000);
+                        
+                        if (this.isManualUpload) {
+                            document.getElementById('upload-input-group').style.display = 'none';
+                            document.getElementById('upload-actions-default').style.display = 'none';
+                            document.getElementById('upload-result-group').style.display = 'flex';
+                            document.getElementById('upload-actions-copy').style.display = 'flex';
+                            
+                            const linkInput = document.getElementById('upload-result-link');
+                            linkInput.value = insertText;
+                            setTimeout(() => {
+                                linkInput.focus();
+                                linkInput.select();
+                            }, 100);
+                        } else {
+                            this.uploadModal.classList.remove('active');
+                            this.editor.focus();
+                            if (this.savedSelection) {
+                                this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
+                            }
+                            if (!document.execCommand('insertText', false, insertText)) {
+                                this.editor.setRangeText(insertText, this.editor.selectionStart, this.editor.selectionEnd, 'end');
+                            }
+                            this.editor.dispatchEvent(new Event('input'));
+                            setTimeout(() => {
+                                if (this.statusEl.innerText === '图片上传成功') this.setStatus('就绪');
+                            }, 3000);
+                        }
                     } else {
                         throw new Error();
                     }
@@ -1101,7 +1185,7 @@
                 } finally {
                     this.editor.disabled = false;
                     this.fetchController = null;
-                    if (this.workspace.classList.contains('split-mode')) this.updatePreview();
+                    if (this.workspace.classList.contains('split-mode') || window.innerWidth > 768) this.updatePreview();
                 }
             }
 
@@ -1123,6 +1207,12 @@
                 });
 
                 this.diffView.innerHTML = diffHtml;
+
+                this.diffNodes = Array.from(this.diffView.querySelectorAll('.diff-add, .diff-remove'));
+                this.currentDiffIndex = 0;
+                if (this.diffNodes.length > 0) {
+                    setTimeout(() => this.scrollToDiff(0), 100);
+                }
 
                 const msgTemplate = this.authConfig.commit_msg || 'Update {{yyyy-mm-dd hh:mm:ss}}';
                 const now = new Date();
