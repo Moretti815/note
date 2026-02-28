@@ -349,7 +349,7 @@
             height: 100%;
         }
 
-        #commit-modal {
+        .modal-overlay {
             position: fixed;
             inset: 0;
             background: rgb(253 251 251 / 60%);
@@ -364,12 +364,12 @@
             transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        #commit-modal.active {
+        .modal-overlay.active {
             opacity: 1;
             visibility: visible;
         }
 
-        .commit-box {
+        .modal-box {
             background: var(--card-bg-blur);
             border: 1px solid rgb(255 255 255 / 80%);
             border-radius: 12px;
@@ -384,17 +384,21 @@
             transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        #commit-modal.active .commit-box {
+        .modal-overlay.active .modal-box {
             transform: translateY(0);
         }
 
-        .commit-input-group {
+        .modal-box.sm {
+            width: 420px;
+        }
+
+        .modal-input-group {
             display: flex;
             flex-direction: column;
             gap: 0.8rem;
         }
 
-        .commit-field {
+        .modal-field {
             width: 100%;
             padding: 0.8rem 1rem;
             border: 1px solid rgb(216 140 154 / 30%);
@@ -407,12 +411,12 @@
             transition: border-color 0.3s ease, background 0.3s ease;
         }
 
-        .commit-field:focus {
+        .modal-field:focus {
             border-color: var(--timeline-accent);
             background: rgb(255 255 255 / 90%);
         }
 
-        textarea.commit-field {
+        textarea.modal-field {
             resize: vertical;
             min-height: 80px;
         }
@@ -445,7 +449,7 @@
             color: #9c4b4e;
         }
 
-        .commit-actions {
+        .modal-actions {
             display: flex;
             justify-content: flex-end;
             gap: 1rem;
@@ -483,16 +487,28 @@
 </head>
 <body>
 
-    <div id="commit-modal">
-        <div class="commit-box">
-            <div class="commit-input-group">
-                <input type="text" id="commit-title" class="commit-field" placeholder="摘要">
-                <textarea id="commit-desc" class="commit-field" placeholder="补充详细描述..."></textarea>
+    <div id="commit-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-input-group">
+                <input type="text" id="commit-title" class="modal-field" placeholder="摘要">
+                <textarea id="commit-desc" class="modal-field" placeholder="补充详细描述..."></textarea>
             </div>
             <div class="diff-container" id="diff-view"></div>
-            <div class="commit-actions">
+            <div class="modal-actions">
                 <button class="btn" id="btn-commit-cancel">取消</button>
                 <button class="btn-solid" id="btn-commit-confirm">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="upload-modal" class="modal-overlay">
+        <div class="modal-box sm">
+            <div class="modal-input-group">
+                <input type="text" id="upload-path" class="modal-field" placeholder="文件路径">
+            </div>
+            <div class="modal-actions">
+                <button class="btn" id="btn-upload-cancel">取消</button>
+                <button class="btn-solid" id="btn-upload-confirm">上传</button>
             </div>
         </div>
     </div>
@@ -526,6 +542,8 @@
                 <div class="fmt-divider"></div>
                 <button class="fmt-btn fmt-action" data-type="link" data-prefix="[" data-suffix="]()" title="链接"><i class="ri-link"></i></button>
                 <button class="fmt-btn fmt-action" data-type="link" data-prefix="![" data-suffix="]()" title="图片"><i class="ri-image-line"></i></button>
+                <button class="fmt-btn" id="btn-upload-img" title="上传图片"><i class="ri-image-add-line"></i></button>
+                <input type="file" id="file-upload-input" accept="image/*" style="display: none;">
                 <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="#" data-suffix="" title="标签"><i class="ri-hashtag"></i></button>
                 <div class="fmt-divider"></div>
                 <button class="fmt-btn" id="btn-locate" title="定位预览位置"><i class="ri-crosshair-2-line"></i></button>
@@ -583,6 +601,9 @@
                 this.commitDesc = document.getElementById('commit-desc');
                 this.diffView = document.getElementById('diff-view');
                 
+                this.uploadModal = document.getElementById('upload-modal');
+                this.uploadPath = document.getElementById('upload-path');
+                
                 this.editor = document.getElementById('editor');
                 this.preview = document.getElementById('preview');
                 this.workspace = document.getElementById('workspace');
@@ -601,6 +622,9 @@
                 this.currentSha = null;
                 this.originalContent = '';
                 this.fetchController = null;
+                
+                this.pendingUploadFile = null;
+                this.savedSelection = null;
 
                 this.init();
             }
@@ -781,6 +805,23 @@
                     }
                 });
 
+                this.editor.addEventListener('paste', (e) => {
+                    const items = (e.clipboardData || window.clipboardData).items;
+                    let hasImage = false;
+                    for (let i = 0; i < items.length; i++) {
+                        if (items[i].type.indexOf('image') !== -1) {
+                            e.preventDefault();
+                            const file = items[i].getAsFile();
+                            this.prepareUpload(file);
+                            hasImage = true;
+                            break;
+                        }
+                    }
+                    if (!hasImage && this.workspace.classList.contains('split-mode')) {
+                        setTimeout(() => this.updatePreview(), 0);
+                    }
+                });
+
                 this.btnSave.addEventListener('click', () => this.showCommitModal());
 
                 document.getElementById('btn-commit-cancel').addEventListener('click', () => {
@@ -791,12 +832,126 @@
                     this.executeCommit();
                 });
 
+                document.getElementById('btn-upload-img').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('file-upload-input').click();
+                });
+
+                document.getElementById('file-upload-input').addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files[0]) {
+                        this.prepareUpload(e.target.files[0]);
+                        e.target.value = '';
+                    }
+                });
+
+                document.getElementById('btn-upload-cancel').addEventListener('click', () => {
+                    this.uploadModal.classList.remove('active');
+                    this.pendingUploadFile = null;
+                    this.editor.focus();
+                    if (this.savedSelection) {
+                        this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
+                    }
+                });
+
+                document.getElementById('btn-upload-confirm').addEventListener('click', () => {
+                    this.executeUpload();
+                });
+
                 window.addEventListener('beforeunload', (e) => {
                     if (this.editor.value !== this.originalContent) {
                         e.preventDefault();
                         e.returnValue = '';
                     }
                 });
+            }
+
+            prepareUpload(file) {
+                this.savedSelection = {
+                    start: this.editor.selectionStart,
+                    end: this.editor.selectionEnd
+                };
+                this.pendingUploadFile = file;
+
+                let ext = 'png';
+                if (file.name) {
+                    const parts = file.name.split('.');
+                    if (parts.length > 1) ext = parts.pop();
+                }
+                
+                let name = file.name;
+                if (!name || name === 'image.png' || name === 'image.jpg') {
+                    const now = new Date();
+                    name = `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getTime()}.${ext}`;
+                }
+
+                const defDir = this.authConfig.default_dir || 'img';
+                const cleanDir = defDir.replace(/^\/|\/$/g, '');
+                const defaultPath = cleanDir ? `${cleanDir}/${name}` : name;
+
+                this.uploadPath.value = defaultPath;
+                this.uploadModal.classList.add('active');
+                
+                setTimeout(() => {
+                    this.uploadPath.focus();
+                    const dotIndex = this.uploadPath.value.lastIndexOf('.');
+                    if (dotIndex > -1) {
+                        this.uploadPath.setSelectionRange(cleanDir.length ? cleanDir.length + 1 : 0, dotIndex);
+                    } else {
+                        this.uploadPath.setSelectionRange(this.uploadPath.value.length, this.uploadPath.value.length);
+                    }
+                }, 100);
+            }
+
+            async executeUpload() {
+                const path = this.uploadPath.value.trim();
+                if (!path) return;
+
+                this.uploadModal.classList.remove('active');
+                
+                const domain = (this.authConfig.img_domain || '').replace(/\/$/, '');
+                const cleanPath = path.replace(/^\//, '');
+                const fullUrl = domain ? `${domain}/${cleanPath}` : cleanPath;
+
+                const insertText = `![${this.pendingUploadFile.name}](${fullUrl})`;
+
+                this.editor.focus();
+                if (this.savedSelection) {
+                    this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
+                }
+
+                if (!document.execCommand('insertText', false, insertText)) {
+                    this.editor.setRangeText(insertText, this.editor.selectionStart, this.editor.selectionEnd, 'end');
+                }
+                this.editor.dispatchEvent(new Event('input'));
+
+                const fileToUpload = this.pendingUploadFile;
+                this.pendingUploadFile = null;
+
+                this.setStatus('上传图片中...', 'var(--timeline-accent)', true);
+                
+                try {
+                    const apiUrl = (this.authConfig.api_url || '').replace(/\/$/, '');
+                    const targetUrl = `${apiUrl}/${cleanPath}`;
+                    
+                    const res = await fetch(targetUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${this.authConfig.api_key}`
+                        },
+                        body: fileToUpload
+                    });
+
+                    if (res.ok) {
+                        this.setStatus('图片上传成功', 'var(--success-color)');
+                        setTimeout(() => {
+                            if (this.statusEl.innerText === '图片上传成功') this.setStatus('就绪');
+                        }, 3000);
+                    } else {
+                        throw new Error();
+                    }
+                } catch (e) {
+                    this.setStatus('图片上传失败', 'var(--danger-color)');
+                }
             }
 
             parseDreamSyntax(raw) {
