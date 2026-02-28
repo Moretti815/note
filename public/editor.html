@@ -20,28 +20,16 @@
             --v-height: 100dvh;
         }
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { box-sizing: border-box; }
 
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb {
             background: rgb(216 140 154 / 20%);
             border-radius: 4px;
             transition: background 0.3s ease;
         }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgb(216 140 154 / 50%);
-        }
+        ::-webkit-scrollbar-thumb:hover { background: rgb(216 140 154 / 50%); }
 
         body {
             margin: 0;
@@ -68,11 +56,7 @@
             flex-shrink: 0;
         }
 
-        .tools-group {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
+        .tools-group { display: flex; gap: 1rem; align-items: center; }
 
         .btn {
             background: transparent;
@@ -94,21 +78,9 @@
             letter-spacing: 0.05em;
         }
 
-        .btn:hover {
-            color: var(--rose-ellipsis);
-            background: rgb(216 140 154 / 10%);
-        }
-
-        .btn.active {
-            color: var(--rose-ellipsis);
-            background: rgb(216 140 154 / 15%);
-        }
-
-        .btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
+        .btn:hover { color: var(--rose-ellipsis); background: rgb(216 140 154 / 10%); }
+        .btn.active { color: var(--rose-ellipsis); background: rgb(216 140 154 / 15%); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
         .workspace {
             flex: 1;
@@ -124,12 +96,7 @@
             scrollbar-gutter: stable;
         }
 
-        #editor-pane {
-            display: flex;
-            flex-direction: column;
-            padding: 0;
-            position: relative;
-        }
+        #editor-pane { display: flex; flex-direction: column; padding: 0; position: relative; }
 
         .format-bar {
             display: flex;
@@ -157,10 +124,7 @@
             font-size: 1.1rem;
         }
 
-        .fmt-btn:hover {
-            color: var(--rose-ellipsis);
-            background: rgb(216 140 154 / 10%);
-        }
+        .fmt-btn:hover { color: var(--rose-ellipsis); background: rgb(216 140 154 / 10%); }
 
         .fmt-divider {
             width: 1px;
@@ -198,56 +162,22 @@
         }
 
         @media (max-width: 768px) {
-            .toolbar { 
-                padding: 0.8rem 1rem; 
-            }
-            #editor-pane { 
-                display: flex; 
-                flex-direction: column; 
-                width: 100%; 
-                flex: 1; 
-            }
+            .toolbar { padding: 0.8rem 1rem; }
+            #editor-pane { display: flex; flex-direction: column; width: 100%; flex: 1; }
             .format-bar { 
-                order: 2; 
-                border-bottom: none;
-                border-top: 1px dashed rgb(216 140 154 / 20%);
-                padding: 0.5rem 1rem;
-                flex-wrap: nowrap;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
+                order: 2; border-bottom: none; border-top: 1px dashed rgb(216 140 154 / 20%);
+                padding: 0.5rem 1rem; flex-wrap: nowrap; overflow-x: auto;
+                -webkit-overflow-scrolling: touch; scrollbar-width: none;
             }
-            .format-bar::-webkit-scrollbar {
-                display: none;
-            }
-            #editor { 
-                order: 1; 
-                padding: 1.2rem 1.2rem; 
-            }
-            #preview { 
-                padding: 1.2rem 1.2rem; 
-                display: none; 
-                width: 100%; 
-                flex: 1; 
-            }
+            .format-bar::-webkit-scrollbar { display: none; }
+            #editor { order: 1; padding: 1.2rem 1.2rem; }
+            #preview { padding: 1.2rem 1.2rem; display: none; width: 100%; flex: 1; }
             .split-mode #editor-pane { display: none; }
             .split-mode #preview { display: block; }
         }
 
-        .preview-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .preview-date {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            letter-spacing: 0.05em;
-            font-family: system-ui, sans-serif;
-            margin-left: 0.2rem;
-        }
+        .preview-item { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 2.5rem; }
+        .preview-date { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.05em; margin-left: 0.2rem; }
 
         .preview-card {
             position: relative;
@@ -264,433 +194,121 @@
         }
 
         .preview-card-id {
-            position: absolute;
-            top: 1.2rem;
-            right: 1.4rem;
-            font-size: 0.75rem;
-            font-family: system-ui, sans-serif;
-            color: var(--text-muted);
-            opacity: 0.3;
-            pointer-events: none;
+            position: absolute; top: 1.2rem; right: 1.4rem;
+            font-size: 0.75rem; color: var(--text-muted); opacity: 0.3; pointer-events: none;
         }
 
-        .card-tag {
-            color: var(--rose-ellipsis);
-            margin-inline-end: 0.4rem;
-            display: inline-block;
-            font-family: system-ui, sans-serif;
-            font-size: 0.85rem;
-        }
-
+        .card-tag { color: var(--rose-ellipsis); margin-inline-end: 0.4rem; display: inline-block; font-size: 0.85rem; }
         .card-link {
-            color: var(--rose-ellipsis);
-            text-decoration: none;
-            border-bottom: 1px dashed rgb(216 140 154 / 40%);
-            transition: all 0.3s ease;
-            padding-bottom: 1px;
-            word-break: break-all;
+            color: var(--rose-ellipsis); text-decoration: none;
+            border-bottom: 1px dashed rgb(216 140 154 / 40%); transition: all 0.3s ease;
+            padding-bottom: 1px; word-break: break-all;
         }
+        .card-link:hover { border-bottom-color: var(--rose-ellipsis); background: rgb(216 140 154 / 10%); }
 
-        .card-link:hover {
-            border-bottom-color: var(--rose-ellipsis);
-            background: rgb(216 140 154 / 10%);
-        }
+        .text-weak { color: var(--text-muted); font-size: 0.9em; opacity: 0.85; }
+        .text-strike { text-decoration: line-through; text-decoration-color: currentColor; text-decoration-thickness: 1.5px; opacity: 0.95; }
+        .text-underline { text-decoration: none; border-bottom: 1px solid var(--text-deco); padding-bottom: 1px; }
+        .text-wavy { text-decoration: underline wavy var(--text-deco); text-underline-offset: 3px; }
+        .manual-br { height: 0.5em; }
 
-        .text-weak {
-            color: var(--text-muted);
-            font-size: 0.9em;
-            opacity: 0.85;
-        }
-
-        .text-strike {
-            text-decoration: line-through;
-            text-decoration-color: currentColor;
-            text-decoration-thickness: 1.5px;
-            opacity: 0.95;
-        }
-
-        .text-underline {
-            text-decoration: none;
-            border-bottom: 1px solid var(--text-deco);
-            padding-bottom: 1px;
-        }
-
-        .text-wavy {
-            text-decoration: underline wavy var(--text-deco);
-            text-underline-offset: 3px;
-        }
-
-        .manual-br {
-            height: 0.5em;
-        }
-
-        .card-img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-            margin-block: 0.6rem;
-            box-shadow: 0 2px 6px rgb(0 0 0 / 5%);
-            display: block;
-        }
-
-        .gallery {
-            display: grid;
-            gap: 0.4rem;
-            margin-block: 0.6rem;
-        }
-
+        .card-img { max-width: 100%; height: auto; border-radius: 4px; margin-block: 0.6rem; box-shadow: 0 2px 6px rgb(0 0 0 / 5%); display: block; }
+        .gallery { display: grid; gap: 0.4rem; margin-block: 0.6rem; }
         .gallery.grid-2 { grid-template-columns: repeat(2, 1fr); }
         .gallery.grid-3 { grid-template-columns: repeat(3, 1fr); }
-
-        .gallery .card-img {
-            margin: 0;
-            aspect-ratio: 1;
-            object-fit: cover;
-            width: 100%;
-            height: 100%;
-        }
+        .gallery .card-img { margin: 0; aspect-ratio: 1; object-fit: cover; width: 100%; height: 100%; }
 
         .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgb(253 251 251 / 60%);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            position: fixed; inset: 0; background: rgb(253 251 251 / 60%);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            z-index: 1000; display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
         }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
 
         .modal-box {
-            background: var(--card-bg-blur);
-            border: 1px solid rgb(255 255 255 / 80%);
-            border-radius: 12px;
-            padding: 2rem;
-            width: 680px;
-            max-width: 90vw;
+            background: var(--card-bg-blur); border: 1px solid rgb(255 255 255 / 80%);
+            border-radius: 12px; padding: 2rem; width: 680px; max-width: 90vw;
             box-shadow: 0 15px 35px rgb(0 0 0 / 4%), inset 0 0 0 1px rgb(255 255 255 / 50%);
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
+            display: flex; flex-direction: column; gap: 1.2rem;
         }
+        .modal-box.sm { width: 420px; }
 
-        .modal-box.sm {
-            width: 420px;
-        }
-
-        .modal-input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
-
+        .modal-input-group { display: flex; flex-direction: column; gap: 0.8rem; }
         .modal-field {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 1px solid rgb(216 140 154 / 30%);
-            border-radius: 6px;
-            background: rgb(255 255 255 / 60%);
-            font-family: inherit;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            outline: none;
+            width: 100%; padding: 0.8rem 1rem; border: 1px solid rgb(216 140 154 / 30%);
+            border-radius: 6px; background: rgb(255 255 255 / 60%); font-family: inherit;
+            color: var(--text-main); font-size: 0.95rem; outline: none;
             transition: border-color 0.3s ease, background 0.3s ease;
         }
+        .modal-field:focus { border-color: var(--timeline-accent); background: rgb(255 255 255 / 90%); }
+        textarea.modal-field { resize: vertical; min-height: 80px; }
 
-        .modal-field:focus {
-            border-color: var(--timeline-accent);
-            background: rgb(255 255 255 / 90%);
-        }
+        .diff-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: -0.5rem; border-bottom: 1px dashed rgb(216 140 154 / 30%); padding-bottom: 0.5rem; }
+        .diff-tabs { display: flex; gap: 0.5rem; }
+        .diff-tab { padding: 0.3rem 0.8rem; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; border-radius: 4px; transition: all 0.2s; }
+        .diff-tab.active { background: rgb(216 140 154 / 15%); color: var(--rose-ellipsis); }
+        .diff-nav { display: flex; gap: 0.5rem; }
+        .diff-nav .btn { padding: 0.2rem; font-size: 1.2rem; }
+        .diff-container { position: relative; border-radius: 6px; background: rgb(0 0 0 / 2%); border: 1px solid rgb(0 0 0 / 5%); max-height: 280px; overflow-y: auto; padding: 0.5rem 0; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.85rem; line-height: 1.5; scroll-behavior: smooth; }
+        .diff-chunk { border-left: 3px solid var(--timeline-accent); padding-left: 0.5rem; margin: 0.4rem 0; background: rgb(255 255 255 / 40%); border-radius: 0 4px 4px 0; }
+        .diff-line { padding: 0.1rem 0.5rem; white-space: pre-wrap; word-break: break-all; }
+        .diff-add { background: rgb(181 201 154 / 25%); color: #4a5d3c; }
+        .diff-remove { background: rgb(229 152 155 / 20%); color: #9c4b4e; }
 
-        textarea.modal-field {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .diff-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: -0.5rem;
-            border-bottom: 1px dashed rgb(216 140 154 / 30%);
-            padding-bottom: 0.5rem;
-        }
-
-        .diff-tabs {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .diff-tab {
-            padding: 0.3rem 0.8rem;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-
-        .diff-tab.active {
-            background: rgb(216 140 154 / 15%);
-            color: var(--rose-ellipsis);
-        }
-
-        .diff-nav {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .diff-nav .btn {
-            padding: 0.2rem;
-            font-size: 1.2rem;
-        }
-
-        .diff-container {
-            position: relative;
-            border-radius: 6px;
-            background: rgb(0 0 0 / 2%);
-            border: 1px solid rgb(0 0 0 / 5%);
-            max-height: 280px;
-            overflow-y: auto;
-            padding: 0.5rem 0;
-            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-            font-size: 0.85rem;
-            line-height: 1.5;
-            scroll-behavior: smooth;
-        }
-
-        .diff-chunk {
-            border-left: 3px solid var(--timeline-accent);
-            padding-left: 0.5rem;
-            margin: 0.4rem 0;
-            background: rgb(255 255 255 / 40%);
-            border-radius: 0 4px 4px 0;
-        }
-
-        .diff-line {
-            padding: 0.1rem 0.5rem;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-
-        .diff-add {
-            background: rgb(181 201 154 / 25%);
-            color: #4a5d3c;
-        }
-
-        .diff-remove {
-            background: rgb(229 152 155 / 20%);
-            color: #9c4b4e;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-            margin-top: 0.5rem;
-        }
-
+        .modal-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 0.5rem; }
         .btn-solid {
-            background: var(--timeline-accent);
-            color: #fff;
-            padding: 0.6rem 1.5rem;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: opacity 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 10px rgb(244 194 194 / 30%);
+            background: var(--timeline-accent); color: #fff; padding: 0.6rem 1.5rem;
+            border-radius: 6px; border: none; cursor: pointer; font-size: 0.95rem; font-family: inherit;
+            transition: opacity 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 4px 10px rgb(244 194 194 / 30%);
         }
+        .btn-solid:hover { opacity: 0.9; box-shadow: 0 6px 15px rgb(244 194 194 / 40%); }
 
-        .btn-solid:hover {
-            opacity: 0.9;
-            box-shadow: 0 6px 15px rgb(244 194 194 / 40%);
-        }
-
-        .bottom-area {
-            position: relative;
-            flex-shrink: 0;
-        }
-
+        .bottom-area { position: relative; flex-shrink: 0; }
         .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.4rem 1.5rem;
-            padding-bottom: max(0.4rem, env(safe-area-inset-bottom));
-            background: rgb(253 251 251 / 80%);
-            backdrop-filter: blur(12px);
-            border-top: 1px dashed rgb(216 140 154 / 30%);
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            z-index: 20;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.4rem 1.5rem; padding-bottom: max(0.4rem, env(safe-area-inset-bottom));
+            background: rgb(253 251 251 / 80%); backdrop-filter: blur(12px);
+            border-top: 1px dashed rgb(216 140 154 / 30%); font-size: 0.8rem; color: var(--text-muted); z-index: 20;
         }
-
-        .status-left {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            cursor: pointer;
-            transition: color 0.2s;
-            padding: 0.2rem 0;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .status-left:hover {
-            color: var(--text-main);
-        }
-
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        #status-msg {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        .status-left { display: flex; align-items: center; gap: 0.6rem; cursor: pointer; transition: color 0.2s; padding: 0.2rem 0; flex: 1; min-width: 0; }
+        .status-left:hover { color: var(--text-main); }
+        .status-indicator { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        #status-msg { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .bg-info { background: var(--text-muted); }
         .bg-success { background: var(--success-color); }
         .bg-error { background: var(--danger-color); }
 
-        @keyframes pulse-indicator {
-            0% { transform: scale(0.8); opacity: 0.5; }
-            50% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(0.8); opacity: 0.5; }
-        }
-
-        .loading-pulse {
-            animation: pulse-indicator 1.2s infinite ease-in-out;
-            background: var(--timeline-accent);
-        }
-
-        .btn-cancel-sm {
-            padding: 0;
-            font-size: 1.1rem;
-            color: var(--danger-color);
-            display: none;
-            flex-shrink: 0;
-            margin-left: 0.5rem;
-        }
+        @keyframes pulse-indicator { 0% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(0.8); opacity: 0.5; } }
+        .loading-pulse { animation: pulse-indicator 1.2s infinite ease-in-out; background: var(--timeline-accent); }
+        .btn-cancel-sm { padding: 0; font-size: 1.1rem; color: var(--danger-color); display: none; flex-shrink: 0; margin-left: 0.5rem; }
 
         .console-panel {
-            position: absolute;
-            bottom: 100%;
-            left: 0;
-            width: 450px;
-            max-width: 100vw;
-            height: 350px;
-            background: rgb(253 251 251 / 90%);
-            backdrop-filter: blur(16px);
-            border-top: 1px solid rgb(255 255 255 / 80%);
-            border-right: 1px solid rgb(255 255 255 / 80%);
-            border-radius: 0 12px 0 0;
-            box-shadow: 4px -4px 15px rgb(0 0 0 / 3%);
-            display: flex;
-            flex-direction: column;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.2s ease, visibility 0.2s ease;
-            z-index: 15;
+            position: absolute; bottom: 100%; left: 0; width: 450px; max-width: 100vw; height: 350px;
+            background: rgb(253 251 251 / 90%); backdrop-filter: blur(16px);
+            border-top: 1px solid rgb(255 255 255 / 80%); border-right: 1px solid rgb(255 255 255 / 80%);
+            border-radius: 0 12px 0 0; box-shadow: 4px -4px 15px rgb(0 0 0 / 3%);
+            display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease; z-index: 15;
         }
-
-        .console-panel.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .console-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.8rem 1.2rem;
-            border-bottom: 1px dashed rgb(216 140 154 / 20%);
-            font-size: 0.85rem;
-            font-family: system-ui, sans-serif;
-            color: var(--text-main);
-        }
-
-        .console-logs {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0.8rem 0;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .log-item {
-            padding: 0.4rem 1.2rem;
-            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-            font-size: 0.8rem;
-            line-height: 1.5;
-            display: flex;
-            gap: 0.5rem;
-            align-items: flex-start;
-            word-break: break-all;
-        }
-
+        .console-panel.active { opacity: 1; visibility: visible; }
+        .console-header { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 1.2rem; border-bottom: 1px dashed rgb(216 140 154 / 20%); font-size: 0.85rem; color: var(--text-main); }
+        .console-logs { flex: 1; overflow-y: auto; padding: 0.8rem 0; display: flex; flex-direction: column; }
+        .log-item { padding: 0.4rem 1.2rem; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.8rem; line-height: 1.5; display: flex; gap: 0.5rem; align-items: flex-start; word-break: break-all; }
         .log-item.type-info { color: var(--text-main); }
         .log-item.type-success { color: #4a5d3c; background: rgb(181 201 154 / 15%); }
         .log-item.type-error { color: #9c4b4e; background: rgb(229 152 155 / 10%); }
-
-        .log-time {
-            color: var(--text-muted);
-            flex-shrink: 0;
-        }
+        .log-time { color: var(--text-muted); flex-shrink: 0; }
 
         .tag-dropdown {
-            position: absolute;
-            background: var(--card-bg-blur);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgb(255 255 255 / 80%);
-            border-radius: 6px;
-            box-shadow: 0 4px 15px rgb(0 0 0 / 5%);
-            z-index: 100;
-            max-height: 220px;
-            min-width: 120px;
-            overflow-y: auto;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.2s ease, visibility 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            padding: 0.4rem;
+            position: absolute; background: var(--card-bg-blur); backdrop-filter: blur(12px);
+            border: 1px solid rgb(255 255 255 / 80%); border-radius: 6px; box-shadow: 0 4px 15px rgb(0 0 0 / 5%);
+            z-index: 100; max-height: 220px; min-width: 120px; overflow-y: auto; opacity: 0; visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease; display: flex; flex-direction: column; padding: 0.4rem;
         }
-
-        .tag-dropdown.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .tag-item {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.85rem;
-            cursor: pointer;
-            border-radius: 4px;
-            color: var(--text-main);
-            font-family: system-ui, sans-serif;
-            transition: background 0.2s, color 0.2s;
-        }
-
-        .tag-item:hover {
-            background: rgb(216 140 154 / 15%);
-            color: var(--rose-ellipsis);
-        }
+        .tag-dropdown.active { opacity: 1; visibility: visible; }
+        .tag-item { padding: 0.4rem 0.8rem; font-size: 0.85rem; cursor: pointer; border-radius: 4px; color: var(--text-main); transition: background 0.2s, color 0.2s; }
+        .tag-item:hover { background: rgb(216 140 154 / 15%); color: var(--rose-ellipsis); }
     </style>
 </head>
 <body>
@@ -725,16 +343,9 @@
             <div id="upload-input-group" class="modal-input-group">
                 <input type="text" id="upload-path" class="modal-field" placeholder="文件路径">
             </div>
-            <div id="upload-result-group" class="modal-input-group" style="display: none;">
-                <input type="text" id="upload-result-link" class="modal-field" readonly>
-            </div>
-            <div class="modal-actions" id="upload-actions-default">
+            <div class="modal-actions">
                 <button class="btn" id="btn-upload-cancel">取消</button>
                 <button class="btn-solid" id="btn-upload-confirm">上传</button>
-            </div>
-            <div class="modal-actions" id="upload-actions-copy" style="display: none;">
-                <button class="btn" id="btn-upload-close">关闭</button>
-                <button class="btn-solid" id="btn-upload-copy">复制链接</button>
             </div>
         </div>
     </div>
@@ -897,7 +508,6 @@
                     const handleViewport = () => {
                         const vh = window.visualViewport.height;
                         document.documentElement.style.setProperty('--v-height', `${vh}px`);
-                        
                         if (document.activeElement === this.editor) {
                             this.editor.scrollIntoView({ block: 'nearest' });
                         }
@@ -910,12 +520,7 @@
 
             log(msg, type = 'info', loading = false) {
                 const time = new Date().toLocaleTimeString('zh-CN', { hour12: false });
-                const iconMap = {
-                    info: 'ri-information-line',
-                    success: 'ri-check-line',
-                    error: 'ri-error-warning-line'
-                };
-
+                const iconMap = { info: 'ri-information-line', success: 'ri-check-line', error: 'ri-error-warning-line' };
                 const logEl = document.createElement('div');
                 logEl.className = `log-item type-${type}`;
                 logEl.innerHTML = `<span class="log-time">[${time}]</span> <i class="${iconMap[type]}"></i> <span class="log-msg">${msg}</span>`;
@@ -943,10 +548,7 @@
                     }
                     this.log('正在加载系统配置...', 'info', true);
                     const res = await fetch('config.toml');
-                    if (!res.ok) {
-                        const errText = await res.text();
-                        throw new Error(`config.toml load failed: ${res.status} ${errText}`);
-                    }
+                    if (!res.ok) throw new Error(`config.toml load failed: ${res.status}`);
                     this.sysConfig = parse(await res.text());
                     
                     if (!this.sysConfig.editor_config) {
@@ -961,17 +563,14 @@
                     
                     if (decrypted) {
                         this.authConfig = parse(decrypted);
-                        
                         const reqKeys = ['github_user', 'github_repo', 'github_token', 'commit_user', 'commit_email'];
-                        const missing = reqKeys.filter(k => !this.authConfig[k]);
-                        if (missing.length > 0) {
-                            this.log(`配置缺少关键字段: ${missing.join(', ')}，核心功能不可用`, 'error');
+                        if (reqKeys.some(k => !this.authConfig[k])) {
+                            this.log('配置缺少关键字段，核心功能不可用', 'error');
                             this.editor.disabled = true;
                             return;
                         }
-
                         if (!this.authConfig.data_path && !this.authConfig.private_path) {
-                            this.log('未配置任何数据路径 (data_path / private_path)，请检查配置', 'error');
+                            this.log('未配置任何数据路径，请检查配置', 'error');
                             this.editor.disabled = true;
                             return;
                         }
@@ -981,11 +580,8 @@
                         this.bindEvents();
                         this.bindFormatters();
                         
-                        if (this.authConfig.data_path) {
-                            this.loadTarget('public');
-                        } else if (this.authConfig.private_path) {
-                            this.loadTarget('private');
-                        }
+                        if (this.authConfig.data_path) this.loadTarget('public');
+                        else this.loadTarget('private');
                     } else {
                         sessionStorage.removeItem('editor_pwd');
                         window.location.href = 'index.html';
@@ -1005,12 +601,10 @@
                 }
             }
 
-            checkDirty() {
-                if (this.currentMode) {
-                    this.docs[this.currentMode].content = this.editor.value;
+            conditionallyUpdatePreview() {
+                if (this.workspace.classList.contains('split-mode') || window.innerWidth > 768) {
+                    this.updatePreview();
                 }
-                const isDirty = Object.values(this.docs).some(doc => doc.loaded && doc.content !== doc.original);
-                this.btnSave.style.color = isDirty ? 'var(--rose-ellipsis)' : '';
             }
 
             hasUnsavedChanges() {
@@ -1018,6 +612,10 @@
                     this.docs[this.currentMode].content = this.editor.value;
                 }
                 return Object.values(this.docs).some(doc => doc.loaded && doc.content !== doc.original);
+            }
+
+            checkDirty() {
+                this.btnSave.style.color = this.hasUnsavedChanges() ? 'var(--rose-ellipsis)' : '';
             }
 
             bindFormatters() {
@@ -1043,7 +641,6 @@
 
                     const textBefore = this.editor.value.substring(0, this.editor.selectionStart);
                     const index = textBefore.split('\n---\n').length - 1;
-                    
                     const items = this.preview.querySelectorAll('.preview-item');
                     if (items[index]) {
                         items[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1059,7 +656,6 @@
                         const start = this.editor.selectionStart;
                         const end = this.editor.selectionEnd;
                         const selected = this.editor.value.substring(start, end);
-
                         const replacement = pre + selected + suf;
                         
                         this.editor.focus();
@@ -1076,16 +672,13 @@
                             const pos = start + pre.length;
                             this.editor.setSelectionRange(pos, pos);
                         }
-
                         this.editor.dispatchEvent(new Event('input'));
                     });
                 });
             }
 
             bindEvents() {
-                this.btnConsoleToggle.addEventListener('click', () => {
-                    this.consolePanel.classList.toggle('active');
-                });
+                this.btnConsoleToggle.addEventListener('click', () => this.consolePanel.classList.toggle('active'));
 
                 document.getElementById('btn-clear-console').addEventListener('click', () => {
                     this.consoleLogs.innerHTML = '';
@@ -1102,9 +695,7 @@
                 });
 
                 this.btnBack.addEventListener('click', () => {
-                    if (this.hasUnsavedChanges()) {
-                        if (!confirm('当前有未保存的修改，确定要离开吗？')) return;
-                    }
+                    if (this.hasUnsavedChanges() && !confirm('当前有未保存的修改，确定要离开吗？')) return;
                     window.location.href = 'index.html';
                 });
 
@@ -1115,9 +706,7 @@
                     this.workspace.classList.toggle('split-mode');
                     this.btnSplit.classList.toggle('active', this.workspace.classList.contains('split-mode'));
                     this.updateViewIcon();
-                    if (this.workspace.classList.contains('split-mode')) {
-                        this.updatePreview();
-                    }
+                    this.conditionallyUpdatePreview();
                 });
 
                 window.addEventListener('resize', () => {
@@ -1133,12 +722,10 @@
                         const href = link.getAttribute('href');
                         if (href && href.startsWith('#')) {
                             e.preventDefault();
-                            const targetId = 'preview-post-' + href.substring(1);
-                            const targetEl = document.getElementById(targetId);
+                            const targetEl = document.getElementById('preview-post-' + href.substring(1));
                             if (targetEl) {
                                 targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                const card = targetEl.querySelector('.preview-card');
-                                card.animate([
+                                targetEl.querySelector('.preview-card').animate([
                                     { boxShadow: '0 0 0 2px var(--timeline-accent)' },
                                     { boxShadow: '0 4px 15px rgb(0 0 0 / 2%), inset 0 0 0 1px rgb(255 255 255 / 30%)' }
                                 ], { duration: 1500, easing: 'ease-out' });
@@ -1148,12 +735,8 @@
                 });
 
                 this.editor.addEventListener('input', () => {
-                    if (this.currentMode) {
-                        this.docs[this.currentMode].content = this.editor.value;
-                    }
-                    if (this.workspace.classList.contains('split-mode') || window.innerWidth > 768) {
-                        this.updatePreview();
-                    }
+                    if (this.currentMode) this.docs[this.currentMode].content = this.editor.value;
+                    this.conditionallyUpdatePreview();
                     this.checkDirty();
                 });
 
@@ -1163,38 +746,29 @@
                     for (let i = 0; i < items.length; i++) {
                         if (items[i].type.indexOf('image') !== -1) {
                             e.preventDefault();
-                            const file = items[i].getAsFile();
-                            this.prepareUpload(file, false);
+                            this.prepareUpload(items[i].getAsFile(), false);
                             hasImage = true;
                             break;
                         }
                     }
-                    if (!hasImage && (this.workspace.classList.contains('split-mode') || window.innerWidth > 768)) {
-                        setTimeout(() => this.updatePreview(), 0);
-                    }
+                    if (!hasImage) setTimeout(() => this.conditionallyUpdatePreview(), 0);
                 });
 
                 this.btnSave.addEventListener('click', () => this.showCommitModal());
-
-                document.getElementById('btn-commit-cancel').addEventListener('click', () => {
-                    this.commitModal.classList.remove('active');
-                });
-
-                document.getElementById('btn-commit-confirm').addEventListener('click', () => {
-                    this.executeCommit();
-                });
+                document.getElementById('btn-commit-cancel').addEventListener('click', () => this.commitModal.classList.remove('active'));
+                document.getElementById('btn-commit-confirm').addEventListener('click', () => this.executeCommit());
 
                 this.tabPub.addEventListener('click', () => this.switchDiffTab('public'));
                 this.tabPriv.addEventListener('click', () => this.switchDiffTab('private'));
 
                 document.getElementById('btn-diff-prev').addEventListener('click', () => {
-                    if (!this.diffNodes || this.diffNodes.length === 0) return;
+                    if (!this.diffNodes.length) return;
                     this.currentDiffIndex = (this.currentDiffIndex - 1 + this.diffNodes.length) % this.diffNodes.length;
                     this.scrollToDiff(this.currentDiffIndex);
                 });
 
                 document.getElementById('btn-diff-next').addEventListener('click', () => {
-                    if (!this.diffNodes || this.diffNodes.length === 0) return;
+                    if (!this.diffNodes.length) return;
                     this.currentDiffIndex = (this.currentDiffIndex + 1) % this.diffNodes.length;
                     this.scrollToDiff(this.currentDiffIndex);
                 });
@@ -1215,36 +789,10 @@
                     this.uploadModal.classList.remove('active');
                     this.pendingUploadFile = null;
                     this.editor.focus();
-                    if (this.savedSelection) {
-                        this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
-                    }
+                    if (this.savedSelection) this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
                 });
 
-                document.getElementById('btn-upload-confirm').addEventListener('click', () => {
-                    this.executeUpload();
-                });
-
-                document.getElementById('btn-upload-close').addEventListener('click', () => {
-                    this.uploadModal.classList.remove('active');
-                    this.editor.focus();
-                    if (this.savedSelection) {
-                        this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
-                    }
-                });
-
-                document.getElementById('btn-upload-copy').addEventListener('click', () => {
-                    const link = document.getElementById('upload-result-link').value;
-                    navigator.clipboard.writeText(link).then(() => {
-                        this.log('已复制链接到剪贴板', 'success');
-                        this.uploadModal.classList.remove('active');
-                        this.editor.focus();
-                        if (this.savedSelection) {
-                            this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
-                        }
-                    }).catch(() => {
-                        this.log('复制链接失败', 'error');
-                    });
-                });
+                document.getElementById('btn-upload-confirm').addEventListener('click', () => this.executeUpload());
 
                 this.btnTag.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -1272,12 +820,8 @@
                 });
 
                 document.addEventListener('click', (e) => {
-                    if (!e.target.closest('#tag-dropdown') && !e.target.closest('#btn-tag')) {
-                        this.tagDropdown.classList.remove('active');
-                    }
-                    if (!e.target.closest('#console-panel') && !e.target.closest('#status-bar')) {
-                        this.consolePanel.classList.remove('active');
-                    }
+                    if (!e.target.closest('#tag-dropdown') && !e.target.closest('#btn-tag')) this.tagDropdown.classList.remove('active');
+                    if (!e.target.closest('#console-panel') && !e.target.closest('#status-bar')) this.consolePanel.classList.remove('active');
                 });
 
                 window.addEventListener('beforeunload', (e) => {
@@ -1297,8 +841,7 @@
                 blocks.forEach(block => {
                     const lines = block.split('\n');
                     if (lines.length >= 2) {
-                        const tagLine = lines[1];
-                        const matches = tagLine.match(/#([^\s#]+)/g) || [];
+                        const matches = lines[1].match(/#([^\s#]+)/g) || [];
                         matches.forEach(m => tags.add(m.substring(1)));
                     }
                 });
@@ -1325,28 +868,22 @@
                 this.diffNodes = Array.from(this.activeDiffView.querySelectorAll('.diff-chunk'));
                 this.currentDiffIndex = 0;
                 
-                if (this.diffNodes.length > 0) {
-                    setTimeout(() => this.scrollToDiff(0), 50);
-                }
+                if (this.diffNodes.length > 0) setTimeout(() => this.scrollToDiff(0), 50);
             }
 
             scrollToDiff(index) {
-                if (!this.diffNodes || !this.diffNodes[index] || !this.activeDiffView) return;
-                const node = this.diffNodes[index];
-                this.activeDiffView.scrollTop = node.offsetTop - 20;
+                if (!this.diffNodes[index] || !this.activeDiffView) return;
+                this.activeDiffView.scrollTop = this.diffNodes[index].offsetTop - 20;
             }
 
             prepareUpload(file, isManual = false) {
                 if (!this.authConfig.image?.api_url || !this.authConfig.image?.api_key) {
-                    this.log('图片上传失败：缺少 image 的 api_url 或 api_key 配置', 'error');
+                    this.log('图片上传失败：缺少 api_url 或 api_key 配置', 'error');
                     return;
                 }
 
                 this.isManualUpload = isManual;
-                this.savedSelection = {
-                    start: this.editor.selectionStart,
-                    end: this.editor.selectionEnd
-                };
+                this.savedSelection = { start: this.editor.selectionStart, end: this.editor.selectionEnd };
                 this.pendingUploadFile = file;
 
                 let ext = 'png';
@@ -1361,17 +898,8 @@
                     name = `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getTime()}.${ext}`;
                 }
 
-                const defDir = this.authConfig.image?.default_dir || 'img';
-                const cleanDir = defDir.replace(/^\/|\/$/g, '');
-                const defaultPath = cleanDir ? `${cleanDir}/${name}` : name;
-
-                this.uploadPath.value = defaultPath;
-                
-                document.getElementById('upload-input-group').style.display = 'flex';
-                document.getElementById('upload-result-group').style.display = 'none';
-                document.getElementById('upload-actions-default').style.display = 'flex';
-                document.getElementById('upload-actions-copy').style.display = 'none';
-
+                const cleanDir = (this.authConfig.image?.default_dir || 'img').replace(/^\/|\/$/g, '');
+                this.uploadPath.value = cleanDir ? `${cleanDir}/${name}` : name;
                 this.uploadModal.classList.add('active');
                 
                 setTimeout(() => {
@@ -1396,20 +924,15 @@
                 const fileToUpload = this.pendingUploadFile;
                 
                 this.pendingUploadFile = null;
-                
                 this.uploadModal.classList.remove('active');
                 
                 this.editor.focus();
-                if (this.savedSelection) {
-                    this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
-                }
+                if (this.savedSelection) this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
 
                 if (this.isManualUpload) {
                     navigator.clipboard.writeText(insertText).then(() => {
                         this.log('已提取图片链接并复制到剪贴板', 'success');
-                    }).catch(() => {
-                        this.log('剪贴板写入失败', 'error');
-                    });
+                    }).catch(() => this.log('剪贴板写入失败', 'error'));
                 } else {
                     if (!document.execCommand('insertText', false, insertText)) {
                         this.editor.setRangeText(insertText, this.editor.selectionStart, this.editor.selectionEnd, 'end');
@@ -1421,22 +944,16 @@
                 
                 try {
                     const apiUrl = (this.authConfig.image?.api_url || '').replace(/\/$/, '');
-                    const targetUrl = `${apiUrl}/${cleanPath}`;
-                    
-                    const res = await fetch(targetUrl, {
+                    const res = await fetch(`${apiUrl}/${cleanPath}`, {
                         method: 'PUT',
-                        headers: {
-                            'Authorization': `Bearer ${this.authConfig.image?.api_key}`
-                        },
+                        headers: { 'Authorization': `Bearer ${this.authConfig.image?.api_key}` },
                         body: fileToUpload
                     });
 
                     if (res.ok) {
-                        const resData = await res.text();
-                        this.log(`图片上传成功: ${cleanPath} | 远端响应: ${resData}`, 'success');
+                        this.log(`图片上传成功: ${cleanPath} | 远端响应: ${await res.text()}`, 'success');
                     } else {
-                        const errData = await res.text();
-                        throw new Error(`HTTP Error: ${res.status} | ${errData}`);
+                        throw new Error(`HTTP Error: ${res.status} | ${await res.text()}`);
                     }
                 } catch (e) {
                     this.log(`图片上传失败: ${e.message}`, 'error');
@@ -1452,43 +969,32 @@
                     const id = isAsc ? index + 1 : total - index;
                     const lines = block.split('\n');
                     const date = lines.shift().trim();
-                    const tags = [];
-                    const imgStore = [];
-                    const linkStore = [];
+                    const imgStore = [], linkStore = [];
                     
                     if (lines.length > 0) {
-                        lines[0] = lines[0].replace(/#([^\s#]+)/g, (_, tag) => {
-                            tags.push(tag);
-                            return `<span class="card-tag">#${tag}</span>`;
-                        });
+                        lines[0] = lines[0].replace(/#([^\s#]+)/g, (_, tag) => `<span class="card-tag">#${tag}</span>`);
                     }
                     
                     const processedLines = lines.map(line => {
                         let p = line;
                         p = p.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
-                            imgStore.push({ alt, url });
-                            return `__IMG_${imgStore.length - 1}__`;
+                            imgStore.push({ alt, url }); return `__IMG_${imgStore.length - 1}__`;
                         });
                         p = p.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
-                            linkStore.push({ text, url });
-                            return `__LNK_${linkStore.length - 1}__`;
+                            linkStore.push({ text, url }); return `__LNK_${linkStore.length - 1}__`;
                         });
                         p = p.replace(/(https?:\/\/[^\s<]+)/g, (match, url) => {
-                            let cleanUrl = url;
-                            let trailing = '';
+                            let cleanUrl = url, trailing = '';
                             const matchPunc = url.match(/([.,;:!?。，、！？]+)$/);
                             if (matchPunc) {
                                 cleanUrl = url.substring(0, url.length - matchPunc[0].length);
                                 trailing = matchPunc[0];
                             }
-                            const displayUrl = cleanUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
-                            return `<a href="${cleanUrl}" target="_blank" class="card-link" rel="noopener noreferrer">${displayUrl}</a>${trailing}`;
+                            return `<a href="${cleanUrl}" target="_blank" class="card-link" rel="noopener noreferrer">${cleanUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}</a>${trailing}`;
                         });
                         p = p.replace(/__LNK_(\d+)__/g, (_, idx) => {
                             const { text, url } = linkStore[idx];
-                            const isInternal = url.startsWith('#');
-                            const targetProps = isInternal ? '' : 'target="_blank" rel="noopener noreferrer"';
-                            return `<a href="${url}" ${targetProps} class="card-link">${text}</a>`;
+                            return `<a href="${url}" ${url.startsWith('#') ? '' : 'target="_blank" rel="noopener noreferrer"'} class="card-link">${text}</a>`;
                         });
                         p = p.replace(/__IMG_(\d+)__/g, (_, idx) => {
                             const { alt, url } = imgStore[idx];
@@ -1499,29 +1005,17 @@
                         p = p.replace(/(?<!\\)~~(.+?)(?<!\\)~~/g, '<span class="text-strike">$1</span>');
                         p = p.replace(/(?<!\\)\+\+(.+?)(?<!\\)\+\+/g, '<span class="text-underline">$1</span>');
                         p = p.replace(/(?<!\\)\^\^(.+?)(?<!\\)\^\^/g, '<span class="text-wavy">$1</span>');
-                        
-                        p = p.replace(/\\(%%|~~|\+\+|\^\^)/g, '$1');
-
-                        return p;
+                        return p.replace(/\\(%%|~~|\+\+|\^\^)/g, '$1');
                     });
 
                     let finalHtml = processedLines.join('<div class="manual-br"></div>');
                     finalHtml = finalHtml.replace(/(?:<div class="manual-br"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="manual-br"><\/div>)*/g, '$1');
                     finalHtml = finalHtml.replace(/(<img[^>]+>){2,}/g, match => {
                         const count = (match.match(/<img/g) || []).length;
-                        const gridClass = (count === 2 || count === 4) ? 'grid-2' : 'grid-3';
-                        return `<div class="gallery ${gridClass}">${match}</div>`;
+                        return `<div class="gallery ${(count === 2 || count === 4) ? 'grid-2' : 'grid-3'}">${match}</div>`;
                     });
 
-                    return `
-                        <div class="preview-item" id="preview-post-${id}">
-                            <div class="preview-date">${date}</div>
-                            <div class="preview-card">
-                                <span class="preview-card-id">#${id}</span>
-                                ${finalHtml}
-                            </div>
-                        </div>
-                    `;
+                    return `<div class="preview-item" id="preview-post-${id}"><div class="preview-date">${date}</div><div class="preview-card"><span class="preview-card-id">#${id}</span>${finalHtml}</div></div>`;
                 }).join('');
             }
 
@@ -1530,24 +1024,17 @@
             }
 
             async loadTarget(mode) {
-                if (this.currentMode) {
-                    this.docs[this.currentMode].content = this.editor.value;
-                }
-
-                if (this.fetchController) {
-                    this.fetchController.abort();
-                }
+                if (this.currentMode) this.docs[this.currentMode].content = this.editor.value;
+                if (this.fetchController) this.fetchController.abort();
+                
                 this.fetchController = new AbortController();
-
                 this.currentMode = mode;
                 this.btnPub.classList.toggle('active', mode === 'public');
                 this.btnPriv.classList.toggle('active', mode === 'private');
 
                 if (this.docs[mode].loaded) {
                     this.editor.value = this.docs[mode].content;
-                    if (this.workspace.classList.contains('split-mode') || window.innerWidth > 768) {
-                        this.updatePreview();
-                    }
+                    this.conditionallyUpdatePreview();
                     this.checkDirty();
                     return;
                 }
@@ -1562,8 +1049,7 @@
                 this.editor.disabled = true;
 
                 try {
-                    const url = `https://api.github.com/repos/${this.authConfig.github_user}/${this.authConfig.github_repo}/contents/${path}`;
-                    const res = await fetch(url, {
+                    const res = await fetch(`https://api.github.com/repos/${this.authConfig.github_user}/${this.authConfig.github_repo}/contents/${path}`, {
                         headers: {
                             'Accept': 'application/vnd.github+json',
                             'Authorization': `Bearer ${this.authConfig.github_token}`,
@@ -1583,65 +1069,41 @@
                         this.editor.value = text;
                         this.log(`数据加载完成`, 'success');
                     } else {
-                        const errBody = await res.text();
-                        throw new Error(`HTTP Error: ${res.status} - ${errBody}`);
+                        throw new Error(`HTTP Error: ${res.status} - ${await res.text()}`);
                     }
                 } catch (e) {
-                    if (e.name === 'AbortError') return;
-                    this.log(`数据拉取失败: ${e.message}`, 'error');
+                    if (e.name !== 'AbortError') this.log(`数据拉取失败: ${e.message}`, 'error');
                 } finally {
                     this.editor.disabled = false;
                     this.fetchController = null;
-                    if (this.workspace.classList.contains('split-mode') || window.innerWidth > 768) {
-                        this.updatePreview();
-                    }
+                    this.conditionallyUpdatePreview();
                     this.checkDirty();
                 }
             }
 
             genDiffHtml(original, content) {
                 const differences = diffLines(original, content);
-                let html = '';
-                let chunkHtml = '';
-                let inChunk = false;
+                let html = '', chunkHtml = '', inChunk = false;
 
                 differences.forEach(part => {
                     const lines = part.value.replace(/\n$/, '').split('\n');
                     if (part.added || part.removed) {
-                        if (!inChunk) {
-                            inChunk = true;
-                            chunkHtml = '<div class="diff-chunk">';
-                        }
-                        const cls = part.added ? 'diff-add' : 'diff-remove';
-                        const prefix = part.added ? '+' : '-';
+                        if (!inChunk) { inChunk = true; chunkHtml = '<div class="diff-chunk">'; }
                         lines.forEach(line => {
-                            const safeLine = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                            chunkHtml += `<div class="diff-line ${cls}">${prefix} ${safeLine}</div>`;
+                            chunkHtml += `<div class="diff-line ${part.added ? 'diff-add' : 'diff-remove'}">${part.added ? '+' : '-'} ${line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`;
                         });
                     } else {
-                        if (inChunk) {
-                            chunkHtml += '</div>';
-                            html += chunkHtml;
-                            inChunk = false;
-                        }
+                        if (inChunk) { chunkHtml += '</div>'; html += chunkHtml; inChunk = false; }
                         lines.forEach(line => {
-                            const safeLine = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                            html += `<div class="diff-line diff-normal">  ${safeLine}</div>`;
+                            html += `<div class="diff-line diff-normal">  ${line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`;
                         });
                     }
                 });
-
-                if (inChunk) {
-                    chunkHtml += '</div>';
-                    html += chunkHtml;
-                }
-                return html;
+                return html + (inChunk ? chunkHtml + '</div>' : '');
             }
 
             showCommitModal() {
-                if (this.currentMode) {
-                    this.docs[this.currentMode].content = this.editor.value;
-                }
+                if (this.currentMode) this.docs[this.currentMode].content = this.editor.value;
 
                 const pubDirty = this.docs.public.loaded && this.docs.public.content !== this.docs.public.original;
                 const privDirty = this.docs.private.loaded && this.docs.private.content !== this.docs.private.original;
@@ -1659,16 +1121,12 @@
                 this.tabPub.style.display = pubDirty ? 'block' : 'none';
                 this.tabPriv.style.display = privDirty ? 'block' : 'none';
 
-                let defaultMode = pubDirty ? 'public' : 'private';
-                if (pubDirty && privDirty) defaultMode = this.currentMode;
-                this.switchDiffTab(defaultMode);
+                this.switchDiffTab((pubDirty && privDirty) ? this.currentMode : (pubDirty ? 'public' : 'private'));
 
-                const msgTemplate = this.authConfig.commit_msg;
-                if (msgTemplate) {
+                if (this.authConfig.commit_msg) {
                     const now = new Date();
-                    const tzOffset = now.getTimezoneOffset() * 60000;
-                    const localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, 19).replace('T', ' ');
-                    this.commitTitle.value = msgTemplate.replace('{{yyyy-mm-dd hh:mm:ss}}', localISOTime);
+                    const localISOTime = (new Date(now - now.getTimezoneOffset() * 60000)).toISOString().slice(0, 19).replace('T', ' ');
+                    this.commitTitle.value = this.authConfig.commit_msg.replace('{{yyyy-mm-dd hh:mm:ss}}', localISOTime);
                 } else {
                     this.commitTitle.value = '';
                 }
@@ -1678,39 +1136,28 @@
             }
 
             async executeCommit() {
-                if (this.fetchController) {
-                    this.fetchController.abort();
-                }
+                if (this.fetchController) this.fetchController.abort();
                 this.fetchController = new AbortController();
 
                 this.commitModal.classList.remove('active');
                 this.editor.disabled = true;
                 this.btnSave.disabled = true;
 
-                const title = this.commitTitle.value.trim();
-                const desc = this.commitDesc.value.trim();
-                const commitMsg = desc ? `${title}\n\n${desc}` : title;
+                const commitMsg = this.commitDesc.value.trim() ? `${this.commitTitle.value.trim()}\n\n${this.commitDesc.value.trim()}` : this.commitTitle.value.trim();
 
                 try {
                     for (const mode of this.modesToCommit) {
                         this.log(`正在同步 ${mode} 数据至远端...`, 'info', true);
                         const path = mode === 'public' ? this.authConfig.data_path : this.authConfig.private_path;
-                        const contentB64 = Base64.encode(this.docs[mode].content);
-
                         const payload = {
                             message: commitMsg,
-                            content: contentB64,
-                            committer: {
-                                name: this.authConfig.commit_user,
-                                email: this.authConfig.commit_email
-                            }
+                            content: Base64.encode(this.docs[mode].content),
+                            committer: { name: this.authConfig.commit_user, email: this.authConfig.commit_email }
                         };
                         
                         if (this.docs[mode].sha) payload.sha = this.docs[mode].sha;
 
-                        const url = `https://api.github.com/repos/${this.authConfig.github_user}/${this.authConfig.github_repo}/contents/${path}`;
-                        
-                        const res = await fetch(url, {
+                        const res = await fetch(`https://api.github.com/repos/${this.authConfig.github_user}/${this.authConfig.github_repo}/contents/${path}`, {
                             method: 'PUT',
                             headers: {
                                 'Accept': 'application/vnd.github+json',
@@ -1728,30 +1175,22 @@
                             this.docs[mode].original = this.docs[mode].content;
                             this.log(`保存成功: 数据已同步`, 'success');
                         } else {
-                            const errBody = await res.text();
-                            throw new Error(`HTTP Error: ${res.status} - ${errBody}`);
+                            throw new Error(`HTTP Error: ${res.status} - ${await res.text()}`);
                         }
                     }
                 } catch (e) {
-                    if (e.name !== 'AbortError') {
-                        this.log(`保存中断: ${e.message}`, 'error');
-                    }
+                    if (e.name !== 'AbortError') this.log(`保存中断: ${e.message}`, 'error');
                 } finally {
                     this.editor.disabled = false;
                     this.btnSave.disabled = false;
                     this.fetchController = null;
-                    
-                    if (this.currentMode) {
-                        this.editor.value = this.docs[this.currentMode].content;
-                    }
+                    if (this.currentMode) this.editor.value = this.docs[this.currentMode].content;
                     this.checkDirty();
                 }
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            new EditorCore();
-        });
+        document.addEventListener('DOMContentLoaded', () => new EditorCore());
     </script>
 </body>
 </html>

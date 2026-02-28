@@ -28,9 +28,7 @@
             --text-deco: rgb(238 187 77 / 40%);
         }
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -55,19 +53,11 @@
             align-items: center;
             transition: opacity 0.6s ease, visibility 0.6s ease;
         }
-
-        #loader.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
+        #loader.hidden { opacity: 0; visibility: hidden; }
 
         .loader-dot {
-            width: 10px;
-            height: 10px;
-            background-color: var(--timeline-accent);
-            border-radius: 50%;
-            box-shadow: 0 0 8px rgb(244 194 194 / 60%);
-            animation: breathe 1.5s infinite ease-in-out;
+            width: 10px; height: 10px; background-color: var(--timeline-accent); border-radius: 50%;
+            box-shadow: 0 0 8px rgb(244 194 194 / 60%); animation: breathe 1.5s infinite ease-in-out;
         }
 
         @keyframes breathe {
@@ -75,166 +65,65 @@
             50% { transform: scale(1.2); opacity: 1; }
         }
 
-        #bg-canvas {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: -1; 
-        }
+        #bg-canvas { position: fixed; inset: 0; pointer-events: none; z-index: -1; }
 
         #dream-transition {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0; z-index: 9998;
             background: radial-gradient(circle at center, #fff0f5 0%, #fdf5f7 50%, #f4e8eb 100%);
-            opacity: 0;
-            visibility: hidden;
-            z-index: 9998;
-            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.2s;
+            opacity: 0; visibility: hidden; transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.2s;
         }
-
-        #dream-transition.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        #dream-transition.active { opacity: 1; visibility: visible; }
 
         #secret-petal {
-            position: fixed;
-            top: 2rem;
-            left: 2.5rem;
-            font-size: 1.4rem;
-            color: var(--text-muted);
-            opacity: 0;
-            visibility: hidden;
-            cursor: pointer;
-            z-index: 100;
-            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            -webkit-tap-highlight-color: transparent;
+            position: fixed; top: 2rem; left: 2.5rem; font-size: 1.4rem; color: var(--text-muted);
+            opacity: 0; visibility: hidden; cursor: pointer; z-index: 100;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1); -webkit-tap-highlight-color: transparent;
         }
-
-        #secret-petal.visible {
-            opacity: 0.15;
-            visibility: visible;
-        }
-
-        @media (hover: hover) {
-            #secret-petal.visible:hover {
-                opacity: 0.8;
-                transform: scale(1.1) rotate(15deg);
-            }
-        }
-
-        #secret-petal.visible.touched {
-            opacity: 0.8;
-            transform: scale(1.1) rotate(15deg);
-        }
+        #secret-petal.visible { opacity: 0.15; visibility: visible; }
+        @media (hover: hover) { #secret-petal.visible:hover { opacity: 0.8; transform: scale(1.1) rotate(15deg); } }
+        #secret-petal.visible.touched { opacity: 0.8; transform: scale(1.1) rotate(15deg); }
 
         @keyframes petalResonance {
             0%, 100% { filter: drop-shadow(0 0 8px rgb(238 187 77 / 40%)); transform: scale(1.15); }
             50% { filter: drop-shadow(0 0 16px rgb(238 187 77 / 80%)); transform: scale(1.22); }
         }
-
-        #secret-petal.unlocked {
-            opacity: 0.9 !important;
-            color: #eebb4d;
-            animation: petalResonance 3s ease-in-out infinite;
-        }
+        #secret-petal.unlocked { opacity: 0.9 !important; color: #eebb4d; animation: petalResonance 3s ease-in-out infinite; }
 
         #pwd-modal {
-            position: fixed;
-            inset: 0;
-            background: rgb(253 251 251 / 40%);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            z-index: 999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.5s ease;
+            position: fixed; inset: 0; background: rgb(253 251 251 / 40%);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            z-index: 999; display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: all 0.5s ease;
         }
-
-        #pwd-modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        #pwd-modal.active { opacity: 1; visibility: visible; }
 
         #pwd-input {
-            background: transparent;
-            border: none;
+            background: transparent; border: none;
             background-image: linear-gradient(90deg, transparent, var(--timeline-accent), transparent);
-            background-size: 0px 2px;
-            background-position: center bottom;
-            background-repeat: no-repeat;
-            color: var(--text-main);
-            font-size: 1.2rem;
-            text-align: center;
-            padding: 0.5rem 1rem;
-            width: 280px;
-            outline: none;
-            font-family: inherit;
-            letter-spacing: 0.1em;
+            background-size: 0px 2px; background-position: center bottom; background-repeat: no-repeat;
+            color: var(--text-main); font-size: 1.2rem; text-align: center; padding: 0.5rem 1rem;
+            width: 280px; outline: none; font-family: inherit; letter-spacing: 0.1em;
             text-shadow: 0 0 12px rgb(216 140 154 / 0%);
-            transition: background-size 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-                        text-shadow 0.7s ease;
+            transition: background-size 0.7s cubic-bezier(0.22, 1, 0.36, 1), text-shadow 0.7s ease;
         }
-
-        #pwd-input:focus {
-            background-size: 100% 2px;
-            text-shadow: 0 0 8px rgb(216 140 154 / 20%);
-        }
-
-        #pwd-input::placeholder {
-            color: var(--text-muted);
-            opacity: 0.6;
-            font-weight: 300;
-        }
+        #pwd-input:focus { background-size: 100% 2px; text-shadow: 0 0 8px rgb(216 140 154 / 20%); }
+        #pwd-input::placeholder { color: var(--text-muted); opacity: 0.6; font-weight: 300; }
 
         .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgb(242 198 208 / 80%) 0%, transparent 70%);
-            transform: scale(0);
-            animation: ripple-anim 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-            pointer-events: none;
-            z-index: 10;
+            position: absolute; border-radius: 50%; background: radial-gradient(circle, rgb(242 198 208 / 80%) 0%, transparent 70%);
+            transform: scale(0); animation: ripple-anim 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            pointer-events: none; z-index: 10;
         }
-
-        @keyframes ripple-anim {
-            to { transform: scale(4); opacity: 0; }
-        }
+        @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
 
         #editor-link {
-            position: fixed;
-            bottom: 2rem;
-            left: 2.5rem;
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            opacity: 0;
-            visibility: hidden;
-            cursor: pointer;
-            z-index: 100;
-            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            text-decoration: none;
-            -webkit-tap-highlight-color: transparent;
+            position: fixed; bottom: 2rem; left: 2.5rem; font-size: 1.2rem; color: var(--text-muted);
+            opacity: 0; visibility: hidden; cursor: pointer; z-index: 100;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1); text-decoration: none; -webkit-tap-highlight-color: transparent;
         }
-
-        #editor-link.visible {
-            opacity: 0.15;
-            visibility: visible;
-        }
-
-        @media (hover: hover) {
-            #editor-link.visible:hover {
-                opacity: 0.8;
-                transform: scale(1.1) rotate(-10deg);
-            }
-        }
-
-        #editor-link.visible.touched {
-            opacity: 0.8;
-            transform: scale(1.1) rotate(-10deg);
-        }
+        #editor-link.visible { opacity: 0.15; visibility: visible; }
+        @media (hover: hover) { #editor-link.visible:hover { opacity: 0.8; transform: scale(1.1) rotate(-10deg); } }
+        #editor-link.visible.touched { opacity: 0.8; transform: scale(1.1) rotate(-10deg); }
 
         @media (max-width: 600px) {
             #secret-petal { top: 1.5rem; left: 1.5rem; }
@@ -243,168 +132,48 @@
         }
 
         .corner-link {
-            position: absolute;
-            top: 2rem;
-            right: 2.5rem;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.85rem;
-            letter-spacing: 0.1em;
-            opacity: 0.4;
-            transition: opacity 0.4s ease;
-            font-family: system-ui, sans-serif;
-            z-index: 10;
-            display: none;
+            position: absolute; top: 2rem; right: 2.5rem; color: var(--text-muted); text-decoration: none;
+            font-size: 0.85rem; letter-spacing: 0.1em; opacity: 0.4; transition: opacity 0.4s ease;
+            font-family: system-ui, sans-serif; z-index: 10; display: none;
         }
-
         .corner-link:hover { opacity: 0.8; }
 
-        .container {
-            flex: 1;
-            width: 100%;
-            max-width: 580px;
-            margin-inline: auto;
-            padding: 4rem 1.5rem;
-        }
+        .container { flex: 1; width: 100%; max-width: 580px; margin-inline: auto; padding: 4rem 1.5rem; }
 
-        header {
-            text-align: center;
-            margin-block-end: 2.5rem;
+        header { text-align: center; margin-block-end: 2.5rem; }
+        header h1 { font-weight: 300; letter-spacing: 0.25em; color: #d88c9a; margin-block: 0 0.5rem; font-size: 1.8rem; min-height: 1.8rem; transition: color 1s ease; }
+        header p { font-size: 0.9rem; color: var(--text-muted); font-style: italic; line-height: 1.6; min-height: 1.4rem; }
+        body.private-mode header h1 { color: var(--private-accent); }
 
-            & h1 {
-                font-weight: 300;
-                letter-spacing: 0.25em;
-                color: #d88c9a;
-                margin-block: 0 0.5rem;
-                font-size: 1.8rem;
-                min-height: 1.8rem;
-                transition: color 1s ease;
-            }
-
-            & p {
-                font-size: 0.9rem;
-                color: var(--text-muted);
-                font-style: italic;
-                line-height: 1.6;
-                min-height: 1.4rem;
-            }
-        }
-
-        body.private-mode header h1 {
-            color: var(--private-accent);
-        }
-
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.6rem;
-            margin-block-end: 3.5rem;
-            min-height: 28px;
-        }
-
+        .tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin-block-end: 3.5rem; min-height: 28px; }
         .tag {
-            padding: 0.2rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            background: rgb(255 255 255 / 40%);
-            border: 1px solid rgb(255 255 255 / 30%);
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            backdrop-filter: blur(8px);
-            -webkit-tap-highlight-color: transparent;
-            font-family: system-ui, sans-serif;
-
-            @media (hover: hover) {
-                &:hover {
-                    transform: scale(0.95);
-                    background: rgb(255 255 255 / 60%);
-                    color: var(--text-main);
-                }
-            }
-
-            &:active { transform: scale(0.92); }
-
-            &.active {
-                background: var(--timeline-accent);
-                color: #fff;
-                border-color: var(--timeline-accent);
-                box-shadow: inset 0 1px 3px rgb(0 0 0 / 10%);
-            }
+            padding: 0.2rem 0.8rem; border-radius: 20px; font-size: 0.8rem;
+            background: rgb(255 255 255 / 40%); border: 1px solid rgb(255 255 255 / 30%);
+            color: var(--text-muted); cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            backdrop-filter: blur(8px); -webkit-tap-highlight-color: transparent; font-family: system-ui, sans-serif;
         }
+        @media (hover: hover) { .tag:hover { transform: scale(0.95); background: rgb(255 255 255 / 60%); color: var(--text-main); } }
+        .tag:active { transform: scale(0.92); }
+        .tag.active { background: var(--timeline-accent); color: #fff; border-color: var(--timeline-accent); box-shadow: inset 0 1px 3px rgb(0 0 0 / 10%); }
 
-        .tag.special-unread {
-            color: var(--rose-ellipsis);
-            border-color: rgb(216 140 154 / 30%);
-            font-weight: 500;
-        }
+        .tag.special-unread { color: var(--rose-ellipsis); border-color: rgb(216 140 154 / 30%); font-weight: 500; }
+        .tag.special-unread.active { background: var(--rose-ellipsis); border-color: var(--rose-ellipsis); color: #fff; }
 
-        .tag.special-unread.active {
-            background: var(--rose-ellipsis);
-            border-color: var(--rose-ellipsis);
-            color: #fff;
-        }
+        @keyframes microwave { 0% { box-shadow: 0 0 0 0 rgb(216 140 154 / 50%); } 100% { box-shadow: 0 0 0 6px rgb(216 140 154 / 0%); } }
+        .tag.special-unread.has-unread { animation: microwave 2s cubic-bezier(0.25, 1, 0.5, 1) infinite; }
 
-        @keyframes microwave {
-            0% { box-shadow: 0 0 0 0 rgb(216 140 154 / 50%); }
-            100% { box-shadow: 0 0 0 6px rgb(216 140 154 / 0%); }
-        }
+        body.private-mode .tag.special-unread { color: #eebb4d; border-color: rgb(238 187 77 / 30%); }
+        body.private-mode .tag.special-unread.active { background: #eebb4d; border-color: #eebb4d; color: #fff; }
+        @keyframes microwave-private { 0% { box-shadow: 0 0 0 0 rgb(238 187 77 / 50%); } 100% { box-shadow: 0 0 0 6px rgb(238 187 77 / 0%); } }
+        body.private-mode .tag.special-unread.has-unread { animation: microwave-private 2s cubic-bezier(0.25, 1, 0.5, 1) infinite; }
 
-        .tag.special-unread.has-unread {
-            animation: microwave 2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
-        }
-
-        body.private-mode .tag.special-unread {
-            color: #eebb4d;
-            border-color: rgb(238 187 77 / 30%);
-        }
-
-        body.private-mode .tag.special-unread.active {
-            background: #eebb4d;
-            border-color: #eebb4d;
-            color: #fff;
-        }
-
-        @keyframes microwave-private {
-            0% { box-shadow: 0 0 0 0 rgb(238 187 77 / 50%); }
-            100% { box-shadow: 0 0 0 6px rgb(238 187 77 / 0%); }
-        }
-
-        body.private-mode .tag.special-unread.has-unread {
-            animation: microwave-private 2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
-        }
-
-        .timeline {
-            display: grid;
-            gap: 2rem;
-            perspective: 1200px;
-        }
-
-        .item {
-            display: grid;
-            grid-template-columns: 20px 1fr;
-            gap: 1.2rem;
-            opacity: 0;
-            transform-style: preserve-3d;
-        }
-
-        .timeline.ready .item,
-        .timeline.ready .empty-tip {
-            animation: deepSurface 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
+        .timeline { display: grid; gap: 2rem; perspective: 1200px; }
+        .item { display: grid; grid-template-columns: 20px 1fr; gap: 1.2rem; opacity: 0; transform-style: preserve-3d; }
+        .timeline.ready .item, .timeline.ready .empty-tip { animation: deepSurface 1s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
 
         @keyframes deepSurface {
-            0% { 
-                opacity: 0; 
-                transform: translateY(40px) translateZ(-60px) rotateX(-8deg); 
-                filter: blur(10px);
-            }
-            100% { 
-                opacity: 1; 
-                transform: translateY(0) translateZ(0) rotateX(0); 
-                filter: blur(0);
-            }
+            0% { opacity: 0; transform: translateY(40px) translateZ(-60px) rotateX(-8deg); filter: blur(10px); }
+            100% { opacity: 1; transform: translateY(0) translateZ(0) rotateX(0); filter: blur(0); }
         }
 
         @keyframes targetPulse {
@@ -413,336 +182,94 @@
             100% { box-shadow: 0 2px 8px rgb(0 0 0 / 3%); border-color: rgb(255 255 255 / 40%); }
         }
 
-        .track {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100%;
-
-            & .node {
-                width: 8px;
-                height: 8px;
-                background-color: #fff;
-                border: 2px solid var(--timeline-accent);
-                border-radius: 50%;
-                box-shadow: 0 0 0 3px rgb(244 194 194 / 15%);
-                flex-shrink: 0;
-                margin-top: 0.25em; 
-                position: relative;
-                z-index: 2;
-                transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            }
-
-            & .node::after {
-                content: '';
-                position: absolute;
-                top: calc(100% + 2px);
-                left: 50%;
-                transform: translateX(-50%);
-                width: 2px;
-                height: 14px;
-                background: linear-gradient(to bottom, var(--rose-ellipsis), transparent);
-                border-radius: 2px;
-                opacity: 0;
-                visibility: hidden;
-                transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            }
-
-            & .line {
-                width: 1px;
-                flex-grow: 1;
-                background-color: var(--timeline-accent);
-                opacity: 0.5;
-                transition: background 0.6s ease, opacity 0.6s ease;
-            }
+        .track { display: flex; flex-direction: column; align-items: center; height: 100%; }
+        .track .node {
+            width: 8px; height: 8px; background-color: #fff; border: 2px solid var(--timeline-accent);
+            border-radius: 50%; box-shadow: 0 0 0 3px rgb(244 194 194 / 15%); flex-shrink: 0;
+            margin-top: 0.25em; position: relative; z-index: 2; transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
         }
+        .track .node::after {
+            content: ''; position: absolute; top: calc(100% + 2px); left: 50%; transform: translateX(-50%);
+            width: 2px; height: 14px; background: linear-gradient(to bottom, var(--rose-ellipsis), transparent);
+            border-radius: 2px; opacity: 0; visibility: hidden; transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .track .line { width: 1px; flex-grow: 1; background-color: var(--timeline-accent); opacity: 0.5; transition: background 0.6s ease, opacity 0.6s ease; }
 
         .diamond-link {
-            width: 7px;
-            height: 7px;
-            border: 1.5px solid var(--timeline-accent);
-            background: transparent;
-            transform: rotate(45deg);
-            margin-top: 1.0rem;
-            flex-shrink: 0;
-            cursor: pointer;
-            z-index: 3;
-            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            position: relative;
-            opacity: 0.8;
-            -webkit-tap-highlight-color: transparent;
+            width: 7px; height: 7px; border: 1.5px solid var(--timeline-accent); background: transparent;
+            transform: rotate(45deg); margin-top: 1.0rem; flex-shrink: 0; cursor: pointer; z-index: 3;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); position: relative; opacity: 0.8; -webkit-tap-highlight-color: transparent;
         }
+        .diamond-link::after { content: ''; position: absolute; inset: -12px; background: transparent; }
+        @media (hover: hover) { .diamond-link:hover { opacity: 1; background: var(--timeline-accent); box-shadow: 0 0 10px rgb(244 194 194 / 80%); transform: rotate(45deg) scale(1.3); } }
+        .diamond-link:active { transform: rotate(45deg) scale(0.9); }
 
-        .diamond-link::after {
-            content: '';
-            position: absolute;
-            inset: -12px;
-            background: transparent;
-        }
+        body.private-mode .diamond-link { border-color: var(--private-accent); }
+        @media (hover: hover) { body.private-mode .diamond-link:hover { background: var(--private-accent); box-shadow: 0 0 10px rgb(242 198 208 / 80%); } }
 
-        @media (hover: hover) {
-            .diamond-link:hover {
-                opacity: 1;
-                background: var(--timeline-accent);
-                box-shadow: 0 0 10px rgb(244 194 194 / 80%);
-                transform: rotate(45deg) scale(1.3);
-            }
-        }
+        .item.unread .track .node { border-color: var(--rose-ellipsis); box-shadow: 0 0 0 3px rgb(216 140 154 / 20%), 0 0 12px 2px rgb(216 140 154 / 35%); }
+        .item.unread .track .node::after { opacity: 0.85; visibility: visible; }
 
-        .diamond-link:active {
-            transform: rotate(45deg) scale(0.9);
-        }
+        @keyframes heartbeat { 0%, 100% { box-shadow: 0 0 8px 2px rgb(242 198 208 / 40%); transform: scale(1); } 50% { box-shadow: 0 0 16px 5px rgb(242 198 208 / 80%); transform: scale(1.15); } }
+        @keyframes flowLight { 0% { background-position: 0 -200%; } 100% { background-position: 0 200%; } }
 
-        body.private-mode .diamond-link {
-            border-color: var(--private-accent);
-        }
+        body.private-mode .track .node { border-color: var(--private-accent); animation: heartbeat 2.5s ease-in-out infinite; }
+        body.private-mode .track .node::after { background: linear-gradient(to bottom, #eebb4d, transparent); }
+        body.private-mode .item.unread .track .node { border-color: #eebb4d; box-shadow: 0 0 0 3px rgb(238 187 77 / 20%), 0 0 12px 2px rgb(238 187 77 / 35%); animation: none; }
+        body.private-mode .track .line { background: linear-gradient(to bottom, transparent, var(--private-accent), transparent); background-size: 100% 200%; animation: flowLight 3.5s linear infinite; opacity: 0.8; background-color: transparent; }
 
-        @media (hover: hover) {
-            body.private-mode .diamond-link:hover {
-                background: var(--private-accent);
-                box-shadow: 0 0 10px rgb(242 198 208 / 80%);
-            }
-        }
-
-        .item.unread .track .node {
-            border-color: var(--rose-ellipsis);
-            box-shadow: 0 0 0 3px rgb(216 140 154 / 20%), 0 0 12px 2px rgb(216 140 154 / 35%);
-        }
-
-        .item.unread .track .node::after {
-            opacity: 0.85;
-            visibility: visible;
-        }
-
-        @keyframes heartbeat {
-            0%, 100% { box-shadow: 0 0 8px 2px rgb(242 198 208 / 40%); transform: scale(1); }
-            50% { box-shadow: 0 0 16px 5px rgb(242 198 208 / 80%); transform: scale(1.15); }
-        }
-
-        @keyframes flowLight {
-            0% { background-position: 0 -200%; }
-            100% { background-position: 0 200%; }
-        }
-
-        body.private-mode .track .node {
-            border-color: var(--private-accent);
-            animation: heartbeat 2.5s ease-in-out infinite;
-        }
-
-        body.private-mode .track .node::after {
-            background: linear-gradient(to bottom, #eebb4d, transparent);
-        }
-
-        body.private-mode .item.unread .track .node {
-            border-color: #eebb4d;
-            box-shadow: 0 0 0 3px rgb(238 187 77 / 20%), 0 0 12px 2px rgb(238 187 77 / 35%);
-            animation: none;
-        }
-
-        body.private-mode .track .line {
-            background: linear-gradient(to bottom, transparent, var(--private-accent), transparent);
-            background-size: 100% 200%;
-            animation: flowLight 3.5s linear infinite;
-            opacity: 0.8;
-            background-color: transparent;
-        }
-
-        .content {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-        }
-
-        .date {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            letter-spacing: 0.05em;
-            font-family: system-ui, sans-serif;
-        }
+        .content { display: flex; flex-direction: column; gap: 0.4rem; }
+        .date { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.05em; font-family: system-ui, sans-serif; }
 
         .card {
-            position: relative;
-            background: var(--card-bg-blur);
-            backdrop-filter: blur(12px) saturate(120%);
-            -webkit-backdrop-filter: blur(12px) saturate(120%);
-            border-radius: 8px;
-            border: 1px solid rgb(255 255 255 / 40%);
+            position: relative; background: var(--card-bg-blur); backdrop-filter: blur(12px) saturate(120%);
+            -webkit-backdrop-filter: blur(12px) saturate(120%); border-radius: 8px; border: 1px solid rgb(255 255 255 / 40%);
             box-shadow: 0 4px 15px rgb(0 0 0 / 2%), inset 0 0 0 1px rgb(255 255 255 / 20%);
-            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            overflow: hidden;
-            transform-origin: center bottom;
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); cursor: pointer; -webkit-tap-highlight-color: transparent;
+            overflow: hidden; transform-origin: center bottom;
         }
+        .card:active { transform: scale(0.99); box-shadow: 0 8px 25px var(--glow-accent), inset 0 0 0 1px rgb(255 255 255 / 40%); border-color: rgb(255 255 255 / 80%); transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1); }
 
-        .card:active {
-            transform: scale(0.99);
-            box-shadow: 0 8px 25px var(--glow-accent), inset 0 0 0 1px rgb(255 255 255 / 40%);
-            border-color: rgb(255 255 255 / 80%);
-            transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-
-        body.private-mode .card {
-            box-shadow: 0 8px 30px rgb(242 198 208 / 12%), inset 0 0 20px rgb(255 255 255 / 60%);
-            border-color: rgb(255 255 255 / 50%);
-        }
-
-        body.private-mode .card:active {
-            transform: scale(0.99);
-            box-shadow: 0 8px 30px rgb(242 198 208 / 30%), inset 0 0 25px rgb(255 255 255 / 80%);
-        }
+        body.private-mode .card { box-shadow: 0 8px 30px rgb(242 198 208 / 12%), inset 0 0 20px rgb(255 255 255 / 60%); border-color: rgb(255 255 255 / 50%); }
+        body.private-mode .card:active { transform: scale(0.99); box-shadow: 0 8px 30px rgb(242 198 208 / 30%), inset 0 0 25px rgb(255 255 255 / 80%); }
 
         .card-id {
-            position: absolute;
-            top: 1.2rem;
-            right: 1.4rem;
-            font-size: 0.75rem;
-            font-family: system-ui, sans-serif;
-            color: var(--text-muted);
-            opacity: 0.25;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            z-index: 2;
+            position: absolute; top: 1.2rem; right: 1.4rem; font-size: 0.75rem;
+            font-family: system-ui, sans-serif; color: var(--text-muted); opacity: 0.25;
+            pointer-events: none; transition: opacity 0.3s ease; z-index: 2;
         }
-
         .card:active .card-id { opacity: 0.5; }
 
-        .card-inner {
-            padding: 1.2rem 1.4rem;
-            line-height: 1.7;
-            font-size: 0.95rem;
-            max-height: calc(1.7em * 5 + 2.4rem);
-            overflow: hidden;
-            transition: max-height 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
+        .card-inner { padding: 1.2rem 1.4rem; line-height: 1.7; font-size: 0.95rem; max-height: calc(1.7em * 5 + 2.4rem); overflow: hidden; transition: max-height 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
         .card.expanded .card-inner { max-height: 2000px; }
+        .card-tag { color: var(--rose-ellipsis); margin-inline-end: 0.4rem; display: inline-block; font-family: system-ui, sans-serif; font-size: 0.85rem; }
+        .card-link { color: var(--rose-ellipsis); text-decoration: none; border-bottom: 1px dashed rgb(216 140 154 / 40%); transition: all 0.3s ease; padding-bottom: 1px; word-break: break-all; }
+        .card-link:hover { border-bottom-color: var(--rose-ellipsis); background: rgb(216 140 154 / 10%); }
 
-        .card-tag {
-            color: var(--rose-ellipsis);
-            margin-inline-end: 0.4rem;
-            display: inline-block;
-            font-family: system-ui, sans-serif;
-            font-size: 0.85rem;
-        }
+        .text-weak { color: var(--text-muted); font-size: 0.9em; opacity: 0.85; }
+        .text-strike { text-decoration: line-through; text-decoration-color: currentColor; text-decoration-thickness: 1.5px; opacity: 0.95; }
+        .text-underline { text-decoration: none; border-bottom: 1px solid var(--text-deco); padding-bottom: 1px; }
+        .text-wavy { text-decoration: underline wavy var(--text-deco); text-underline-offset: 3px; }
+        .manual-br { height: 0.5em; }
 
-        .card-link {
-            color: var(--rose-ellipsis);
-            text-decoration: none;
-            border-bottom: 1px dashed rgb(216 140 154 / 40%);
-            transition: all 0.3s ease;
-            padding-bottom: 1px;
-            word-break: break-all;
-        }
-
-        .card-link:hover {
-            border-bottom-color: var(--rose-ellipsis);
-            background: rgb(216 140 154 / 10%);
-        }
-
-        .text-weak {
-            color: var(--text-muted);
-            font-size: 0.9em;
-            opacity: 0.85;
-        }
-
-        .text-strike {
-            text-decoration: line-through;
-            text-decoration-color: currentColor;
-            text-decoration-thickness: 1.5px;
-            opacity: 0.95;
-        }
-
-        .text-underline {
-            text-decoration: none;
-            border-bottom: 1px solid var(--text-deco);
-            padding-bottom: 1px;
-        }
-
-        .text-wavy {
-            text-decoration: underline wavy var(--text-deco);
-            text-underline-offset: 3px;
-        }
-
-        .manual-br {
-            height: 0.5em;
-        }
-
-        .card-img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-            margin-block: 0.6rem;
-            box-shadow: 0 2px 6px rgb(0 0 0 / 5%);
-            cursor: zoom-in;
-            display: block;
-        }
-
-        .gallery {
-            display: grid;
-            gap: 0.4rem;
-            margin-block: 0.6rem;
-        }
-
+        .card-img { max-width: 100%; height: auto; border-radius: 4px; margin-block: 0.6rem; box-shadow: 0 2px 6px rgb(0 0 0 / 5%); cursor: zoom-in; display: block; }
+        .gallery { display: grid; gap: 0.4rem; margin-block: 0.6rem; }
         .gallery.grid-2 { grid-template-columns: repeat(2, 1fr); }
         .gallery.grid-3 { grid-template-columns: repeat(3, 1fr); }
-
-        .gallery .card-img {
-            margin: 0;
-            aspect-ratio: 1;
-            object-fit: cover;
-            width: 100%;
-            height: 100%;
-        }
-
-        .card.has-more:not(.expanded) .card-img,
-        .card.has-more:not(.expanded) .gallery {
-            pointer-events: none;
-        }
+        .gallery .card-img { margin: 0; aspect-ratio: 1; object-fit: cover; width: 100%; height: 100%; }
+        .card.has-more:not(.expanded) .card-img, .card.has-more:not(.expanded) .gallery { pointer-events: none; }
 
         .card-mask {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 3.5rem;
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 3.5rem;
             background: linear-gradient(to bottom, transparent, rgb(255 255 255 / 80%) 50%, rgb(255 255 255 / 95%) 100%);
-            display: none;
-            justify-content: center;
-            align-items: flex-end;
-            padding-bottom: 0.6rem;
-            opacity: 1;
-            transition: opacity 0.4s ease;
-            pointer-events: none;
-            z-index: 1;
+            display: none; justify-content: center; align-items: flex-end; padding-bottom: 0.6rem;
+            opacity: 1; transition: opacity 0.4s ease; pointer-events: none; z-index: 1;
         }
-
-        body.private-mode .card-mask {
-            background: linear-gradient(to bottom, transparent, rgb(255 253 254 / 85%) 50%, rgb(255 253 254 / 98%) 100%);
-        }
-
+        body.private-mode .card-mask { background: linear-gradient(to bottom, transparent, rgb(255 253 254 / 85%) 50%, rgb(255 253 254 / 98%) 100%); }
         .card.has-more:not(.expanded) .card-mask { display: flex; }
         .card.has-more.expanded .card-mask { display: flex; opacity: 0; }
-
-        .ellipsis {
-            color: var(--rose-ellipsis);
-            font-size: 1.2rem;
-            letter-spacing: 0.15em;
-            line-height: 1;
-            transform: translateY(2px);
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        .empty-tip {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            letter-spacing: 0.1em;
-            margin-block-start: 2.5rem;
-            font-style: italic;
-            opacity: 0;
-        }
+        .ellipsis { color: var(--rose-ellipsis); font-size: 1.2rem; letter-spacing: 0.15em; line-height: 1; transform: translateY(2px); user-select: none; -webkit-user-select: none; }
+        .empty-tip { text-align: center; color: var(--text-muted); font-size: 0.95rem; letter-spacing: 0.1em; margin-block-start: 2.5rem; font-style: italic; opacity: 0; }
     </style>
 </head>
 <body>
@@ -785,10 +312,8 @@
                     const raw = atob(base64Data);
                     const buf = new Uint8Array(raw.length);
                     for (let i = 0; i < raw.length; i++) buf[i] = raw.charCodeAt(i);
-                    
                     const iv = buf.slice(0, 12);
                     const data = buf.slice(12);
-                    
                     const key = await this.deriveKey(password);
                     const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
                     return new TextDecoder().decode(decrypted);
@@ -821,15 +346,9 @@
                 this.canvas.height = this.h;
                 for (let i = 0; i < this.num; i++) {
                     this.petals.push({
-                        x: Math.random() * this.w,
-                        y: Math.random() * this.h,
-                        s: Math.random() * 0.4 + 0.3,
-                        r: Math.random() * 360,
-                        vx: Math.random() * 1 - 0.5,
-                        vy: Math.random() * 0.8 + 0.4,
-                        vr: Math.random() * 2 - 1,
-                        flip: Math.random(),
-                        flipSpeed: Math.random() * 0.03 + 0.01
+                        x: Math.random() * this.w, y: Math.random() * this.h, s: Math.random() * 0.4 + 0.3, r: Math.random() * 360,
+                        vx: Math.random() * 1 - 0.5, vy: Math.random() * 0.8 + 0.4, vr: Math.random() * 2 - 1,
+                        flip: Math.random(), flipSpeed: Math.random() * 0.03 + 0.01
                     });
                 }
             }
@@ -837,15 +356,8 @@
             render() {
                 this.ctx.clearRect(0, 0, this.w, this.h);
                 this.petals.forEach(p => {
-                    p.y += p.vy;
-                    p.x += p.vx + Math.sin(p.flip) * 0.5;
-                    p.r += p.vr;
-                    p.flip += p.flipSpeed;
-
-                    if (p.y > this.h + 20 || p.x > this.w + 20 || p.x < -20) {
-                        p.y = -20;
-                        p.x = Math.random() * this.w;
-                    }
+                    p.y += p.vy; p.x += p.vx + Math.sin(p.flip) * 0.5; p.r += p.vr; p.flip += p.flipSpeed;
+                    if (p.y > this.h + 20 || p.x > this.w + 20 || p.x < -20) { p.y = -20; p.x = Math.random() * this.w; }
 
                     this.ctx.save();
                     this.ctx.translate(p.x, p.y);
@@ -857,9 +369,8 @@
                     this.ctx.bezierCurveTo(15, -30, 15, -15, 0, 0);
                     
                     const g = this.ctx.createLinearGradient(0, -30, 0, 0);
-                    const isPrivate = document.body.classList.contains('private-mode');
                     g.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-                    g.addColorStop(1, isPrivate ? 'rgba(242, 198, 208, 0.8)' : 'rgba(255, 197, 208, 0.7)');
+                    g.addColorStop(1, document.body.classList.contains('private-mode') ? 'rgba(242, 198, 208, 0.8)' : 'rgba(255, 197, 208, 0.7)');
                     this.ctx.fillStyle = g;
                     this.ctx.fill();
                     this.ctx.restore();
@@ -879,33 +390,18 @@
                 this.h = window.innerHeight;
                 this.canvas.width = this.w;
                 this.canvas.height = this.h;
-                window.addEventListener('resize', () => {
-                    this.w = window.innerWidth;
-                    this.h = window.innerHeight;
-                    this.canvas.width = this.w;
-                    this.canvas.height = this.h;
-                });
+                window.addEventListener('resize', () => { this.w = window.innerWidth; this.h = window.innerHeight; this.canvas.width = this.w; this.canvas.height = this.h; });
                 window.addEventListener('click', (e) => this.burst(e.clientX, e.clientY));
                 this.render();
             }
             burst(x, y) {
-                const count = 8 + Math.random() * 6;
-                const isPrivate = document.body.classList.contains('private-mode');
-                const colors = isPrivate ? ['#f2c6d0', '#eebb4d', '#ffffff'] : ['#f4c2c2', '#d88c9a', '#ffffff'];
-                for(let i = 0; i < count; i++) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const speed = 0.8 + Math.random() * 2;
+                const colors = document.body.classList.contains('private-mode') ? ['#f2c6d0', '#eebb4d', '#ffffff'] : ['#f4c2c2', '#d88c9a', '#ffffff'];
+                for(let i = 0, count = 8 + Math.random() * 6; i < count; i++) {
+                    const angle = Math.random() * Math.PI * 2, speed = 0.8 + Math.random() * 2;
                     this.particles.push({
-                        x, y,
-                        vx: Math.cos(angle) * speed,
-                        vy: Math.sin(angle) * speed,
-                        size: Math.random() * 3 + 2,
-                        color: colors[Math.floor(Math.random() * colors.length)],
-                        alpha: 1,
-                        life: 0,
-                        maxLife: 50 + Math.random() * 40,
-                        rot: Math.random() * Math.PI * 2,
-                        rotSpeed: (Math.random() - 0.5) * 0.1
+                        x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, size: Math.random() * 3 + 2,
+                        color: colors[Math.floor(Math.random() * colors.length)], alpha: 1, life: 0,
+                        maxLife: 50 + Math.random() * 40, rot: Math.random() * Math.PI * 2, rotSpeed: (Math.random() - 0.5) * 0.1
                     });
                 }
             }
@@ -913,13 +409,7 @@
                 this.ctx.clearRect(0, 0, this.w, this.h);
                 for(let i = this.particles.length - 1; i >= 0; i--) {
                     const p = this.particles[i];
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.vx *= 0.94;
-                    p.vy *= 0.94;
-                    p.vy += 0.015;
-                    p.rot += p.rotSpeed;
-                    p.life++;
+                    p.x += p.vx; p.y += p.vy; p.vx *= 0.94; p.vy *= 0.94; p.vy += 0.015; p.rot += p.rotSpeed; p.life++;
                     p.alpha = Math.max(0, 1 - Math.pow(p.life / p.maxLife, 2));
                     this.ctx.save();
                     this.ctx.translate(p.x, p.y);
@@ -959,18 +449,17 @@
                 this.rawEditorData = null;
                 this.unlockMode = null;
                 this.readHashes = new Set(JSON.parse(localStorage.getItem('dream_read_hashes') || '[]'));
+                this.zoomInstance = null;
             }
 
             cleanDeadHashes() {
                 const pubSet = new Set(this.publicItems.map(i => i.hash));
                 const privSet = this.privateItems.length ? new Set(this.privateItems.map(i => i.hash)) : null;
-                
                 const validHashes = Array.from(this.readHashes).filter(h => {
                     if (h.startsWith('pub_')) return pubSet.has(h);
                     if (h.startsWith('priv_')) return privSet ? privSet.has(h) : true;
                     return false;
                 });
-                
                 this.readHashes = new Set(validHashes);
                 localStorage.setItem('dream_read_hashes', JSON.stringify(validHashes));
             }
@@ -987,39 +476,28 @@
                     const { parse } = await import('https://esm.sh/smol-toml@1.3.0');
                     this.config = parse(rawConfig);
                     this.applyConfig(this.config);
-
                     await document.fonts.ready;
 
-                    const delay = this.config.load_delay || 0;
-                    if (delay > 0) await new Promise(r => setTimeout(r, delay));
+                    if (this.config.load_delay > 0) await new Promise(r => setTimeout(r, this.config.load_delay));
 
                     if (this.config.private_source) {
                         try {
                             const pRes = await fetch(this.config.private_source);
-                            if (pRes.ok) {
-                                this.rawPrivateData = (await pRes.text()).trim();
-                                this.petalBtn.classList.add('visible');
-                            }
+                            if (pRes.ok) { this.rawPrivateData = (await pRes.text()).trim(); this.petalBtn.classList.add('visible'); }
                         } catch(e) {}
                     }
 
                     if (this.config.editor_config) {
                         try {
                             const eRes = await fetch(this.config.editor_config);
-                            if (eRes.ok) {
-                                this.rawEditorData = (await eRes.text()).trim();
-                                const editorBtn = document.getElementById('editor-link');
-                                if (editorBtn) editorBtn.classList.add('visible');
-                            }
+                            if (eRes.ok) { this.rawEditorData = (await eRes.text()).trim(); document.getElementById('editor-link')?.classList.add('visible'); }
                         } catch(e) {}
                     }
                     
                     this.initAuthEvents();
 
-                    const dataSource = this.config.data_source;
-                    if (!dataSource) throw new Error('Absolute source truth broken');
-
-                    const dataRes = await fetch(dataSource);
+                    if (!this.config.data_source) throw new Error('Absolute source truth broken');
+                    const dataRes = await fetch(this.config.data_source);
                     if (!dataRes.ok) throw new Error('Data fetch failed');
                     
                     const text = await dataRes.text();
@@ -1033,10 +511,7 @@
                     new SakuraSystem('bg-canvas');
                     
                     loader.classList.add('hidden');
-                    setTimeout(() => {
-                        this.el.classList.add('ready');
-                        this.handleInitialHash();
-                    }, 500);
+                    setTimeout(() => { this.el.classList.add('ready'); this.handleInitialHash(); }, 500);
 
                 } catch (e) {
                     new SakuraSystem('bg-canvas');
@@ -1075,21 +550,19 @@
             }
 
             initAuthEvents() {
-                this.petalBtn.addEventListener('click', async () => {
+                this.petalBtn.addEventListener('click', () => {
                     this.petalBtn.classList.add('touched');
                     setTimeout(() => this.petalBtn.classList.remove('touched'), 400);
 
                     if (this.isPrivateMode) {
                         this.switchDreamMode(false);
+                    } else if (this.privateItems.length > 0) {
+                        this.switchDreamMode(true);
                     } else {
-                        if (this.privateItems.length > 0) {
-                            this.switchDreamMode(true);
-                        } else {
-                            this.unlockMode = 'private';
-                            this.pwdInput.placeholder = this.config.private_tip || '输入轻语解锁梦境...';
-                            this.pwdInput.value = '';
-                            this.pwdModal.classList.add('active');
-                        }
+                        this.unlockMode = 'private';
+                        this.pwdInput.placeholder = this.config.private_tip || '输入轻语解锁梦境...';
+                        this.pwdInput.value = '';
+                        this.pwdModal.classList.add('active');
                     }
                 });
 
@@ -1100,12 +573,9 @@
                         setTimeout(() => editorBtn.classList.remove('touched'), 400);
                         
                         const savedPwd = sessionStorage.getItem('editor_pwd');
-                        if (savedPwd && this.rawEditorData) {
-                            const decrypted = await CryptoSys.decrypt(this.rawEditorData, savedPwd);
-                            if (decrypted) {
-                                window.location.href = 'editor.html';
-                                return;
-                            }
+                        if (savedPwd && this.rawEditorData && await CryptoSys.decrypt(this.rawEditorData, savedPwd)) {
+                            window.location.href = 'editor.html';
+                            return;
                         }
                         
                         this.unlockMode = 'editor';
@@ -1131,8 +601,7 @@
                             this.switchDreamMode(true, decrypted);
                         }
                     } else if (this.unlockMode === 'editor' && this.rawEditorData) {
-                        const decrypted = await CryptoSys.decrypt(this.rawEditorData, pwd);
-                        if (decrypted) {
+                        if (await CryptoSys.decrypt(this.rawEditorData, pwd)) {
                             sessionStorage.setItem('editor_pwd', pwd);
                             this.pwdInput.value = '';
                             this.pwdModal.classList.remove('active');
@@ -1142,15 +611,13 @@
                 });
 
                 this.pwdInput.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        this.pwdModal.classList.remove('active');
-                    }
+                    if (e.key === 'Enter') this.pwdModal.classList.remove('active');
                 });
             }
 
             updateHeadAndHeader() {
-                const c = this.config;
-                const mode = this.isPrivateMode;
+                const c = this.config, mode = this.isPrivateMode;
+                const set = (id, val) => { if (val !== undefined && document.getElementById(id)) document.getElementById(id)[id.includes('title') ? 'innerText' : 'innerHTML'] = val; };
                 
                 const title = mode ? (c.private_title || c.title) : c.title;
                 if (title !== undefined) document.getElementById('doc-title').innerText = title;
@@ -1160,79 +627,91 @@
                 
                 const icon = mode ? (c.private_icon || c.icon) : c.icon;
                 if (icon) {
-                    let link = document.querySelector('link[rel="icon"]');
-                    if (!link) {
-                        link = document.createElement('link');
-                        link.rel = 'icon';
-                        document.head.appendChild(link);
-                    }
-                    link.href = icon;
+                    let link = document.querySelector('link[rel="icon"]') || document.createElement('link');
+                    link.rel = 'icon'; link.href = icon;
+                    if (!link.parentNode) document.head.appendChild(link);
                 }
                 
-                const hTitle = mode ? (c.private_header_title || c.header_title) : c.header_title;
-                if (hTitle !== undefined) document.getElementById('site-title').innerText = hTitle;
-                
-                const hSub = mode ? (c.private_header_subtitle || c.header_subtitle) : c.header_subtitle;
-                if (hSub !== undefined) document.getElementById('site-subtitle').innerHTML = hSub.replace(/\n/g, '<br>');
+                set('site-title', mode ? (c.private_header_title || c.header_title) : c.header_title);
+                const sub = mode ? (c.private_header_subtitle || c.header_subtitle) : c.header_subtitle;
+                if (sub !== undefined) document.getElementById('site-subtitle').innerHTML = sub.replace(/\n/g, '<br>');
             }
 
             applyConfig(c) {
                 if (c.private_tip) this.pwdInput.placeholder = c.private_tip;
-                
                 const cornerBtn = document.getElementById('corner-link');
                 if (c.home_url) {
                     cornerBtn.href = c.home_url;
                     cornerBtn.innerText = c.home_url.replace(/^https?:\/\//, '').replace(/\/$/, '');
                     cornerBtn.style.display = 'block';
                 }
-
                 if (c.font) {
                     const style = document.createElement('style');
-                    style.textContent = `
-                        @font-face { font-family: 'ConfigFont'; src: url('${c.font}'); font-display: swap; }
-                        body { font-family: 'ConfigFont', system-ui, -apple-system, sans-serif !important; }
-                    `;
+                    style.textContent = `@font-face { font-family: 'ConfigFont'; src: url('${c.font}'); font-display: swap; } body { font-family: 'ConfigFont', system-ui, -apple-system, sans-serif !important; }`;
                     document.head.appendChild(style);
                 }
-
                 this.updateHeadAndHeader();
             }
 
             bindGlobalEvents() {
                 document.addEventListener('click', (e) => {
-                    const internalLink = e.target.closest('a.card-link');
-                    if (internalLink && internalLink.getAttribute('href').startsWith('#')) {
+                    const isDiamond = e.target.closest('.diamond-link');
+                    const isInternalLink = e.target.closest('a.card-link') && e.target.closest('a.card-link').getAttribute('href').startsWith('#');
+
+                    if (isDiamond || isInternalLink) {
                         e.preventDefault();
-                        const targetHash = internalLink.getAttribute('href');
-                        const modeStr = this.isPrivateMode ? 'private' : 'public';
-                        this.activeTags[modeStr] = null;
-                        if (this.tagsEl) {
-                            Array.from(this.tagsEl.children).forEach(btn => btn.classList.remove('active'));
-                        }
+                        if(isDiamond) e.stopPropagation();
+                        const targetHash = isDiamond ? '#' + isDiamond.dataset.id : e.target.closest('a.card-link').getAttribute('href');
+                        
+                        this.activeTags[this.isPrivateMode ? 'private' : 'public'] = null;
+                        this.renderTags();
                         history.replaceState(null, '', targetHash);
                         this.render();
                         requestAnimationFrame(() => this.handleInitialHash());
                         return;
                     }
 
-                    if (!e.target.closest('.card') && !e.target.closest('#pwd-modal') && !e.target.closest('a') && window.location.hash) {
-                        history.replaceState(null, '', window.location.pathname + window.location.search);
+                    const tagBtn = e.target.closest('#tags .tag');
+                    if (tagBtn) {
+                        const modeStr = this.isPrivateMode ? 'private' : 'public';
+                        const val = tagBtn.dataset.val;
+                        this.activeTags[modeStr] = this.activeTags[modeStr] === val ? null : val;
+                        this.renderTags();
+                        this.render();
+                        return;
                     }
                     
                     const card = e.target.closest('.card');
-                    if (card && this.isPrivateMode && !e.target.closest('a') && e.target.tagName !== 'IMG') {
-                        const rect = card.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const y = e.clientY - rect.top;
-                        const ripple = document.createElement('div');
-                        ripple.className = 'ripple';
-                        ripple.style.left = `${x}px`;
-                        ripple.style.top = `${y}px`;
-                        ripple.style.width = ripple.style.height = '40px';
-                        ripple.style.transformOrigin = 'center';
-                        ripple.style.marginTop = ripple.style.marginLeft = '-20px';
-                        card.appendChild(ripple);
-                        setTimeout(() => ripple.remove(), 800);
+                    if (card) {
+                        if (e.target.closest('a') || e.target.tagName === 'IMG') return;
+                        history.replaceState(null, '', '#' + card.dataset.id);
+                        
+                        const itemNode = card.closest('.item');
+                        if (itemNode.classList.contains('unread')) {
+                            itemNode.classList.remove('unread');
+                            this.readHashes.add(card.dataset.hash);
+                            localStorage.setItem('dream_read_hashes', JSON.stringify([...this.readHashes]));
+                            this.updateUnreadTagState();
+                        }
+                        
+                        if (card.classList.contains('has-more')) {
+                            const inner = card.querySelector('.card-inner');
+                            inner.style.maxHeight = card.classList.toggle('expanded') ? `${inner.scrollHeight}px` : '';
+                        }
+
+                        if (this.isPrivateMode) {
+                            const rect = card.getBoundingClientRect();
+                            const ripple = document.createElement('div');
+                            ripple.className = 'ripple';
+                            ripple.style.cssText = `left:${e.clientX - rect.left}px; top:${e.clientY - rect.top}px; width:40px; height:40px; transform-origin:center; margin-top:-20px; margin-left:-20px;`;
+                            card.appendChild(ripple);
+                            setTimeout(() => ripple.remove(), 800);
+                        }
+                        return;
+                    }
+
+                    if (!e.target.closest('#pwd-modal') && !e.target.closest('a') && window.location.hash) {
+                        history.replaceState(null, '', window.location.pathname + window.location.search);
                     }
                 });
             }
@@ -1244,22 +723,15 @@
                     if (target) {
                         const card = target.querySelector('.card');
                         const triggerAnim = () => {
-                            card.style.animation = 'none';
-                            card.offsetHeight;
+                            card.style.animation = 'none'; card.offsetHeight;
                             card.style.animation = 'targetPulse 2.5s cubic-bezier(0.22, 1, 0.36, 1)';
                         };
                         const rect = target.getBoundingClientRect();
-                        const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
-                        if (isVisible) {
+                        if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
                             triggerAnim();
                         } else {
                             let fired = false;
-                            const endScroll = () => {
-                                if (fired) return;
-                                fired = true;
-                                window.removeEventListener('scrollend', endScroll);
-                                triggerAnim();
-                            };
+                            const endScroll = () => { if (fired) return; fired = true; window.removeEventListener('scrollend', endScroll); triggerAnim(); };
                             window.addEventListener('scrollend', endScroll);
                             target.scrollIntoView({ behavior: 'smooth', block: 'center' });
                             setTimeout(endScroll, 1200);
@@ -1270,10 +742,7 @@
 
             generateHash(str) {
                 let h = 0;
-                for (let i = 0; i < str.length; i++) {
-                    h = (h << 5) - h + str.charCodeAt(i);
-                    h |= 0;
-                }
+                for (let i = 0; i < str.length; i++) { h = (h << 5) - h + str.charCodeAt(i); h |= 0; }
                 return Math.abs(h).toString(36);
             }
 
@@ -1283,129 +752,73 @@
                 const total = blocks.length;
 
                 const parsedData = blocks.map((block, index) => {
-                    const blockHash = (isPrivate ? 'priv_' : 'pub_') + this.generateHash(block);
                     const lines = block.split('\n');
                     const date = lines.shift().trim();
-                    const tags = [];
-                    const imgStore = [];
-                    const linkStore = [];
+                    const tags = [], imgStore = [], linkStore = [];
                     
                     if (lines.length > 0) {
-                        lines[0] = lines[0].replace(/#([^\s#]+)/g, (_, tag) => {
-                            tags.push(tag);
-                            return `<span class="card-tag">#${tag}</span>`;
-                        });
+                        lines[0] = lines[0].replace(/#([^\s#]+)/g, (_, tag) => { tags.push(tag); return `<span class="card-tag">#${tag}</span>`; });
                     }
                     
                     const processedLines = lines.map(line => {
                         let p = line;
-                        p = p.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
-                            imgStore.push({ alt, url });
-                            return `__IMG_${imgStore.length - 1}__`;
-                        });
-                        p = p.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
-                            linkStore.push({ text, url });
-                            return `__LNK_${linkStore.length - 1}__`;
-                        });
+                        p = p.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => { imgStore.push({ alt, url }); return `__IMG_${imgStore.length - 1}__`; });
+                        p = p.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => { linkStore.push({ text, url }); return `__LNK_${linkStore.length - 1}__`; });
                         p = p.replace(/(https?:\/\/[^\s<]+)/g, (match, url) => {
-                            let cleanUrl = url;
-                            let trailing = '';
+                            let cleanUrl = url, trailing = '';
                             const matchPunc = url.match(/([.,;:!?。，、！？]+)$/);
-                            if (matchPunc) {
-                                cleanUrl = url.substring(0, url.length - matchPunc[0].length);
-                                trailing = matchPunc[0];
-                            }
-                            const displayUrl = cleanUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
-                            return `<a href="${cleanUrl}" target="_blank" class="card-link" rel="noopener noreferrer">${displayUrl}</a>${trailing}`;
+                            if (matchPunc) { cleanUrl = url.substring(0, url.length - matchPunc[0].length); trailing = matchPunc[0]; }
+                            return `<a href="${cleanUrl}" target="_blank" class="card-link" rel="noopener noreferrer">${cleanUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}</a>${trailing}`;
                         });
                         p = p.replace(/__LNK_(\d+)__/g, (_, idx) => {
                             const { text, url } = linkStore[idx];
-                            const isInternal = url.startsWith('#');
-                            const targetProps = isInternal ? '' : 'target="_blank" rel="noopener noreferrer"';
-                            return `<a href="${url}" ${targetProps} class="card-link">${text}</a>`;
+                            return `<a href="${url}" ${url.startsWith('#') ? '' : 'target="_blank" rel="noopener noreferrer"'} class="card-link">${text}</a>`;
                         });
                         p = p.replace(/__IMG_(\d+)__/g, (_, idx) => {
-                            const { alt, url } = imgStore[idx];
-                            return `<img src="${url}" alt="${alt}" class="card-img" loading="lazy" />`;
+                            const { alt, url } = imgStore[idx]; return `<img src="${url}" alt="${alt}" class="card-img" loading="lazy" />`;
                         });
-
                         p = p.replace(/(?<!\\)%%(.+?)(?<!\\)%%/g, '<span class="text-weak">$1</span>');
                         p = p.replace(/(?<!\\)~~(.+?)(?<!\\)~~/g, '<span class="text-strike">$1</span>');
                         p = p.replace(/(?<!\\)\+\+(.+?)(?<!\\)\+\+/g, '<span class="text-underline">$1</span>');
                         p = p.replace(/(?<!\\)\^\^(.+?)(?<!\\)\^\^/g, '<span class="text-wavy">$1</span>');
-                        
-                        p = p.replace(/\\(%%|~~|\+\+|\^\^)/g, '$1');
-
-                        return p;
+                        return p.replace(/\\(%%|~~|\+\+|\^\^)/g, '$1');
                     });
 
                     let finalHtml = processedLines.join('<div class="manual-br"></div>');
                     finalHtml = finalHtml.replace(/(?:<div class="manual-br"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="manual-br"><\/div>)*/g, '$1');
                     finalHtml = finalHtml.replace(/(<img[^>]+>){2,}/g, match => {
-                        const count = (match.match(/<img/g) || []).length;
-                        const gridClass = (count === 2 || count === 4) ? 'grid-2' : 'grid-3';
-                        return `<div class="gallery ${gridClass}">${match}</div>`;
+                        return `<div class="gallery ${(match.match(/<img/g) || []).length === 2 || (match.match(/<img/g) || []).length === 4 ? 'grid-2' : 'grid-3'}">${match}</div>`;
                     });
 
-                    const id = isAsc ? index + 1 : total - index;
-                    return { id, date, text: finalHtml, tags, hash: blockHash };
+                    return { id: isAsc ? index + 1 : total - index, date, text: finalHtml, tags, hash: (isPrivate ? 'priv_' : 'pub_') + this.generateHash(block) };
                 });
 
                 return isAsc ? parsedData.reverse() : parsedData;
             }
 
             updateUnreadTagState() {
-                const items = this.isPrivateMode ? this.privateItems : this.publicItems;
-                const unreadCount = items.filter(i => !this.readHashes.has(i.hash)).length;
+                const unreadCount = (this.isPrivateMode ? this.privateItems : this.publicItems).filter(i => !this.readHashes.has(i.hash)).length;
                 const unreadBtn = this.tagsEl.querySelector('[data-val="__UNREAD__"]');
-                if (unreadBtn) {
-                    if (unreadCount > 0) {
-                        unreadBtn.classList.add('has-unread');
-                    } else {
-                        unreadBtn.classList.remove('has-unread');
-                    }
-                }
+                if (unreadBtn) unreadBtn.classList.toggle('has-unread', unreadCount > 0);
             }
 
             renderTags() {
                 const modeStr = this.isPrivateMode ? 'private' : 'public';
                 const items = this.isPrivateMode ? this.privateItems : this.publicItems;
+                if (!items.length) { this.tagsEl.style.display = 'none'; return; }
                 
-                if (!items.length) {
-                    this.tagsEl.style.display = 'none';
-                    return;
-                }
-                
-                const set = new Set();
-                items.forEach(i => i.tags.forEach(t => set.add(t)));
-                const unique = Array.from(set);
-                
+                const unique = Array.from(new Set(items.flatMap(i => i.tags)));
                 this.tagsEl.style.display = 'flex';
                 
                 const unreadCount = items.filter(i => !this.readHashes.has(i.hash)).length;
-                const unreadClass = unreadCount > 0 ? 'has-unread' : '';
-                const unreadTagHtml = `<button class="tag special-unread ${unreadClass}" data-val="__UNREAD__">✦ 未读</button>`;
-                
+                const unreadTagHtml = `<button class="tag special-unread ${unreadCount > 0 ? 'has-unread' : ''}" data-val="__UNREAD__">✦ 未读</button>`;
                 this.tagsEl.innerHTML = unreadTagHtml + unique.map(t => `<button class="tag" data-val="${t}">#${t}</button>`).join('');
                 
                 const activeTag = this.activeTags[modeStr];
                 if (activeTag) {
-                    Array.from(this.tagsEl.children).forEach(btn => {
-                        btn.classList.toggle('active', btn.dataset.val === activeTag);
-                    });
+                    const btn = this.tagsEl.querySelector(`[data-val="${activeTag}"]`);
+                    if (btn) btn.classList.add('active');
                 }
-                
-                this.tagsEl.onclick = e => {
-                    if (e.target.tagName === 'BUTTON') {
-                        const val = e.target.dataset.val;
-                        this.activeTags[modeStr] = this.activeTags[modeStr] === val ? null : val;
-                        
-                        Array.from(this.tagsEl.children).forEach(btn => {
-                            btn.classList.toggle('active', btn.dataset.val === this.activeTags[modeStr]);
-                        });
-                        this.render();
-                    }
-                };
             }
 
             render() {
@@ -1419,10 +832,7 @@
                     : (activeTag ? items.filter(i => i.tags.includes(activeTag)) : items);
 
                 if (filtered.length === 0 && activeTag === '__UNREAD__') {
-                    const tip = this.isPrivateMode 
-                        ? (this.config.private_unread_empty_tip || this.config.unread_empty_tip) 
-                        : this.config.unread_empty_tip;
-                    
+                    const tip = this.isPrivateMode ? (this.config.private_unread_empty_tip || this.config.unread_empty_tip) : this.config.unread_empty_tip;
                     if (tip) {
                         const emptyNode = document.createElement('div');
                         emptyNode.className = 'empty-tip';
@@ -1432,81 +842,44 @@
                     return;
                 }
 
+                const fragment = document.createDocumentFragment();
+                
                 filtered.forEach((item, i) => {
                     const node = document.createElement('article');
-                    const isUnread = !this.readHashes.has(item.hash);
-                    node.className = `item ${isUnread ? 'unread' : ''}`;
+                    node.className = `item ${!this.readHashes.has(item.hash) ? 'unread' : ''}`;
                     node.id = `post-${item.id}`;
                     node.style.animationDelay = `${i * 0.08}s`;
-
-                    const isLast = i === filtered.length - 1;
-                    const line = isLast ? 'background: transparent;' : '';
-                    const anchorDiamond = activeTag ? `<div class="diamond-link" title="聚焦到此落叶"></div>` : '';
 
                     node.innerHTML = `
                         <div class="track">
                             <div class="node"></div>
-                            ${anchorDiamond}
-                            <div class="line" style="${line}"></div>
+                            ${activeTag ? `<div class="diamond-link" data-id="${item.id}" title="聚焦到此落叶"></div>` : ''}
+                            <div class="line" style="${i === filtered.length - 1 ? 'background: transparent;' : ''}"></div>
                         </div>
                         <div class="content">
                             <time class="date">${item.date}</time>
-                            <div class="card">
+                            <div class="card" data-id="${item.id}" data-hash="${item.hash}">
                                 <span class="card-id">#${item.id}</span>
                                 <div class="card-inner">${item.text}</div>
                                 <div class="card-mask"><span class="ellipsis">...</span></div>
                             </div>
                         </div>
                     `;
-                    
-                    const diamondEl = node.querySelector('.diamond-link');
-                    if (diamondEl) {
-                        diamondEl.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            this.activeTags[modeStr] = null;
-                            Array.from(this.tagsEl.children).forEach(btn => btn.classList.remove('active'));
-                            history.replaceState(null, '', '#' + item.id);
-                            this.render();
-                            requestAnimationFrame(() => this.handleInitialHash());
-                        });
-                    }
-
-                    const card = node.querySelector('.card');
-                    const inner = node.querySelector('.card-inner');
-                    
-                    card.addEventListener('click', (e) => {
-                        if (e.target.closest('a') || e.target.tagName === 'IMG') return;
-                        history.replaceState(null, '', '#' + item.id);
-                        
-                        if (node.classList.contains('unread')) {
-                            node.classList.remove('unread');
-                            this.readHashes.add(item.hash);
-                            localStorage.setItem('dream_read_hashes', JSON.stringify([...this.readHashes]));
-                            this.updateUnreadTagState();
-                        }
-                        
-                        if (!card.classList.contains('has-more')) return;
-                        if (card.classList.toggle('expanded')) {
-                            inner.style.maxHeight = `${inner.scrollHeight}px`;
-                        } else {
-                            inner.style.maxHeight = '';
-                        }
-                    });
-
-                    this.el.appendChild(node);
+                    fragment.appendChild(node);
                 });
+
+                this.el.appendChild(fragment);
 
                 requestAnimationFrame(() => {
                     document.querySelectorAll('.card').forEach(card => {
                         const inner = card.querySelector('.card-inner');
-                        const checkHeight = () => {
-                            if (inner.scrollHeight > inner.clientHeight + 2) card.classList.add('has-more');
-                        };
+                        const checkHeight = () => { if (inner.scrollHeight > inner.clientHeight + 2) card.classList.add('has-more'); };
                         checkHeight();
                         inner.querySelectorAll('img').forEach(img => img.addEventListener('load', checkHeight));
                     });
                     
-                    mediumZoom('.card-img', {
+                    if (this.zoomInstance) this.zoomInstance.detach();
+                    this.zoomInstance = mediumZoom('.card-img', {
                         margin: 24,
                         background: this.isPrivateMode ? 'rgba(253, 245, 247, 0.95)' : 'rgba(253, 251, 251, 0.95)'
                     });
