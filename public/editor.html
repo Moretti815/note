@@ -1279,8 +1279,8 @@
             }
 
             prepareUpload(file, isManual = false) {
-                if (!this.authConfig.api_url || !this.authConfig.api_key) {
-                    this.log('图片上传失败：缺少 api_url 或 api_key 配置', 'error');
+                if (!this.authConfig.image?.api_url || !this.authConfig.image?.api_key) {
+                    this.log('图片上传失败：缺少 image 的 api_url 或 api_key 配置', 'error');
                     return;
                 }
 
@@ -1303,7 +1303,7 @@
                     name = `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getTime()}.${ext}`;
                 }
 
-                const defDir = this.authConfig.default_dir || 'img';
+                const defDir = this.authConfig.image?.default_dir || 'img';
                 const cleanDir = defDir.replace(/^\/|\/$/g, '');
                 const defaultPath = cleanDir ? `${cleanDir}/${name}` : name;
 
@@ -1331,7 +1331,7 @@
                 const path = this.uploadPath.value.trim();
                 if (!path) return;
 
-                const domain = (this.authConfig.img_domain || '').replace(/\/$/, '');
+                const domain = (this.authConfig.image?.img_domain || '').replace(/\/$/, '');
                 const cleanPath = path.replace(/^\//, '');
                 const fullUrl = domain ? `${domain}/${cleanPath}` : cleanPath;
                 const insertText = `![${this.pendingUploadFile.name}](${fullUrl})`;
@@ -1362,13 +1362,13 @@
                 this.log(`准备异步上传图片: ${cleanPath}`, 'info', true);
                 
                 try {
-                    const apiUrl = (this.authConfig.api_url || '').replace(/\/$/, '');
+                    const apiUrl = (this.authConfig.image?.api_url || '').replace(/\/$/, '');
                     const targetUrl = `${apiUrl}/${cleanPath}`;
                     
                     const res = await fetch(targetUrl, {
                         method: 'PUT',
                         headers: {
-                            'Authorization': `Bearer ${this.authConfig.api_key}`
+                            'Authorization': `Bearer ${this.authConfig.image?.api_key}`
                         },
                         body: fileToUpload
                     });
