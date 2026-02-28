@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>内容编辑器</title>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.9.1/fonts/remixicon.min.css" rel="stylesheet">
     <style>
@@ -17,6 +17,7 @@
             --danger-color: #e5989b;
             --success-color: #b5c99a;
             --text-deco: rgb(171 155 160 / 60%);
+            --v-height: 100dvh;
         }
 
         *, *::before, *::after {
@@ -47,10 +48,12 @@
             font-family: system-ui, -apple-system, sans-serif;
             background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             color: var(--text-main);
-            height: 100dvh;
+            height: var(--v-height);
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            position: fixed;
+            width: 100%;
         }
 
         .toolbar {
@@ -886,6 +889,23 @@
                 };
 
                 this.init();
+                this.initViewportHandler();
+            }
+
+            initViewportHandler() {
+                if (window.visualViewport) {
+                    const handleViewport = () => {
+                        const vh = window.visualViewport.height;
+                        document.documentElement.style.setProperty('--v-height', `${vh}px`);
+                        
+                        if (document.activeElement === this.editor) {
+                            this.editor.scrollIntoView({ block: 'nearest' });
+                        }
+                    };
+                    window.visualViewport.addEventListener('resize', handleViewport);
+                    window.visualViewport.addEventListener('scroll', handleViewport);
+                    handleViewport();
+                }
             }
 
             log(msg, type = 'info', loading = false) {
