@@ -885,11 +885,14 @@
                     }
                     this.log('正在加载系统配置...', 'info', true);
                     const res = await fetch('config.toml');
-                    if (!res.ok) throw new Error('config.toml load failed');
+                    if (!res.ok) {
+                        const errText = await res.text();
+                        throw new Error(`config.toml load failed: ${res.status} ${errText}`);
+                    }
                     this.sysConfig = parse(await res.text());
                     
                     if (!this.sysConfig.editor_config) {
-                        this.log('未配置鉴权文件', 'error');
+                        this.log('系统配置 config.toml 缺少 [editor_config] 字段', 'error');
                         return;
                     }
 
@@ -900,11 +903,31 @@
                     
                     if (decrypted) {
                         this.authConfig = parse(decrypted);
+                        
+                        const reqKeys = ['github_user', 'github_repo', 'github_token', 'commit_user', 'commit_email'];
+                        const missing = reqKeys.filter(k => !this.authConfig[k]);
+                        if (missing.length > 0) {
+                            this.log(`配置缺少关键字段: ${missing.join(', ')}，核心功能不可用`, 'error');
+                            this.editor.disabled = true;
+                            return;
+                        }
+
+                        if (!this.authConfig.data_path && !this.authConfig.private_path) {
+                            this.log('未配置任何数据路径 (data_path / private_path)，请检查配置', 'error');
+                            this.editor.disabled = true;
+                            return;
+                        }
+
                         this.log('配置就绪', 'success');
                         this.updateViewIcon();
                         this.bindEvents();
                         this.bindFormatters();
-                        this.loadTarget('public');
+                        
+                        if (this.authConfig.data_path) {
+                            this.loadTarget('public');
+                        } else if (this.authConfig.private_path) {
+                            this.loadTarget('private');
+                        }
                     } else {
                         sessionStorage.removeItem('editor_pwd');
                         window.location.href = 'index.html';
@@ -1256,17 +1279,17 @@
             }
 
             prepareUpload(file, isManual = false) {
+                if (!this.authConfig.api_url || !this.authConfig.api_key) {
+                    this.log('图片上传失败：缺少 api_url 或 api_key 配置', 'error');
+                    return;
+                }
+
                 this.isManualUpload = isManual;
                 this.savedSelection = {
                     start: this.editor.selectionStart,
                     end: this.editor.selectionEnd
                 };
                 this.pendingUploadFile = file;
-
-                document.getElementById('upload-input-group').style.display = 'flex';
-                document.getElementById('upload-result-group').style.display = 'none';
-                document.getElementById('upload-actions-default').style.display = 'flex';
-                document.getElementById('upload-actions-copy').style.display = 'none';
 
                 let ext = 'png';
                 if (file.name) {
@@ -1285,6 +1308,12 @@
                 const defaultPath = cleanDir ? `${cleanDir}/${name}` : name;
 
                 this.uploadPath.value = defaultPath;
+                
+                document.getElementById('upload-input-group').style.display = 'flex';
+                document.getElementById('upload-result-group').style.display = 'none';
+                document.getElementById('upload-actions-default').style.display = 'flex';
+                document.getElementById('upload-actions-copy').style.display = 'none';
+
                 this.uploadModal.classList.add('active');
                 
                 setTimeout(() => {
@@ -1309,7 +1338,28 @@
                 const fileToUpload = this.pendingUploadFile;
                 
                 this.pendingUploadFile = null;
-                this.log(`准备上传图片: ${cleanPath}`, 'info', true);
+                
+                this.uploadModal.classList.remove('active');
+                
+                this.editor.focus();
+                if (this.savedSelection) {
+                    this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
+                }
+
+                if (this.isManualUpload) {
+                    navigator.clipboard.writeText(insertText).then(() => {
+                        this.log('已提取图片链接并复制到剪贴板', 'success');
+                    }).catch(() => {
+                        this.log('剪贴板写入失败', 'error');
+                    });
+                } else {
+                    if (!document.execCommand('insertText', false, insertText)) {
+                        this.editor.setRangeText(insertText, this.editor.selectionStart, this.editor.selectionEnd, 'end');
+                    }
+                    this.editor.dispatchEvent(new Event('input'));
+                }
+
+                this.log(`准备异步上传图片: ${cleanPath}`, 'info', true);
                 
                 try {
                     const apiUrl = (this.authConfig.api_url || '').replace(/\/$/, '');
@@ -1324,33 +1374,11 @@
                     });
 
                     if (res.ok) {
-                        this.log(`图片上传成功: ${cleanPath}`, 'success');
-                        
-                        if (this.isManualUpload) {
-                            document.getElementById('upload-input-group').style.display = 'none';
-                            document.getElementById('upload-actions-default').style.display = 'none';
-                            document.getElementById('upload-result-group').style.display = 'flex';
-                            document.getElementById('upload-actions-copy').style.display = 'flex';
-                            
-                            const linkInput = document.getElementById('upload-result-link');
-                            linkInput.value = insertText;
-                            setTimeout(() => {
-                                linkInput.focus();
-                                linkInput.select();
-                            }, 100);
-                        } else {
-                            this.uploadModal.classList.remove('active');
-                            this.editor.focus();
-                            if (this.savedSelection) {
-                                this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
-                            }
-                            if (!document.execCommand('insertText', false, insertText)) {
-                                this.editor.setRangeText(insertText, this.editor.selectionStart, this.editor.selectionEnd, 'end');
-                            }
-                            this.editor.dispatchEvent(new Event('input'));
-                        }
+                        const resData = await res.text();
+                        this.log(`图片上传成功: ${cleanPath} | 远端响应: ${resData}`, 'success');
                     } else {
-                        throw new Error(`HTTP Error: ${res.status}`);
+                        const errData = await res.text();
+                        throw new Error(`HTTP Error: ${res.status} | ${errData}`);
                     }
                 } catch (e) {
                     this.log(`图片上传失败: ${e.message}`, 'error');
@@ -1468,11 +1496,11 @@
                 
                 const path = mode === 'public' ? this.authConfig.data_path : this.authConfig.private_path;
                 if (!path) {
-                    this.log(`未配置 ${mode} 路径`, 'error');
+                    this.log(`未配置 ${mode} 对应的远端路径，操作已中断`, 'error');
                     return;
                 }
 
-                this.log(`正在从远端拉取 ${mode} 数据...`, 'info', true);
+                this.log(`正在从远端拉取数据...`, 'info', true);
                 this.editor.disabled = true;
 
                 try {
@@ -1489,19 +1517,20 @@
                     if (res.status === 404) {
                         this.docs[mode] = { content: '', original: '', sha: null, loaded: true };
                         this.editor.value = '';
-                        this.log(`未找到 ${mode} 数据，已创建新档`, 'info');
+                        this.log(`未找到远端文件，已创建新档`, 'info');
                     } else if (res.ok) {
                         const data = await res.json();
                         const text = Base64.decode(data.content.replace(/\n/g, ''));
                         this.docs[mode] = { content: text, original: text, sha: data.sha, loaded: true };
                         this.editor.value = text;
-                        this.log(`${mode} 数据加载完成`, 'success');
+                        this.log(`数据加载完成`, 'success');
                     } else {
-                        throw new Error(`HTTP Error: ${res.status}`);
+                        const errBody = await res.text();
+                        throw new Error(`HTTP Error: ${res.status} - ${errBody}`);
                     }
                 } catch (e) {
                     if (e.name === 'AbortError') return;
-                    this.log(`${mode} 数据拉取失败: ${e.message}`, 'error');
+                    this.log(`数据拉取失败: ${e.message}`, 'error');
                 } finally {
                     this.editor.disabled = false;
                     this.fetchController = null;
@@ -1576,14 +1605,17 @@
                 if (pubDirty && privDirty) defaultMode = this.currentMode;
                 this.switchDiffTab(defaultMode);
 
-                const msgTemplate = this.authConfig.commit_msg || 'Update {{yyyy-mm-dd hh:mm:ss}}';
-                const now = new Date();
-                const tzOffset = now.getTimezoneOffset() * 60000;
-                const localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, 19).replace('T', ' ');
+                const msgTemplate = this.authConfig.commit_msg;
+                if (msgTemplate) {
+                    const now = new Date();
+                    const tzOffset = now.getTimezoneOffset() * 60000;
+                    const localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, 19).replace('T', ' ');
+                    this.commitTitle.value = msgTemplate.replace('{{yyyy-mm-dd hh:mm:ss}}', localISOTime);
+                } else {
+                    this.commitTitle.value = '';
+                }
                 
-                this.commitTitle.value = msgTemplate.replace('{{yyyy-mm-dd hh:mm:ss}}', localISOTime);
                 this.commitDesc.value = '';
-
                 this.commitModal.classList.add('active');
             }
 
@@ -1611,8 +1643,8 @@
                             message: commitMsg,
                             content: contentB64,
                             committer: {
-                                name: this.authConfig.commit_user || 'Editor System',
-                                email: this.authConfig.commit_email || 'editor@local'
+                                name: this.authConfig.commit_user,
+                                email: this.authConfig.commit_email
                             }
                         };
                         
@@ -1636,9 +1668,10 @@
                             const data = await res.json();
                             this.docs[mode].sha = data.content.sha;
                             this.docs[mode].original = this.docs[mode].content;
-                            this.log(`保存成功: ${mode} 数据已同步`, 'success');
+                            this.log(`保存成功: 数据已同步`, 'success');
                         } else {
-                            throw new Error(`HTTP Error: ${res.status} when saving ${mode}`);
+                            const errBody = await res.text();
+                            throw new Error(`HTTP Error: ${res.status} - ${errBody}`);
                         }
                     }
                 } catch (e) {
