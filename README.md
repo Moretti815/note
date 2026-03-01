@@ -67,7 +67,7 @@ curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/c
 
 3. 将构建输出目录 **Output Directory** 设置为 `public`
 
-这样, 你的仓库触发 `Deploy` 时, 都会自动拉取并注入最新版本的 Petal Note 骨架, 同时会自动处理加密并分发, 均在 `config.toml` 中设置, 个人内容仓库保持纯净
+这样, 你的仓库触发 `Deploy` 时, 都会自动拉取并注入最新版本的 Petal Note 骨架, 同时自动处理各种文件的加密与分发, 均在 `config.toml` 中设置, 个人内容仓库保持纯净
 
 > 若想要仅更新骨架, 手动运行一次 `Redeploy`
 
