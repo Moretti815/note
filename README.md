@@ -92,13 +92,90 @@ private_path = "private.txt"
 commit_msg = "web_editor: {{yyyy-mm-dd hh:mm:ss}}"
 commit_user = "Web Editor"
 commit_email = "example@mail.com"
+
+[image]
+api_url = "https://img-upload.example.com"
+api_key = "xxxxxxxxxxxxxxxxx"
+img_domain = "https://img.example.com"
+default_dir = "images"
 ```
 
 其中 `data_path` 和 `private_path` 是数据文件位于远程仓库的路径
 
-编辑器预览
-
 ![editor_preview](./public/assets/editor.png)
+
+---
+
+编辑器允许直接上传图片, 需要配置一个接受 `PUT` 请求的图片上传 API, 并在 `[image]` 块中完成对应设置
+
+例如使用 **Cloudflare R2** 配合 **Workers** 搭建, 只需要创建一个 R2 存储桶和一个 Worker, 并在 Worker 中绑定你的存储桶, 需要设置以下两个变量
+
+* **MY_BUCKET**: 位于**绑定**选项卡, 填入存储桶名称
+* **UPLOAD_TOKEN**: 位于**环境变量**, 可以使用以下命令生成
+
+  ```console
+  openssl rand -hex 32
+  ```
+
+  将结果填入, 对应配置文件中的 `api_key`
+
+完成变量关联后, 将以下代码粘贴到 Workers 中并部署:
+
+```javascript
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'PUT, OPTIONS',
+  'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+};
+
+export default {
+  async fetch(request, env) {
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders });
+    }
+    if (request.method !== 'PUT') {
+      return new Response('Method Not Allowed', { status: 405, headers: corsHeaders });
+    }
+
+    const authHeader = request.headers.get('Authorization');
+    const expectedAuth = `Bearer ${env.UPLOAD_TOKEN}`;
+    if (!authHeader || authHeader !== expectedAuth) {
+      return new Response('Unauthorized: Invalid or missing token', { status: 401, headers: corsHeaders });
+    }
+
+    const url = new URL(request.url);
+    const objectName = decodeURIComponent(url.pathname.slice(1));
+    if (!objectName) {
+      return new Response('Bad Request: Missing file path in URL', { status: 400, headers: corsHeaders });
+    }
+
+    try {
+      await env.MY_BUCKET.put(objectName, request.body, {
+        httpMetadata: {
+          contentType: request.headers.get('Content-Type') || 'application/octet-stream',
+        }
+      });
+
+      const spaceEncodedPath = objectName.replace(/ /g, '%20');
+      return new Response(JSON.stringify({
+        success: true,
+        message: 'File uploaded successfully',
+        path: spaceEncodedPath
+      }), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders
+        }
+      });
+    } catch (error) {
+      return new Response(`Internal Server Error: ${error.message}`, { status: 500, headers: corsHeaders });
+    }
+  }
+};
+```
+
+部署成功后, 将 Worker 的路由地址填入 `api_url`, 如果存储桶绑定了自定义域名, 将其填入 `img_domain`
 
 ---
 
@@ -217,7 +294,7 @@ export default {
 };
 ```
 
-配置完成后, 在 config.toml 中直接将数据源指向你的 Worker 地址即可：
+配置完成后, 在 config.toml 中直接将数据源指向你的 Worker 地址即可:
 
 ```toml
 data_source = "https://your-worker.workers.dev/data.txt"
