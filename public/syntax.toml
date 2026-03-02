@@ -157,3 +157,23 @@ css = ".fg-purple { color: #cb48e8; }"
 title = "紫色"
 view_type = "fg_color"
 view_value = "#cb48e8"
+
+[[rules]]
+id = "spoiler"
+prefix = "||"
+suffix = "||"
+replacement = "<span class=\"text-spoiler\">$1</span>"
+css = ".text-spoiler { filter: blur(4px); transition: filter 0.3s; } .text-spoiler:hover { filter: blur(0); }"
+title = "剧透/模糊"
+view_type = "icon_class"
+view_value = "ri-eye-off-line"
+
+[[rules]]
+id = "marker"
+prefix = "=="
+suffix = "=="
+replacement = "<mark class=\"text-marker\">$1</mark>"
+css = ".text-marker { background: linear-gradient(to bottom, transparent 60%, #ffeb3b 60%); padding: 0 2px; }"
+title = "马克笔"
+view_type = "color"
+view_value = "#ffeb3b"
