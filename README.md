@@ -247,6 +247,27 @@ view_type = "color"
 view_value = "#fff3bf"
 ```
 
+view_value 还支持 **TOML 内联表** 和 **TOML 数组**
+
+例如
+
+```toml
+item_template = """
+<span class="badge badge-{{color}}">
+  <i class="{{icon}}\"></i> {{text}}
+</span>"""
+# ↑ [[merge_groups]] ... [[rules]] ↓
+view_value = { icon = "ri-check-line", color = "green", text = "成功" }
+```
+
+```toml
+item_template = """<div class="icon-stack">
+  <i class="{{0}}"></i><i class="{{1}}"></i>
+</div>"""
+# ↑ [[merge_groups]] ... [[rules]] ↓
+view_value = ["ri-square-line", "ri-check-fill"]
+```
+
 > [!TIP]
 > petal-note 仓库预设足够应对大多数场景，可以通过 **[🌸 Live Demo 🌸](https://petal-note.vercel.app/)** 预览，或者[单击查看文件](https://www.google.com/search?q=./public/syntax.toml)。
 
