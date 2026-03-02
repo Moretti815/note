@@ -564,9 +564,35 @@
                                     style.textContent = this.syntaxRules.map(r => r.css).join('\n');
                                     document.head.appendChild(style);
 
-                                    const btnHtml = this.syntaxRules.map(r => 
-                                        `<button class="fmt-btn fmt-action" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}"><i class="${r.icon}"></i></button>`
-                                    ).join('');
+                                    const btnHtml = this.syntaxRules.map(r => {
+                                        let inner = '';
+                                        const type = r.view_type || 'icon_class';
+                                        const val = r.view_value || '';
+
+                                        switch (type) {
+                                            case 'color':
+                                                inner = `<div style="width: 14px; height: 14px; border-radius: 4px; background: ${val}; box-shadow: inset 0 0 0 1px rgb(0 0 0 / 15%);"></div>`;
+                                                break;
+                                            case 'fg_color':
+                                                inner = `<span style="font-size: 1.05rem; font-weight: 900; font-family: ui-monospace, monospace; color: ${val}; line-height: 1;">A</span>`;
+                                                break;
+                                            case 'text':
+                                                inner = `<span style="font-size: 0.9rem; font-weight: 700; font-family: ui-monospace, monospace; color: var(--text-main);">${val}</span>`;
+                                                break;
+                                            case 'icon_svg':
+                                                inner = `<div style="width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center; fill: currentColor;">${val}</div>`;
+                                                break;
+                                            case 'icon_base64':
+                                                inner = `<img src="${val}" style="width: 1.1rem; height: 1.1rem; object-fit: contain; pointer-events: none;" alt="${r.title || ''}">`;
+                                                break;
+                                            case 'icon_class':
+                                            default:
+                                                inner = `<i class="${val}"></i>`;
+                                                break;
+                                        }
+
+                                        return `<button class="fmt-btn fmt-action" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}">${inner}</button>`;
+                                    }).join('');
                                     document.getElementById('dynamic-fmt-btns').innerHTML = btnHtml;
                                 } else {
                                     this.log('语法配置已加载，但未检测到有效的 [rules]，请检查 syntax_config 内容', 'info');
