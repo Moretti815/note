@@ -140,6 +140,10 @@
             flex-shrink: 0;
         }
 
+        .fmt-text { font-size: 0.9rem; font-weight: 700; font-family: ui-monospace, monospace; color: var(--text-main); }
+        .fmt-svg { width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center; fill: currentColor; }
+        .fmt-b64 { width: 1.1rem; height: 1.1rem; object-fit: contain; pointer-events: none; }
+
         #editor {
             width: 100%;
             flex: 1;
@@ -307,7 +311,7 @@
         .tag-item:hover { background: rgb(216 140 154 / 15%); color: var(--rose-ellipsis); }
 
         .fmt-dropdown-container { position: relative; display: flex; align-items: center; }
-        .color-menu {
+        .dropdown-menu {
             position: absolute; top: calc(100% + 4px); 
             left: 50%;
             background: var(--card-bg-blur); backdrop-filter: blur(16px);
@@ -318,7 +322,7 @@
             opacity: 0; visibility: hidden; transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
             transform: translateX(var(--shift-x, -50%)) translateY(-4px) scale(0.95); transform-origin: top center;
         }
-        .color-menu.active { 
+        .dropdown-menu.active { 
             opacity: 1; visibility: visible; 
             transform: translateX(var(--shift-x, -50%)) translateY(0) scale(1); 
         }
@@ -572,6 +576,14 @@
                             if (synRes.ok) {
                                 const synData = parse(await synRes.text());
                                 this.syntaxRules = synData.rules || [];
+                                
+                                const mergeMap = new Map();
+                                if (synData.merge_groups) {
+                                    synData.merge_groups.forEach(mg => {
+                                        if (mg.target_type) mergeMap.set(mg.target_type, mg);
+                                    });
+                                }
+
                                 if (this.syntaxRules.length > 0) {
                                     const style = document.createElement('style');
                                     style.textContent = this.syntaxRules.map(r => r.css).join('\n');
@@ -582,7 +594,7 @@
 
                                     this.syntaxRules.forEach(r => {
                                         const type = r.view_type || 'icon_class';
-                                        if (currentGroup && currentGroup.type === type && (type === 'color' || type === 'fg_color')) {
+                                        if (currentGroup && currentGroup.type === type && mergeMap.has(type)) {
                                             currentGroup.rules.push(r);
                                         } else {
                                             currentGroup = { type, rules: [r] };
@@ -590,40 +602,36 @@
                                         }
                                     });
 
+                                    const getInnerHtml = (type, val) => {
+                                        const mg = mergeMap.get(type);
+                                        if (mg && mg.item_template) {
+                                            return mg.item_template.replace(/\{\{value\}\}/gi, val);
+                                        }
+                                        switch (type) {
+                                            case 'text': return `<span class="fmt-text">${val}</span>`;
+                                            case 'icon_svg': return `<div class="fmt-svg">${val}</div>`;
+                                            case 'icon_base64': return `<img src="${val}" class="fmt-b64" alt="">`;
+                                            case 'icon_class': default: return `<i class="${val}"></i>`;
+                                        }
+                                    };
+
                                     const btnHtml = groups.map(g => {
-                                        if ((g.type === 'color' || g.type === 'fg_color') && g.rules.length > 1) {
-                                            const isBg = g.type === 'color';
-                                            const iconHtml = isBg 
-                                                ? `<i class="ri-mark-pen-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-4px;"></i>` 
-                                                : `<span style="font-weight:900;font-family:ui-monospace,monospace;line-height:1;margin-left:2px;">A</span><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>`;
-                                            
-                                            let menuHtml = `<div class="color-menu">`;
+                                        const mergeConf = mergeMap.get(g.type);
+                                        if (mergeConf && g.rules.length > 1) {
+                                            let menuHtml = `<div class="dropdown-menu">`;
                                             g.rules.forEach(r => {
-                                                const val = r.view_value || '';
-                                                const swatch = isBg 
-                                                    ? `<div style="width:16px;height:16px;border-radius:4px;background:${val};box-shadow:inset 0 0 0 1px rgb(0 0 0/15%);"></div>`
-                                                    : `<span style="font-size:1.1rem;font-weight:900;font-family:ui-monospace,monospace;color:${val};line-height:1;">A</span>`;
-                                                menuHtml += `<button class="fmt-btn fmt-action" style="padding:0.35rem;" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}">${swatch}</button>`;
+                                                const inner = getInnerHtml(g.type, r.view_value || '');
+                                                menuHtml += `<button class="fmt-btn fmt-action" style="padding:0.35rem;" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}">${inner}</button>`;
                                             });
                                             menuHtml += `</div>`;
 
                                             return `<div class="fmt-dropdown-container">
-                                                        <button class="fmt-btn fmt-dropdown-toggle" title="${isBg ? '背景高亮' : '文字颜色'}">${iconHtml}</button>
+                                                        <button class="fmt-btn fmt-dropdown-toggle" title="${mergeConf.title || ''}">${mergeConf.icon_html || ''}</button>
                                                         ${menuHtml}
                                                     </div>`;
                                         } else {
                                             return g.rules.map(r => {
-                                                const type = r.view_type || 'icon_class';
-                                                const val = r.view_value || '';
-                                                let inner = '';
-                                                switch (type) {
-                                                    case 'color': inner = `<div style="width: 14px; height: 14px; border-radius: 4px; background: ${val}; box-shadow: inset 0 0 0 1px rgb(0 0 0 / 15%);"></div>`; break;
-                                                    case 'fg_color': inner = `<span style="font-size: 1.05rem; font-weight: 900; font-family: ui-monospace, monospace; color: ${val}; line-height: 1;">A</span>`; break;
-                                                    case 'text': inner = `<span style="font-size: 0.9rem; font-weight: 700; font-family: ui-monospace, monospace; color: var(--text-main);">${val}</span>`; break;
-                                                    case 'icon_svg': inner = `<div style="width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center; fill: currentColor;">${val}</div>`; break;
-                                                    case 'icon_base64': inner = `<img src="${val}" style="width: 1.1rem; height: 1.1rem; object-fit: contain; pointer-events: none;" alt="${r.title || ''}">`; break;
-                                                    case 'icon_class': default: inner = `<i class="${val}"></i>`; break;
-                                                }
+                                                const inner = getInnerHtml(r.view_type || 'icon_class', r.view_value || '');
                                                 return `<button class="fmt-btn fmt-action" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}">${inner}</button>`;
                                             }).join('');
                                         }
@@ -929,7 +937,7 @@
                     
                     const toggle = e.target.closest('.fmt-dropdown-toggle');
                     
-                    document.querySelectorAll('.color-menu').forEach(menu => {
+                    document.querySelectorAll('.dropdown-menu').forEach(menu => {
                         if (toggle && toggle.nextElementSibling === menu) return; 
                         menu.classList.remove('active');
                     });
@@ -961,7 +969,7 @@
                 });
 
                 document.addEventListener('mousedown', (e) => {
-                    if (e.target.closest('.fmt-btn') || e.target.closest('.color-menu') || e.target.closest('.tag-item')) {
+                    if (e.target.closest('.fmt-btn') || e.target.closest('.dropdown-menu') || e.target.closest('.tag-item')) {
                         e.preventDefault();
                     }
                 });

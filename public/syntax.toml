@@ -1,62 +1,8 @@
-[[rules]]
-id = "bold"
-prefix = "**"
-suffix = "**"
-replacement = "<strong class=\"text-bold\">$1</strong>"
-css = ".text-bold { font-weight: 600; color: var(--text-main); }"
-title = "加粗"
-view_type = "icon_class"
-view_value = "ri-bold"
-
-[[rules]]
-id = "italic"
-prefix = "*"
-suffix = "*"
-replacement = "<em class=\"text-italic\">$1</em>"
-css = ".text-italic { font-style: italic; opacity: 0.9; }"
-title = "斜体"
-view_type = "icon_class"
-view_value = "ri-italic"
-
-[[rules]]
-id = "underline"
-prefix = "++"
-suffix = "++"
-replacement = "<span class=\"text-underline\">$1</span>"
-css = ".text-underline { text-decoration: none; border-bottom: 1px solid var(--text-deco); padding-bottom: 1px; }"
-title = "下划线"
-view_type = "icon_class"
-view_value = "ri-underline"
-
-[[rules]]
-id = "strike"
-prefix = "~~"
-suffix = "~~"
-replacement = "<span class=\"text-strike\">$1</span>"
-css = ".text-strike { text-decoration: line-through; text-decoration-color: currentColor; text-decoration-thickness: 1px; opacity: 0.95; }"
-title = "删除线"
-view_type = "icon_class"
-view_value = "ri-strikethrough"
-
-[[rules]]
-id = "wavy"
-prefix = "^^"
-suffix = "^^"
-replacement = "<span class=\"text-wavy\">$1</span>"
-css = ".text-wavy { text-decoration: underline wavy var(--text-deco); text-underline-offset: 3px; }"
-title = "波浪线"
-view_type = "icon_svg"
-view_value = """<svg viewBox="0 0 1088 1024" width="212.5" height="200"><path d="M1069.248 424.128l-73.92 116.8a80 80 0 0 1-129.664 7.68l-50.4-61.92a48 48 0 0 0-74.496 0l-56.896 69.952a80 80 0 0 1-124.128 0l-56.896-69.952a48 48 0 0 0-74.464 0l-53.92 66.272a80 80 0 0 1-126.912-3.616l-38.08-52.704a48 48 0 0 0-77.824 0l-86.976 120.32-25.92-18.784 87.008-120.256a80 80 0 0 1 129.632 0l38.08 52.672a48 48 0 0 0 76.16 2.176l53.92-66.24a80 80 0 0 1 124.16 0l56.896 69.92a48 48 0 0 0 74.464 0l56.896-69.952a80 80 0 0 1 124.128 0l50.4 61.952a48 48 0 0 0 77.76-4.64l73.92-116.8 27.072 17.12z"></path></svg>"""
-
-[[rules]]
-id = "weak"
-prefix = "%%"
-suffix = "%%"
-replacement = "<span class=\"text-weak\">$1</span>"
-css = ".text-weak { color: var(--text-muted); font-size: 0.9em; opacity: 0.85; }"
-title = "减弱"
-view_type = "icon_class"
-view_value = "ri-font-color"
+[[merge_groups]]
+target_type = "color"
+title = "背景高亮"
+icon_html = """<i class="ri-ink-bottle-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-4px;"></i>"""
+item_template = """<div style="width: 16px; height: 16px; border-radius: 4px; background: {{value}}; box-shadow: inset 0 0 0 1px rgb(0 0 0 / 15%);"></div>"""
 
 [[rules]]
 id = "hl-yellow"
@@ -97,6 +43,14 @@ css = ".hl-green { background-color: rgba(235, 251, 238, 0.7); padding: 0 4px; b
 title = "淡绿高亮"
 view_type = "color"
 view_value = "#ebfbee"
+
+#####################
+
+[[merge_groups]]
+target_type = "fg_color"
+title = "文字颜色"
+icon_html = """<i class="ri-markup-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>"""
+item_template = """<span style="font-size: 1.1rem; font-weight: 900; font-family: ui-monospace, monospace; color: {{value}}; line-height: 1;">A</span>"""
 
 [[rules]]
 id = "fg-red"
@@ -158,6 +112,96 @@ title = "紫色"
 view_type = "fg_color"
 view_value = "#cb48e8"
 
+#####################
+
+[[merge_groups]]
+target_type = "marker_group"
+title = "马克笔颜色"
+icon_html = """<i class="ri-mark-pen-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-4px;"></i>"""
+item_template = """<div style="width: 24px; height: 10px; background: {{value}}; opacity: 0.7; border-radius: 2px;"></div>"""
+
+[[rules]]
+id = "marker_yellow"
+prefix = "{m_y}"
+suffix = "{/m_y}"
+replacement = '<mark class="marker-yellow">$1</mark>'
+css = ".marker-yellow { background: linear-gradient(to bottom, transparent 60%, #ffeb3b 60%); padding: 0 2px; }"
+title = "黄色马克笔"
+view_type = "marker_group"
+view_value = "#ffeb3b"
+
+[[rules]]
+id = "marker_pink"
+prefix = "{m_p}"
+suffix = "{/m_p}"
+replacement = '<mark class="marker-pink">$1</mark>'
+css = ".marker-pink { background: linear-gradient(to bottom, transparent 60%, #ffc1cc 60%); padding: 0 2px; }"
+title = "粉色马克笔"
+view_type = "marker_group"
+view_value = "#ffc1cc"
+
+####################
+
+[[rules]]
+id = "bold"
+prefix = "**"
+suffix = "**"
+replacement = "<strong class=\"text-bold\">$1</strong>"
+css = ".text-bold { font-weight: 600; color: var(--text-main); }"
+title = "加粗"
+view_type = "icon_class"
+view_value = "ri-bold"
+
+[[rules]]
+id = "italic"
+prefix = "*"
+suffix = "*"
+replacement = "<em class=\"text-italic\">$1</em>"
+css = ".text-italic { font-style: italic; opacity: 0.9; }"
+title = "斜体"
+view_type = "icon_class"
+view_value = "ri-italic"
+
+[[rules]]
+id = "underline"
+prefix = "++"
+suffix = "++"
+replacement = "<span class=\"text-underline\">$1</span>"
+css = ".text-underline { text-decoration: none; border-bottom: 1px solid var(--text-deco); padding-bottom: 1px; }"
+title = "下划线"
+view_type = "icon_class"
+view_value = "ri-underline"
+
+[[rules]]
+id = "strike"
+prefix = "~~"
+suffix = "~~"
+replacement = "<span class=\"text-strike\">$1</span>"
+css = ".text-strike { text-decoration: line-through; text-decoration-color: currentColor; text-decoration-thickness: 1px; opacity: 0.95; }"
+title = "删除线"
+view_type = "icon_class"
+view_value = "ri-strikethrough"
+
+[[rules]]
+id = "wavy"
+prefix = "^^"
+suffix = "^^"
+replacement = "<span class=\"text-wavy\">$1</span>"
+css = ".text-wavy { text-decoration: underline wavy var(--text-deco); text-underline-offset: 3px; }"
+title = "波浪线"
+view_type = "icon_svg"
+view_value = """<svg viewBox="0 0 1088 1024" width="212.5" height="200"><path d="M1069.248 424.128l-73.92 116.8a80 80 0 0 1-129.664 7.68l-50.4-61.92a48 48 0 0 0-74.496 0l-56.896 69.952a80 80 0 0 1-124.128 0l-56.896-69.952a48 48 0 0 0-74.464 0l-53.92 66.272a80 80 0 0 1-126.912-3.616l-38.08-52.704a48 48 0 0 0-77.824 0l-86.976 120.32-25.92-18.784 87.008-120.256a80 80 0 0 1 129.632 0l38.08 52.672a48 48 0 0 0 76.16 2.176l53.92-66.24a80 80 0 0 1 124.16 0l56.896 69.92a48 48 0 0 0 74.464 0l56.896-69.952a80 80 0 0 1 124.128 0l50.4 61.952a48 48 0 0 0 77.76-4.64l73.92-116.8 27.072 17.12z"></path></svg>"""
+
+[[rules]]
+id = "weak"
+prefix = "%%"
+suffix = "%%"
+replacement = "<span class=\"text-weak\">$1</span>"
+css = ".text-weak { color: var(--text-muted); font-size: 0.9em; opacity: 0.85; }"
+title = "减弱"
+view_type = "icon_class"
+view_value = "ri-subtract-line"
+
 [[rules]]
 id = "spoiler"
 prefix = "||"
@@ -167,16 +211,6 @@ css = ".text-spoiler { filter: blur(4px); transition: filter 0.3s; } .text-spoil
 title = "剧透/模糊"
 view_type = "icon_class"
 view_value = "ri-eye-off-line"
-
-[[rules]]
-id = "marker"
-prefix = "=="
-suffix = "=="
-replacement = "<mark class=\"text-marker\">$1</mark>"
-css = ".text-marker { background: linear-gradient(to bottom, transparent 60%, #ffeb3b 60%); padding: 0 2px; }"
-title = "马克笔"
-view_type = "color"
-view_value = "#ffeb3b"
 
 [[rules]]
 id = "washi-tape"
@@ -197,5 +231,22 @@ css = """
 }
 """
 title = "纸胶带"
-view_type = "text"
-view_value = "Tape"
+view_type = "icon_svg"
+view_value = """
+<svg viewBox="0 0 1024 1024"><path d="M887.466667 580.266667c0-10.24-6.826667-17.066667-17.066667-17.066667h-13.653333c-95.573333 44.373333-215.04 68.266667-344.746667 68.266667-208.213333 0-389.12-58.026667-481.28-160.426667-3.413333-3.413333-13.653333-6.826667-17.066667-3.413333-10.24 3.413333-13.653333 10.24-13.653333 17.066666v215.04c0 146.773333 211.626667 266.24 484.693333 273.066667h382.293334c10.24 0 17.066667-6.826667 17.066666-17.066667 0-23.893333-13.653333-37.546667-20.48-44.373333-6.826667-10.24-10.24-13.653333-10.24-23.893333s3.413333-13.653333 13.653334-23.893334c10.24-10.24 20.48-23.893333 20.48-44.373333 0-27.306667-17.066667-34.133333-27.306667-40.96-6.826667-3.413333-6.826667-3.413333-6.826667-10.24s0-6.826667 6.826667-10.24c10.24-6.826667 27.306667-13.653333 27.306667-40.96 0-23.893333-13.653333-37.546667-20.48-44.373333-10.24-10.24-13.653333-13.653333-13.653334-23.893334 0-10.24 3.413333-13.653333 13.653334-23.893333 6.826667-6.826667 20.48-20.48 20.48-44.373333zM1013.76 467.626667c-6.826667-3.413333-13.653333 0-17.066667 3.413333-20.48 20.48-44.373333 40.96-75.093333 58.026667-6.826667 3.413333-10.24 13.653333-6.826667 23.893333 3.413333 6.826667 6.826667 17.066667 6.826667 23.893333 0 20.48-6.826667 40.96-20.48 58.026667-3.413333 6.826667-3.413333 13.653333 0 20.48 13.653333 17.066667 20.48 37.546667 20.48 58.026667 0 17.066667-3.413333 30.72-10.24 40.96-3.413333 6.826667-3.413333 13.653333 0 17.066666 6.826667 10.24 10.24 23.893333 10.24 40.96 0 10.24-3.413333 20.48-6.826667 30.72-3.413333 6.826667 0 17.066667 6.826667 20.48 3.413333 3.413333 6.826667 3.413333 10.24 3.413334 3.413333 0 6.826667 0 10.24-3.413334 54.613333-44.373333 81.92-98.986667 81.92-160.426666V477.866667s-3.413333-6.826667-10.24-10.24z"></path><path d="M512 597.333333c286.72 0 512-119.466667 512-273.066666s-225.28-273.066667-512-273.066667S0 170.666667 0 324.266667s225.28 273.066667 512 273.066666z m0-204.8c-98.986667 0-170.666667-37.546667-170.666667-68.266666s71.68-68.266667 170.666667-68.266667 170.666667 37.546667 170.666667 68.266667-71.68 68.266667-170.666667 68.266666z"></path></svg>
+"""
+
+[[rules]]
+id = "center"
+prefix = "{center}"
+suffix = "{/center}"
+replacement = "<div class=\"text-center\">$1</div>"
+css = """
+.text-center {
+text-align: center;
+margin: 0.5em 0;
+}
+"""
+title = "居中"
+view_type = "icon_class"
+view_value = "ri-align-center"
