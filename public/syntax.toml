@@ -33,3 +33,21 @@ replacement = "<span class=\"text-strike\">$1</span>"
 css = ".text-strike { text-decoration: line-through; text-decoration-color: currentColor; text-decoration-thickness: 1.5px; opacity: 0.95; }"
 icon = "ri-strikethrough"
 title = "删除线"
+
+[[rules]]
+id = "bold"
+prefix = "**"
+suffix = "**"
+replacement = "<strong class=\"text-bold\">$1</strong>"
+css = ".text-bold { font-weight: 600; color: var(--text-main); }"
+icon = "ri-bold"
+title = "加粗"
+
+[[rules]]
+id = "italic"
+prefix = "*"
+suffix = "*"
+replacement = "<em class=\"text-italic\">$1</em>"
+css = ".text-italic { font-style: italic; opacity: 0.9; }"
+icon = "ri-italic"
+title = "斜体"
