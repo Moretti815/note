@@ -13,6 +13,7 @@ printf "仓库: github.com/%s\n" "$_src"
 
 printf "拉取模板文件 ...\n"
 curl -fsSL "$REPO/public/config.toml" -o "public/config.toml"
+curl -fsSL "$REPO/public/syntax.toml" -o "public/syntax.toml"
 curl -fsSL "$REPO/editor.toml" -o "editor.toml"
 
 printf "创建数据模板 ...\n"
