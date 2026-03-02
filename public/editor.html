@@ -211,12 +211,7 @@
         }
         .card-link:hover { border-bottom-color: var(--rose-ellipsis); background: rgb(216 140 154 / 10%); }
 
-        .text-weak { color: var(--text-muted); font-size: 0.9em; opacity: 0.85; }
-        .text-strike { text-decoration: line-through; text-decoration-color: currentColor; text-decoration-thickness: 1.5px; opacity: 0.95; }
-        .text-underline { text-decoration: none; border-bottom: 1px solid var(--text-deco); padding-bottom: 1px; }
-        .text-wavy { text-decoration: underline wavy var(--text-deco); text-underline-offset: 3px; }
         .manual-br { height: 0.5em; }
-
         .card-img { max-width: 100%; height: auto; border-radius: 4px; margin-block: 0.6rem; box-shadow: 0 2px 6px rgb(0 0 0 / 5%); display: block; }
         .gallery { display: grid; gap: 0.4rem; margin-block: 0.6rem; }
         .gallery.grid-2 { grid-template-columns: repeat(2, 1fr); }
@@ -373,10 +368,7 @@
                 <button class="fmt-btn" id="btn-undo" title="撤销"><i class="ri-arrow-go-back-line"></i></button>
                 <button class="fmt-btn" id="btn-redo" title="重做"><i class="ri-arrow-go-forward-line"></i></button>
                 <div class="fmt-divider"></div>
-                <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="++" data-suffix="++" title="下划线"><i class="ri-underline"></i></button>
-                <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="%%" data-suffix="%%" title="减弱"><i class="ri-font-color"></i></button>
-                <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="^^" data-suffix="^^" title="波浪线"><i class="ri-rhythm-line"></i></button>
-                <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="~~" data-suffix="~~" title="删除线"><i class="ri-strikethrough"></i></button>
+                <div id="dynamic-fmt-btns" style="display:contents;"></div>
                 <div class="fmt-divider"></div>
                 <button class="fmt-btn fmt-action" data-type="link" data-prefix="[" data-suffix="]()" title="链接"><i class="ri-link"></i></button>
                 <button class="fmt-btn fmt-action" data-type="link" data-prefix="![" data-suffix="]()" title="图片"><i class="ri-image-line"></i></button>
@@ -487,6 +479,7 @@
 
                 this.sysConfig = null;
                 this.authConfig = null;
+                this.syntaxRules = [];
                 this.currentMode = null; 
                 this.fetchController = null;
                 
@@ -506,6 +499,10 @@
 
                 this.init();
                 this.initViewportHandler();
+            }
+
+            escapeRegExp(str) {
+                return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             }
 
             initViewportHandler() {
@@ -555,6 +552,28 @@
                     const res = await fetch('config.toml');
                     if (!res.ok) throw new Error(`config.toml load failed: ${res.status}`);
                     this.sysConfig = parse(await res.text());
+
+                    if (this.sysConfig.syntax_config) {
+                        try {
+                            const synRes = await fetch(this.sysConfig.syntax_config);
+                            if (synRes.ok) {
+                                const synData = parse(await synRes.text());
+                                this.syntaxRules = synData.rules || [];
+                                if (this.syntaxRules.length > 0) {
+                                    const style = document.createElement('style');
+                                    style.textContent = this.syntaxRules.map(r => r.css).join('\n');
+                                    document.head.appendChild(style);
+
+                                    const btnHtml = this.syntaxRules.map(r => 
+                                        `<button class="fmt-btn fmt-action" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}"><i class="${r.icon}"></i></button>`
+                                    ).join('');
+                                    document.getElementById('dynamic-fmt-btns').innerHTML = btnHtml;
+                                }
+                            }
+                        } catch(e) {
+                            this.log(`语法配置加载跳过: ${e.message}`, 'info');
+                        }
+                    }
                     
                     if (!this.sysConfig.editor_config) {
                         this.log('系统配置 config.toml 缺少 [editor_config] 字段', 'error');
@@ -1006,11 +1025,20 @@
                             return `<img src="${url}" alt="${alt}" class="card-img" loading="lazy" />`;
                         });
 
-                        p = p.replace(/(?<!\\)%%(.+?)(?<!\\)%%/g, '<span class="text-weak">$1</span>');
-                        p = p.replace(/(?<!\\)~~(.+?)(?<!\\)~~/g, '<span class="text-strike">$1</span>');
-                        p = p.replace(/(?<!\\)\+\+(.+?)(?<!\\)\+\+/g, '<span class="text-underline">$1</span>');
-                        p = p.replace(/(?<!\\)\^\^(.+?)(?<!\\)\^\^/g, '<span class="text-wavy">$1</span>');
-                        return p.replace(/\\(%%|~~|\+\+|\^\^)/g, '$1');
+                        if (this.syntaxRules && this.syntaxRules.length > 0) {
+                            this.syntaxRules.forEach(rule => {
+                                const pre = this.escapeRegExp(rule.prefix);
+                                const suf = this.escapeRegExp(rule.suffix);
+                                const regex = new RegExp(`(?<!\\\\)${pre}(.+?)(?<!\\\\)${suf}`, 'g');
+                                p = p.replace(regex, rule.replacement);
+                            });
+                            
+                            const markers = [...new Set(this.syntaxRules.flatMap(r => [r.prefix, r.suffix]))];
+                            const escapeRegex = new RegExp(`\\\\(${markers.map(m => this.escapeRegExp(m)).join('|')})`, 'g');
+                            p = p.replace(escapeRegex, '$1');
+                        }
+
+                        return p;
                     });
 
                     let finalHtml = processedLines.join('<div class="manual-br"></div>');
