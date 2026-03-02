@@ -747,7 +747,15 @@
                         const start = this.editor.selectionStart;
                         const end = this.editor.selectionEnd;
                         const selected = this.editor.value.substring(start, end);
-                        const replacement = pre + selected + suf;
+                        
+                        let replacement = "";
+                        if (type === 'wrap' && selected.includes('\n') && pre !== '---') {
+                            replacement = selected.split('\n').map(line => {
+                                return line.trim().length > 0 ? (pre + line + suf) : line;
+                            }).join('\n');
+                        } else {
+                            replacement = pre + selected + suf;
+                        }
                         
                         this.editor.focus();
                         this.editor.setSelectionRange(start, end);
