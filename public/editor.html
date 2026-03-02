@@ -97,6 +97,7 @@
             flex: 1;
             height: 100%;
             overflow-y: auto;
+            overflow-x: hidden;
             scrollbar-gutter: stable;
             overscroll-behavior-y: none;
         }
@@ -113,7 +114,6 @@
             align-items: center;
             flex-shrink: 0;
             position: relative;
-            touch-action: pan-x;
         }
 
         .fmt-btn {
@@ -170,11 +170,7 @@
         @media (max-width: 768px) {
             .toolbar { padding: 0.8rem 1rem; }
             #editor-pane { display: flex; flex-direction: column; width: 100%; flex: 1; }
-            .format-bar {
-                padding: 0.5rem 1rem; flex-wrap: nowrap; overflow-x: auto;
-                -webkit-overflow-scrolling: touch; scrollbar-width: none;
-            }
-            .format-bar::-webkit-scrollbar { display: none; }
+            .format-bar { padding: 0.5rem 1rem; }
             #editor { padding: 1.2rem 1.2rem; }
             #preview { padding: 1.2rem 1.2rem; display: none; width: 100%; flex: 1; }
             .split-mode #editor-pane { display: none; }
@@ -312,15 +308,20 @@
 
         .fmt-dropdown-container { position: relative; display: flex; align-items: center; }
         .color-menu {
-            position: absolute; top: calc(100% + 4px); left: 0;
+            position: absolute; top: calc(100% + 4px); 
+            left: 50%;
             background: var(--card-bg-blur); backdrop-filter: blur(16px);
             border: 1px solid rgb(255 255 255 / 80%); border-radius: 8px;
             box-shadow: 0 8px 25px rgb(0 0 0 / 8%), inset 0 0 0 1px rgb(255 255 255 / 40%);
             padding: 0.4rem; z-index: 100; display: flex; gap: 0.3rem;
+            flex-wrap: wrap; width: max-content; max-width: 260px; justify-content: center;
             opacity: 0; visibility: hidden; transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
-            transform: translateY(-4px) scale(0.95); transform-origin: top left;
+            transform: translateX(var(--shift-x, -50%)) translateY(-4px) scale(0.95); transform-origin: top center;
         }
-        .color-menu.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+        .color-menu.active { 
+            opacity: 1; visibility: visible; 
+            transform: translateX(var(--shift-x, -50%)) translateY(0) scale(1); 
+        }
     </style>
 </head>
 <body>
@@ -919,8 +920,12 @@
                 });
 
                 document.addEventListener('click', (e) => {
-                    if (!e.target.closest('#tag-dropdown') && !e.target.closest('#btn-tag')) this.tagDropdown.classList.remove('active');
-                    if (!e.target.closest('#console-panel') && !e.target.closest('#status-bar')) this.consolePanel.classList.remove('active');
+                    if (!e.target.closest('#tag-dropdown') && !e.target.closest('#btn-tag')) {
+                        this.tagDropdown.classList.remove('active');
+                    }
+                    if (!e.target.closest('#console-panel') && !e.target.closest('#status-bar')) {
+                        this.consolePanel.classList.remove('active');
+                    }
                     
                     const toggle = e.target.closest('.fmt-dropdown-toggle');
                     
@@ -931,9 +936,27 @@
                     
                     if (toggle) {
                         e.preventDefault();
-                        toggle.nextElementSibling.classList.toggle('active');
-                    } else if (e.target.closest('.color-menu .fmt-action')) {
-                        e.target.closest('.color-menu').classList.remove('active');
+                        const menu = toggle.nextElementSibling;
+                        const isActive = menu.classList.contains('active');
+                        
+                        if (!isActive) {
+                            menu.style.setProperty('--shift-x', '-50%'); 
+                            const toggleRect = toggle.getBoundingClientRect();
+                            const vw = window.innerWidth;
+                            const menuWidth = menu.offsetWidth;
+                            const expectedLeft = toggleRect.left + (toggleRect.width / 2) - (menuWidth / 2);
+                            const expectedRight = expectedLeft + menuWidth;
+                            let shift = 0;
+                            if (expectedLeft < 5) {
+                                shift = 5 - expectedLeft;
+                            } else if (expectedRight > vw - 5) {
+                                shift = (vw - 5) - expectedRight;
+                            }
+                            if (shift !== 0) {
+                                menu.style.setProperty('--shift-x', `calc(-50% + ${shift}px)`);
+                            }
+                            menu.classList.add('active');
+                        }
                     }
                 });
 
@@ -967,13 +990,25 @@
 
                 if (tags.size === 0) return;
 
-                const rect = this.btnTag.getBoundingClientRect();
-                const containerRect = document.getElementById('editor-pane').getBoundingClientRect();
-                
                 this.tagDropdown.innerHTML = Array.from(tags).map(t => `<div class="tag-item" data-tag="${t}">${t}</div>`).join('');
-                this.tagDropdown.style.top = `${rect.bottom - containerRect.top + 5}px`;
-                this.tagDropdown.style.left = `${rect.left - containerRect.left}px`;
                 this.tagDropdown.classList.add('active');
+
+                const rect = this.btnTag.getBoundingClientRect();
+                const paneRect = document.getElementById('editor-pane').getBoundingClientRect();
+                const dropRect = this.tagDropdown.getBoundingClientRect();
+                const vw = window.innerWidth;
+                const vh = window.innerHeight;
+
+                let top = rect.bottom - paneRect.top + 5;
+                let left = rect.left - paneRect.left;
+
+                if (rect.left + dropRect.width > vw - 5) left = (vw - 5 - dropRect.width) - paneRect.left;
+                if (left + paneRect.left < 5) left = 5 - paneRect.left;
+                
+                if (rect.bottom + dropRect.height > vh - 5) top = rect.top - paneRect.top - dropRect.height - 5;
+
+                this.tagDropdown.style.top = `${top}px`;
+                this.tagDropdown.style.left = `${left}px`;
             }
 
             switchDiffTab(mode) {
