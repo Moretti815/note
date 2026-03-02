@@ -181,35 +181,74 @@ export default {
 
 ## 🐏 自定义语法
 
-通过配置 `config.toml` 的 `syntax_config` 即可定义自定义语法  
-*以下是一个示例*
+通过配置 `config.toml` 指向的 `syntax_config` 文件即可定义语法
+*以下是一个简单的示例：*
 
 ```toml
 [[rules]]
-id = "strike"
+# 定义基本语法
 prefix = "<s>"
 suffix = "</s>"
+
+# 填入元素
 replacement = "<span class=\"text-strike\">$1</span>"
-css = ".text-strike { text-decoration: line-through; text-decoration-color: currentColor; text-decoration-thickness: 1px; opacity: 0.95; }"
+
+# 具体渲染样式
+css = """ .text-strike {
+text-decoration: line-through;
+text-decoration-color: currentColor;
+text-decoration-thickness: 1px;
+opacity: 0.95; }"""
+
+# 工具栏相关属性
 title = "删除线"
 view_type = "icon_class"
 view_value = "ri-strikethrough"
 ```
 
-其中 `view_type`, `view_value` 是编辑器按钮显示的内容, 以下是相关说明
+### 🦇 编辑器工具栏详解
 
-* **color**: 色块, 例如 `#ff0000`
-* **fg_color**: 大写字母 A 附带颜色, 例如 `#ff0000`
-* **text**: 文本, 例如 `~`
-* **icon_class**: [Remix Icon Class](https://remixicon.com/) 图标, 例如 `ri-strikethrough`
-* **icon_svg**: 嵌入完整的 svg
-* **icon_base64**: base64 图片
+`view_type` 和 `view_value` 决定了编辑器工具栏上按钮的 UI, 内置支持的基础呈现方式如下：
+
+* **text**: 纯文本，例如 `~`
+* **icon_class**: [Remix Icon Class](https://remixicon.com/) 图标，例如 `ri-strikethrough`
+* **icon_svg**: 嵌入完整的 SVG 代码
+* **icon_base64**: Base64 格式的图片数据
+
+还可以使用 `[[merge_groups]]` 自定义 `view_type`, 允许手动控制按钮的 UI 模板, 连续的同类型子元素还会被合并渲染
+
+*示例: 定义一个 `color` 组*
+
+```toml
+[[merge_groups]]
+target_type = "color"
+title = "背景高亮"
+icon_html = """<i class="ri-ink-bottle-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-4px;"></i>"""
+item_template = """
+<div style="
+  width: 16px; height: 16px; border-radius: 4px; 
+  background: {{value}};
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 15%);">
+</div>"""
+```
+
+* **title**: 工具栏上父级按钮的悬停提示
+* **icon_html**: 定义父级下拉菜单触发按钮的样式
+* **item_template**: 定义下拉菜单内子按钮的 DOM 模板，渲染时自动将 `{{value}}` 替换为对应 rule 的 `view_value`
+* **target_type**: 类型名称
+
+*示例: 定义一个元素, 父级是 `color`*,
+
+```toml
+# css = "" 语法及渲染定义 ...
+
+title = "淡黄高亮"
+view_type = "color"
+view_value = "#fff3bf"
+```
 
 > [!TIP]
-> 多个连续的 color 或者 fg_color 还会在编辑器中合并渲染为菜单
-
-petal-note 仓库预设的语法定义足够应对大多数场景, 可以通过 **[🌸 Live Demo 🌸](https://petal-note.vercel.app/)** 预览,
-或者[单击查看文件](./public/syntax.toml)
+> petal-note 仓库预设足够应对大多数场景，可以通过 **[🌸 Live Demo 🌸](https://petal-note.vercel.app/)** 预览，或者[单击查看文件](https://www.google.com/search?q=./public/syntax.toml)。
 
 ---
 
