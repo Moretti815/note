@@ -121,6 +121,9 @@ default_dir = "images"
 
 完成变量关联后, 将以下代码粘贴到 Workers 中并部署:
 
+<details>
+<summary><b>点击展开代码</b></summary>
+
 ```javascript
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -174,6 +177,8 @@ export default {
   }
 };
 ```
+
+</details>
 
 部署成功后, 将 Worker 的路由地址填入 `api_url`, 如果存储桶绑定了自定义域名, 将其填入 `img_domain`
 
@@ -271,6 +276,84 @@ view_value = ["ri-square-line", "ri-check-fill"]
 > [!TIP]
 > petal-note 仓库预设足够应对大多数场景，可以通过 **[🌸 Live Demo 🌸](https://petal-note.vercel.app/)** 预览，或者[单击查看文件](https://www.google.com/search?q=./public/syntax.toml)。
 
+有了这些玩法, 可以实现的效果非常多了, 例如以下这段示例完美复刻了 GitHub Alerts, 可以直接投入使用
+
+<details>
+<summary><b>点击展开代码</b></summary>
+
+```toml
+[[merge_groups]]
+target_type = "github_alerts"
+title = "插入 GitHub Alerts"
+icon_html = """<i class="ri-chat-4-line"></i>"""
+item_template = """<div style="display:flex;align-items:center;gap:6px;color:{{color}};font-size:0.85rem;font-family:ui-monospace,monospace;font-weight:600;"><i class="{{icon}}"></i><span>{{label}}</span></div>"""
+
+[[rules]]
+view_type = "github_alerts"
+title = "Note (常规提示)"
+prefix = ":::note "
+suffix = " :::"
+replacement = """<div class="gh-alert gh-alert-note"><div class="gh-alert-title"><i class="ri-information-line"></i> Note</div><div class="gh-alert-body">$1</div></div>"""
+view_value = { color = "#0969da", icon = "ri-information-line", label = "Note" }
+css = """
+.gh-alert { border-left: 4px solid; padding: 0.6rem 1rem; margin: 0.8rem 0; border-radius: 0 6px 6px 0; box-shadow: 0 2px 8px rgb(0 0 0 / 2%); }
+.gh-alert-title { display: flex; align-items: center; gap: 0.4rem; font-weight: 600; margin-bottom: 0.2rem; font-size: 0.9rem; }
+.gh-alert-body { font-size: 0.9rem; color: var(--text-main); line-height: 1.6; }
+.gh-alert-note { border-left-color: #0969da; background: rgb(9 105 218 / 4%); }
+.gh-alert-note .gh-alert-title { color: #0969da; }
+"""
+
+[[rules]]
+view_type = "github_alerts"
+title = "Tip (建议与技巧)"
+prefix = ":::tip "
+suffix = " :::"
+replacement = """<div class="gh-alert gh-alert-tip"><div class="gh-alert-title"><i class="ri-lightbulb-line"></i> Tip</div><div class="gh-alert-body">$1</div></div>"""
+view_value = { color = "#1a7f37", icon = "ri-lightbulb-line", label = "Tip" }
+css = """
+.gh-alert-tip { border-left-color: #1a7f37; background: rgb(26 127 55 / 4%); }
+.gh-alert-tip .gh-alert-title { color: #1a7f37; }
+"""
+
+[[rules]]
+view_type = "github_alerts"
+title = "Important (重要信息)"
+prefix = ":::important "
+suffix = " :::"
+replacement = """<div class="gh-alert gh-alert-important"><div class="gh-alert-title"><i class="ri-message-3-line"></i> Important</div><div class="gh-alert-body">$1</div></div>"""
+view_value = { color = "#8250df", icon = "ri-message-3-line", label = "Important" }
+css = """
+.gh-alert-important { border-left-color: #8250df; background: rgb(130 80 223 / 4%); }
+.gh-alert-important .gh-alert-title { color: #8250df; }
+"""
+
+[[rules]]
+view_type = "github_alerts"
+title = "Warning (警告提示)"
+prefix = ":::warning "
+suffix = " :::"
+replacement = """<div class="gh-alert gh-alert-warning"><div class="gh-alert-title"><i class="ri-error-warning-line"></i> Warning</div><div class="gh-alert-body">$1</div></div>"""
+view_value = { color = "#9a6700", icon = "ri-error-warning-line", label = "Warning" }
+css = """
+.gh-alert-warning { border-left-color: #9a6700; background: rgb(154 103 0 / 4%); }
+.gh-alert-warning .gh-alert-title { color: #9a6700; }
+"""
+
+[[rules]]
+view_type = "github_alerts"
+title = "Caution (危险操作)"
+prefix = ":::caution "
+suffix = " :::"
+replacement = """<div class="gh-alert gh-alert-caution"><div class="gh-alert-title"><i class="ri-close-circle-line"></i> Caution</div><div class="gh-alert-body">$1</div></div>"""
+view_value = { color = "#d1242f", icon = "ri-close-circle-line", label = "Caution" }
+css = """
+.gh-alert-caution { border-left-color: #d1242f; background: rgb(209 36 47 / 4%); }
+.gh-alert-caution .gh-alert-title { color: #d1242f; }
+"""
+```
+
+</details>
+
 ---
 
 ## 🐰 秘密时间线
@@ -349,6 +432,9 @@ view_value = ["ri-square-line", "ri-check-fill"]
 
 以下为 worker.js, 直接返回仓库文件, 并根据字典名单机制进行加密
 
+<details>
+<summary><b>点击展开代码</b></summary>
+
 ```javascript
 export default {
   async fetch(r, e) {
@@ -387,6 +473,8 @@ export default {
   }
 };
 ```
+
+</details>
 
 配置完成后, 在 config.toml 中直接将数据源指向你的 Worker 地址即可:
 
