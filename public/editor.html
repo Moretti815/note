@@ -568,11 +568,17 @@
                                         `<button class="fmt-btn fmt-action" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}"><i class="${r.icon}"></i></button>`
                                     ).join('');
                                     document.getElementById('dynamic-fmt-btns').innerHTML = btnHtml;
+                                } else {
+                                    this.log('语法配置已加载，但未检测到有效的 [rules]，请检查 syntax_config 内容', 'info');
                                 }
+                            } else {
+                                this.log(`语法配置拉取失败 (HTTP ${synRes.status})，请检查 syntax_config 路径`, 'error');
                             }
                         } catch(e) {
-                            this.log(`语法配置加载跳过: ${e.message}`, 'info');
+                            this.log(`语法配置解析异常: ${e.message}，请确保格式正确`, 'error');
                         }
+                    } else {
+                        this.log('提示: 未配置 syntax_config，快捷语法已禁用。如需富文本扩展请配置该项', 'info');
                     }
                     
                     if (!this.sysConfig.editor_config) {
