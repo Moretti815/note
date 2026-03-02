@@ -79,7 +79,7 @@ Petal
 ---
 Petal
 #用法 #特殊语法
-除了 markdown 链接语法以外, Petal Note 还内置了一套自定义语法引擎，通过 TOML 配置。默认也内置了很多常用的语法，例如：
+除了 markdown 链接语法以外, Petal Note 还内置了一套自定义语法引擎，通过 TOML 配置。仓库中的 [syntax.toml](https://github.com/miniyu157/petal-note/blob/main/public/syntax.toml) 默认也内置了很多常用的语法，例如：
 **加粗** *斜体* ++下划线++ ~~删除线~~ ^^波浪线^^ %%减弱%%
 ||剧透/模糊效果|| <- 鼠标悬停查看
 (( 纸胶带 )) {m_y}马克笔{/m_y} {fg-p}彩色前景色{/fg-p} {bg-p}彩色背景色{/bg-p}
