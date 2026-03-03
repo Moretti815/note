@@ -82,11 +82,17 @@ Petal
 除了 markdown 链接语法以外, Petal Note 还内置了一套自定义语法引擎，通过 TOML 配置。仓库中的 [syntax.toml](https://github.com/miniyu157/petal-note/blob/main/public/syntax.toml) 默认也内置了很多常用的语法，例如：
 **加粗** *斜体* ++下划线++ ~~删除线~~ ^^波浪线^^ %%减弱%%
 ||剧透/模糊效果|| <- 鼠标悬停查看
-(( 纸胶带 )) {m_y}马克笔{/m_y} {fg-p}彩色前景色{/fg-p} {bg-p}彩色背景色{/bg-p}
+(( 纸胶带 )) {fg-p}彩色前景色{/fg-p} {bg-p}彩色背景色{/bg-p}
+{w-r}彩色{/w-r}{w-g}波浪线{/w-g} {m_y}马克笔{/m_y} {m_u}五颜六色{/m_u}
+{u-u}彩色{/u-u}{u-p}下划线{/u-p}
 使用反斜杠进行转义，例如 {bg-g}\(( 纸胶带 )){/bg-g}
 配置得当，基本可以混合使用。
 
-语法引擎是完全开放的，只需一个 TOML 定义即可，甚至还可以完美复刻 GitHub Alerts，相关示例代码请 [查看文档](https://github.com/miniyu157/petal-note/tree/main?tab=readme-ov-file#-%E7%BC%96%E8%BE%91%E5%99%A8%E5%B7%A5%E5%85%B7%E6%A0%8F%E8%AF%A6%E8%A7%A3)
+放心！Petal Note 遵循{u-b}**究极开闭原则**{/u-b}，杜绝一切硬编码。语法引擎是完全开放的，只需一个 TOML 文件定义即可，甚至还可以完美复刻 GitHub Alerts，相关示例代码请 [查看文档](https://github.com/miniyu157/petal-note/tree/main?tab=readme-ov-file#-%E7%BC%96%E8%BE%91%E5%99%A8%E5%B7%A5%E5%85%B7%E6%A0%8F%E8%AF%A6%E8%A7%A3)
+(( ![editor_toolbox](./assets/editor_toolbox.png) 编辑器工具栏还可以合并渲染, 图片标签也可以被特殊语法包裹 ))
+
+从左下角那片小叶子体验内置编辑器 密码: {w-r}✨{/w-r}
+编辑器鉴权使用 AES-GCM 端到端加密，具体用法请查看文档。
 ---
 Petal
 #用法 #内容
