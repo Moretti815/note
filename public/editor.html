@@ -331,12 +331,6 @@
                             if (synRes.ok) {
                                 const synData = parse(await synRes.text());
                                 this.syntaxRules = synData.rules || [];
-                                const mergeMap = new Map();
-                                if (synData.merge_groups) {
-                                    synData.merge_groups.forEach(mg => {
-                                        if (mg.target_type) mergeMap.set(mg.target_type, mg);
-                                    });
-                                }
                                 if (this.syntaxRules.length > 0 || synData.global_css) {
                                     const style = document.createElement('style');
                                     const globalCss = synData.global_css || '';
@@ -344,51 +338,47 @@
                                     style.textContent = `${globalCss}\n${ruleCss}`;
                                     document.head.appendChild(style);
                                     const viewTemplates = synData.view_templates || {};
+                                    const mergeMap = synData.merge_groups || {};
                                     const groups = [];
-                                    let currentGroup = null;
+                                    const groupCache = new Map();
+
                                     this.syntaxRules.forEach(r => {
-                                        const type = r.view_type;
-                                        if (!type) return;
-                                        if (currentGroup && currentGroup.type === type && mergeMap.has(type)) {
-                                            currentGroup.rules.push(r);
+                                        if (r.group) {
+                                            if (!groupCache.has(r.group)) {
+                                                const newGroup = { id: r.group, rules: [] };
+                                                groups.push(newGroup);
+                                                groupCache.set(r.group, newGroup);
+                                            }
+                                            groupCache.get(r.group).rules.push(r);
                                         } else {
-                                            currentGroup = { type, rules: [r] };
-                                            groups.push(currentGroup);
+                                            groups.push({ rules: [r] });
                                         }
                                     });
                                     const getInnerHtml = (type, val) => {
-                                        const mg = mergeMap.get(type);
-                                        let tpl = (mg && mg.item_template) ? mg.item_template : viewTemplates[type];
-                                        if (!tpl) return '';
+                                        let tpl = viewTemplates[type];
+                                        if (!tpl) return val || '';
                                         if (typeof val === 'object' && val !== null) {
-                                            for (const [k, v] of Object.entries(val)) {
-                                                tpl = tpl.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'gi'), String(v));
-                                            }
-                                            return tpl;
+                                            return Object.entries(val).reduce((acc, [k, v]) =>
+                                                acc.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'gi'), String(v)), tpl);
                                         }
-                                        return tpl.replace(/\{\{value\}\}/gi, val !== undefined && val !== null ? String(val) : '');
+                                        return tpl.replace(/\{\{value\}\}/gi, String(val || ''));
                                     };
                                     const btnHtml = groups.map(g => {
-                                        const mergeConf = mergeMap.get(g.type);
-                                        if (mergeConf && g.rules.length > 1) {
-                                            let menuHtml = `<div class="dropdown-menu">`;
-                                            g.rules.forEach(r => {
-                                                const inner = getInnerHtml(g.type, r.view_value);
-                                                if (inner) menuHtml += `<button class="fmt-btn fmt-action" style="padding:0.35rem;" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}">${inner}</button>`;
-                                            });
-                                            menuHtml += `</div>`;
+                                        if (g.id) {
+                                            const conf = mergeMap[g.id] || { title: g.id, icon_html: '<i class="ri-function-line"></i>' };
+                                            const menuHtml = g.rules.map(r =>
+                                                `<button class="fmt-btn fmt-action" style="padding:0.35rem;" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}">${getInnerHtml(r.view_type, r.view_value)}</button>`
+                                            ).join('');
                                             return `<div class="fmt-dropdown-container">
-                                                        <button class="fmt-btn fmt-dropdown-toggle" title="${mergeConf.title || ''}">${mergeConf.icon_html || ''}</button>
-                                                        ${menuHtml}
+                                                        <button class="fmt-btn fmt-dropdown-toggle" title="${conf.title || ''}">${conf.icon_html || ''}</button>
+                                                        <div class="dropdown-menu">${menuHtml}</div>
                                                     </div>`;
-                                        } else {
-                                            return g.rules.map(r => {
-                                                const inner = getInnerHtml(r.view_type, r.view_value);
-                                                if (!inner) return '';
-                                                return `<button class="fmt-btn fmt-action" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}">${inner}</button>`;
-                                            }).join('');
                                         }
-                                    }).join('');                                    document.getElementById('dynamic-fmt-btns').innerHTML = btnHtml;
+                                        return g.rules.map(r =>
+                                            `<button class="fmt-btn fmt-action" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}">${getInnerHtml(r.view_type, r.view_value)}</button>`
+                                        ).join('');
+                                    }).join('');
+                                    document.getElementById('dynamic-fmt-btns').innerHTML = btnHtml;
                                 } else {
                                     this.log('语法配置已加载，但未检测到有效的 [rules]，请检查 syntax_config 内容', 'info');
                                 }
