@@ -330,16 +330,10 @@
                                     }, {}) : (mg || {});
                                     
                                     const groups = [];
-                                    const groupCache = new Map();
                                     this.syntaxRules.forEach(r => {
-                                        if (r.group) {
-                                            if (!groupCache.has(r.group)) {
-                                                const newGroup = { id: r.group, rules: [] };
-                                                groups.push(newGroup);
-                                                groupCache.set(r.group, newGroup);
-                                            }
-                                            groupCache.get(r.group).rules.push(r);
-                                        } else groups.push({ rules: [r] });
+                                        const last = groups[groups.length - 1];
+                                        if (r.group && last && last.id === r.group) last.rules.push(r);
+                                        else groups.push({ id: r.group, rules: [r] });
                                     });
                                     
                                     const getInnerHtml = (type, val) => {
@@ -352,7 +346,7 @@
                                     };
                                     
                                     document.getElementById('dynamic-fmt-btns').innerHTML = groups.map(g => {
-                                        if (g.id) {
+                                        if (g.id && g.rules.length > 1) {
                                             const conf = mergeMap[g.id] || { title: g.id, icon_html: '<i class="ri-function-line"></i>' };
                                             const menuHtml = g.rules.map(r => `<button class="fmt-btn fmt-action" style="padding:0.35rem;" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}">${getInnerHtml(r.view_type, r.view_value)}</button>`).join('');
                                             return `<div class="fmt-dropdown-container"><button class="fmt-btn fmt-dropdown-toggle" title="${conf.title || ''}">${conf.icon_html || ''}</button><div class="dropdown-menu">${menuHtml}</div></div>`;
