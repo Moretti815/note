@@ -499,14 +499,7 @@
                         const start = this.editor.selectionStart;
                         const end = this.editor.selectionEnd;
                         const selected = this.editor.value.substring(start, end);
-                        let replacement = "";
-                        if (type === 'wrap' && selected.includes('\n') && pre !== '---') {
-                            replacement = selected.split('\n').map(line => {
-                                return line.trim().length > 0 ? (pre + line + suf) : line;
-                            }).join('\n');
-                        } else {
-                            replacement = pre + selected + suf;
-                        }
+                        const replacement = pre + selected + suf;
                         this.editor.focus();
                         this.editor.setSelectionRange(start, end);
                         if (!document.execCommand('insertText', false, replacement)) {
@@ -817,45 +810,42 @@
                     if (lines.length > 0) {
                         lines[0] = lines[0].replace(/#([^\s#]+)/g, (_, tag) => `<span class="card-tag">#${tag}</span>`);
                     }
-                    const processedLines = lines.map(line => {
-                        let p = line;
-                        p = p.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
-                            imgStore.push({ alt, url }); return `__IMG_${imgStore.length - 1}__`;
-                        });
-                        p = p.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
-                            linkStore.push({ text, url }); return `__LNK_${linkStore.length - 1}__`;
-                        });
-                        p = p.replace(/(https?:\/\/[^\s<]+)/g, (match, url) => {
-                            let cleanUrl = url, trailing = '';
-                            const matchPunc = url.match(/([.,;:!?。，、！？]+)$/);
-                            if (matchPunc) {
-                                cleanUrl = url.substring(0, url.length - matchPunc[0].length);
-                                trailing = matchPunc[0];
-                            }
-                            return `<a href="${cleanUrl}" target="_blank" class="card-link" rel="noopener noreferrer">${cleanUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}</a>${trailing}`;
-                        });
-                        p = p.replace(/__LNK_(\d+)__/g, (_, idx) => {
-                            const { text, url } = linkStore[idx];
-                            return `<a href="${url}" ${url.startsWith('#') ? '' : 'target="_blank" rel="noopener noreferrer"'} class="card-link">${text}</a>`;
-                        });
-                        p = p.replace(/__IMG_(\d+)__/g, (_, idx) => {
-                            const { alt, url } = imgStore[idx];
-                            return `<img src="${url}" alt="${alt}" class="card-img" loading="lazy" />`;
-                        });
-                        if (this.syntaxRules && this.syntaxRules.length > 0) {
-                            this.syntaxRules.forEach(rule => {
-                                const pre = this.escapeRegExp(rule.prefix);
-                                const suf = this.escapeRegExp(rule.suffix);
-                                const regex = new RegExp(`(?<!\\\\)${pre}(.+?)(?<!\\\\)${suf}`, 'g');
-                                p = p.replace(regex, rule.replacement);
-                            });
-                            const markers = [...new Set(this.syntaxRules.flatMap(r => [r.prefix, r.suffix]))];
-                            const escapeRegex = new RegExp(`\\\\(${markers.map(m => this.escapeRegExp(m)).join('|')})`, 'g');
-                            p = p.replace(escapeRegex, '$1');
-                        }
-                        return p;
+                    let p = lines.join('\n');
+                    p = p.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
+                        imgStore.push({ alt, url }); return `__IMG_${imgStore.length - 1}__`;
                     });
-                    let finalHtml = processedLines.join('<div class="manual-br"></div>');
+                    p = p.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
+                        linkStore.push({ text, url }); return `__LNK_${linkStore.length - 1}__`;
+                    });
+                    p = p.replace(/(https?:\/\/[^\s<]+)/g, (match, url) => {
+                        let cleanUrl = url, trailing = '';
+                        const matchPunc = url.match(/([.,;:!?。，、！？]+)$/);
+                        if (matchPunc) {
+                            cleanUrl = url.substring(0, url.length - matchPunc[0].length);
+                            trailing = matchPunc[0];
+                        }
+                        return `<a href="${cleanUrl}" target="_blank" class="card-link" rel="noopener noreferrer">${cleanUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}</a>${trailing}`;
+                    });
+                    p = p.replace(/__LNK_(\d+)__/g, (_, idx) => {
+                        const { text, url } = linkStore[idx];
+                        return `<a href="${url}" ${url.startsWith('#') ? '' : 'target="_blank" rel="noopener noreferrer"'} class="card-link">${text}</a>`;
+                    });
+                    p = p.replace(/__IMG_(\d+)__/g, (_, idx) => {
+                        const { alt, url } = imgStore[idx];
+                        return `<img src="${url}" alt="${alt}" class="card-img" loading="lazy" />`;
+                    });
+                    if (this.syntaxRules && this.syntaxRules.length > 0) {
+                        this.syntaxRules.forEach(rule => {
+                            const pre = this.escapeRegExp(rule.prefix);
+                            const suf = this.escapeRegExp(rule.suffix);
+                            const regex = new RegExp(`(?<!\\\\)${pre}(.+?)(?<!\\\\)${suf}`, 'gs');
+                            p = p.replace(regex, rule.replacement);
+                        });
+                        const markers = [...new Set(this.syntaxRules.flatMap(r => [r.prefix, r.suffix]))];
+                        const escapeRegex = new RegExp(`\\\\(${markers.map(m => this.escapeRegExp(m)).join('|')})`, 'g');
+                        p = p.replace(escapeRegex, '$1');
+                    }
+                    let finalHtml = p.split('\n').join('<div class="manual-br"></div>');
                     finalHtml = finalHtml.replace(/(?:<div class="manual-br"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="manual-br"><\/div>)*/g, '$1');
                     finalHtml = finalHtml.replace(/(<img[^>]+>){2,}/g, match => {
                         const count = (match.match(/<img/g) || []).length;
