@@ -4,50 +4,55 @@ global_css = """
 .fmt-b64 { width: 1.1rem; height: 1.1rem; object-fit: contain; pointer-events: none; }
 """
 
-[view_templates]
-icon_class = '<i class="{{value}}"></i>'
-text = '<span class="fmt-text">{{value}}</span>'
-icon_svg = '<div class="fmt-svg">{{value}}</div>'
-icon_base64 = '<img src="{{value}}" class="fmt-b64" alt="">'
-html = '{{value}}'
-basic_styles = '<i class="{{value}}" style="font-size: 1.1rem;"></i>'
-underline_color = '<span style="font-size: 1.1rem; font-family: ui-monospace, monospace; text-decoration: underline; text-decoration-color: {{value}}; text-decoration-thickness: 2px; text-underline-offset: 2px; line-height: 1;">U</span>'
-wavy_color = '<span style="font-size: 1.1rem; font-family: ui-monospace, monospace; text-decoration: underline wavy {{value}}; text-underline-offset: 3px; line-height: 1;">W</span>'
-color = '<div style="width: 16px; height: 16px; border-radius: 4px; background: {{value}}; box-shadow: inset 0 0 0 1px rgb(0 0 0 / 15%);"></div>'
-fg_color = '<span style="font-size: 1.1rem; font-weight: 900; font-family: ui-monospace, monospace; color: {{value}}; line-height: 1;">A</span>'
-marker_group = '<div style="width: 24px; height: 10px; background: {{value}}; opacity: 0.7; border-radius: 2px;"></div>'
+[[view_templates]]
+type = "icon_class"
+template = '<i class="{{value}}"></i>'
+
+[[view_templates]]
+type = "text"
+template = '<span class="fmt-text">{{value}}</span>'
+
+[[view_templates]]
+type = "icon_svg"
+template = '<div class="fmt-svg">{{value}}</div>'
+
+[[view_templates]]
+type = "icon_base64"
+template = '<img src="{{value}}" class="fmt-b64" alt="">'
+
+[[view_templates]]
+type = "html"
+template = '{{value}}'
+
+[[view_templates]]
+type = "basic_styles"
+template = '<i class="{{value}}" style="font-size: 1.1rem;"></i>'
+
+[[view_templates]]
+type = "underline_color"
+template = '<span style="font-size: 1.1rem; font-family: ui-monospace, monospace; text-decoration: underline; text-decoration-color: {{value}}; text-decoration-thickness: 2px; text-underline-offset: 2px; line-height: 1;">U</span>'
+
+[[view_templates]]
+type = "wavy_color"
+template = '<span style="font-size: 1.1rem; font-family: ui-monospace, monospace; text-decoration: underline wavy {{value}}; text-underline-offset: 3px; line-height: 1;">W</span>'
+
+[[view_templates]]
+type = "color"
+template = '<div style="width: 16px; height: 16px; border-radius: 4px; background: {{value}}; box-shadow: inset 0 0 0 1px rgb(0 0 0 / 15%);"></div>'
+
+[[view_templates]]
+type = "fg_color"
+template = '<span style="font-size: 1.1rem; font-weight: 900; font-family: ui-monospace, monospace; color: {{value}}; line-height: 1;">A</span>'
+
+[[view_templates]]
+type = "marker_group"
+template = '<div style="width: 24px; height: 10px; background: {{value}}; opacity: 0.7; border-radius: 2px;"></div>'
 
 ####################
 
 [merge_groups.basic_styles]
 title = "基础样式"
 icon_html = """<i class="ri-font-size-2"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>"""
-
-[merge_groups.underline_color]
-title = "彩色下划线"
-icon_html = """<i class="ri-underline"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>"""
-
-[merge_groups.wavy_color]
-title = "彩色波浪线"
-icon_html = """<svg viewBox="0 0 1088 1024" width="1.2em" height="1.2em" style="vertical-align: -0.2em; fill: currentColor;"><path d="M1069.248 424.128l-73.92 116.8a80 80 0 0 1-129.664 7.68l-50.4-61.92a48 48 0 0 0-74.496 0l-56.896 69.952a80 80 0 0 1-124.128 0l-56.896-69.952a48 48 0 0 0-74.464 0l-53.92 66.272a80 80 0 0 1-126.912-3.616l-38.08-52.704a48 48 0 0 0-77.824 0l-86.976 120.32-25.92-18.784 87.008-120.256a80 80 0 0 1 129.632 0l38.08 52.672a48 48 0 0 0 76.16 2.176l53.92-66.24a80 80 0 0 1 124.16 0l56.896 69.92a48 48 0 0 0 74.464 0l56.896-69.952a80 80 0 0 1 124.128 0l50.4 61.952a48 48 0 0 0 77.76-4.64l73.92-116.8 27.072 17.12z"></path></svg><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>"""
-
-[merge_groups.color]
-title = "背景高亮"
-icon_html = """<i class="ri-ink-bottle-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-4px;"></i>"""
-
-[merge_groups.fg_color]
-title = "文字颜色"
-icon_html = """<i class="ri-markup-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>"""
-
-[merge_groups.marker_group]
-title = "马克笔颜色"
-icon_html = """<i class="ri-mark-pen-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-4px;"></i>"""
-
-[merge_groups.magic_tools]
-title = "魔法组件"
-icon_html = """<i class="ri-magic-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>"""
-
-####################
 
 [[rules]]
 group = "basic_styles"
@@ -90,6 +95,10 @@ view_type = "basic_styles"
 view_value = "ri-subtract-line"
 
 ####################
+
+[merge_groups.underline_color]
+title = "彩色下划线"
+icon_html = """<i class="ri-underline"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>"""
 
 [[rules]]
 group = "underline_color"
@@ -163,6 +172,10 @@ view_value = "#e599f7"
 
 ####################
 
+[merge_groups.wavy_color]
+title = "彩色波浪线"
+icon_html = """<svg viewBox="0 0 1088 1024" width="1.2em" height="1.2em" style="vertical-align: -0.2em; fill: currentColor;"><path d="M1069.248 424.128l-73.92 116.8a80 80 0 0 1-129.664 7.68l-50.4-61.92a48 48 0 0 0-74.496 0l-56.896 69.952a80 80 0 0 1-124.128 0l-56.896-69.952a48 48 0 0 0-74.464 0l-53.92 66.272a80 80 0 0 1-126.912-3.616l-38.08-52.704a48 48 0 0 0-77.824 0l-86.976 120.32-25.92-18.784 87.008-120.256a80 80 0 0 1 129.632 0l38.08 52.672a48 48 0 0 0 76.16 2.176l53.92-66.24a80 80 0 0 1 124.16 0l56.896 69.92a48 48 0 0 0 74.464 0l56.896-69.952a80 80 0 0 1 124.128 0l50.4 61.952a48 48 0 0 0 77.76-4.64l73.92-116.8 27.072 17.12z"></path></svg><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>"""
+
 [[rules]]
 group = "wavy_color"
 prefix = "^^"
@@ -235,6 +248,10 @@ view_value = "#e599f7"
 
 ####################
 
+[merge_groups.color]
+title = "背景高亮"
+icon_html = """<i class="ri-ink-bottle-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-4px;"></i>"""
+
 [[rules]]
 group = "color"
 prefix = "{bg-y}"
@@ -276,6 +293,10 @@ view_type = "color"
 view_value = "#ebfbee"
 
 ####################
+
+[merge_groups.fg_color]
+title = "文字颜色"
+icon_html = """<i class="ri-markup-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>"""
 
 [[rules]]
 group = "fg_color"
@@ -339,6 +360,10 @@ view_value = "#cb48e8"
 
 ####################
 
+[merge_groups.marker_group]
+title = "马克笔颜色"
+icon_html = """<i class="ri-mark-pen-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-4px;"></i>"""
+
 [[rules]]
 group = "marker_group"
 prefix = "{m_y}"
@@ -400,6 +425,10 @@ view_type = "marker_group"
 view_value = "#ffe0b2"
 
 ####################
+
+[merge_groups.magic_tools]
+title = "魔法组件"
+icon_html = """<i class="ri-magic-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>"""
 
 [[rules]]
 group = "magic_tools"

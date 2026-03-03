@@ -6,19 +6,7 @@
     <title>内容编辑器</title>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.9.1/fonts/remixicon.min.css" rel="stylesheet">
     <style>
-        :root {
-            --text-main: #5c4b51;
-            --text-muted: #ab9ba0;
-            --timeline-accent: #f4c2c2;
-            --card-bg-blur: rgb(255 255 255 / 75%);
-            --rose-ellipsis: #d88c9a;
-            --bg-gradient-start: #fdfbfb;
-            --bg-gradient-end: #f1f3f4;
-            --danger-color: #e5989b;
-            --success-color: #b5c99a;
-            --text-deco: rgb(171 155 160 / 60%);
-            --v-height: 100dvh;
-        }
+        :root { --text-main: #5c4b51; --text-muted: #ab9ba0; --timeline-accent: #f4c2c2; --card-bg-blur: rgb(255 255 255 / 75%); --rose-ellipsis: #d88c9a; --bg-gradient-start: #fdfbfb; --bg-gradient-end: #f1f3f4; --danger-color: #e5989b; --success-color: #b5c99a; --text-deco: rgb(171 155 160 / 60%); --v-height: 100dvh; }
         *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -213,9 +201,7 @@
                     const key = await this.deriveKey(password);
                     const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
                     return new TextDecoder().decode(decrypted);
-                } catch (e) {
-                    return null;
-                }
+                } catch (e) { return null; }
             }
         };
         const Base64 = {
@@ -279,17 +265,13 @@
                 this.init();
                 this.initViewportHandler();
             }
-            escapeRegExp(str) {
-                return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            }
+            escapeRegExp(str) { return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
             initViewportHandler() {
                 if (window.visualViewport) {
                     const handleViewport = () => {
                         const vh = window.visualViewport.height;
                         document.documentElement.style.setProperty('--v-height', `${vh}px`);
-                        if (document.activeElement === this.editor) {
-                            this.editor.scrollIntoView({ block: 'nearest' });
-                        }
+                        if (document.activeElement === this.editor) this.editor.scrollIntoView({ block: 'nearest' });
                     };
                     window.visualViewport.addEventListener('resize', handleViewport);
                     window.visualViewport.addEventListener('scroll', handleViewport);
@@ -317,10 +299,7 @@
             async init() {
                 try {
                     const pwd = sessionStorage.getItem('editor_pwd');
-                    if (!pwd) {
-                        window.location.href = 'index.html';
-                        return;
-                    }
+                    if (!pwd) return window.location.href = 'index.html';
                     this.log('正在加载系统配置...', 'info', true);
                     const res = await fetch('config.toml');
                     if (!res.ok) throw new Error(`config.toml load failed: ${res.status}`);
@@ -333,15 +312,25 @@
                                 this.syntaxRules = synData.rules || [];
                                 if (this.syntaxRules.length > 0 || synData.global_css) {
                                     const style = document.createElement('style');
-                                    const globalCss = synData.global_css || '';
-                                    const ruleCss = this.syntaxRules.map(r => r.css).filter(Boolean).join('\n');
-                                    style.textContent = `${globalCss}\n${ruleCss}`;
+                                    style.textContent = `${synData.global_css || ''}\n${this.syntaxRules.map(r => r.css).filter(Boolean).join('\n')}`;
                                     document.head.appendChild(style);
-                                    const viewTemplates = synData.view_templates || {};
-                                    const mergeMap = synData.merge_groups || {};
+                                    
+                                    const viewTemplates = (synData.view_templates || []).reduce((a, t) => {
+                                        const k = t.type || t.id || t.name || Object.keys(t)[0];
+                                        const v = t.template || t.html || Object.values(t)[0];
+                                        if (k) a[k] = v;
+                                        return a;
+                                    }, {});
+                                    
+                                    const mg = synData.merge_groups;
+                                    const mergeMap = Array.isArray(mg) ? mg.reduce((a, g) => {
+                                        const k = g.id || g.group || g.name || Object.keys(g)[0];
+                                        if (k) a[k] = g;
+                                        return a;
+                                    }, {}) : (mg || {});
+                                    
                                     const groups = [];
                                     const groupCache = new Map();
-
                                     this.syntaxRules.forEach(r => {
                                         if (r.group) {
                                             if (!groupCache.has(r.group)) {
@@ -350,51 +339,31 @@
                                                 groupCache.set(r.group, newGroup);
                                             }
                                             groupCache.get(r.group).rules.push(r);
-                                        } else {
-                                            groups.push({ rules: [r] });
-                                        }
+                                        } else groups.push({ rules: [r] });
                                     });
+                                    
                                     const getInnerHtml = (type, val) => {
-                                        let tpl = viewTemplates[type];
+                                        const tpl = viewTemplates[type];
                                         if (!tpl) return val || '';
                                         if (typeof val === 'object' && val !== null) {
-                                            return Object.entries(val).reduce((acc, [k, v]) =>
-                                                acc.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'gi'), String(v)), tpl);
+                                            return Object.entries(val).reduce((acc, [k, v]) => acc.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'gi'), String(v)), tpl);
                                         }
                                         return tpl.replace(/\{\{value\}\}/gi, String(val || ''));
                                     };
-                                    const btnHtml = groups.map(g => {
+                                    
+                                    document.getElementById('dynamic-fmt-btns').innerHTML = groups.map(g => {
                                         if (g.id) {
                                             const conf = mergeMap[g.id] || { title: g.id, icon_html: '<i class="ri-function-line"></i>' };
-                                            const menuHtml = g.rules.map(r =>
-                                                `<button class="fmt-btn fmt-action" style="padding:0.35rem;" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}">${getInnerHtml(r.view_type, r.view_value)}</button>`
-                                            ).join('');
-                                            return `<div class="fmt-dropdown-container">
-                                                        <button class="fmt-btn fmt-dropdown-toggle" title="${conf.title || ''}">${conf.icon_html || ''}</button>
-                                                        <div class="dropdown-menu">${menuHtml}</div>
-                                                    </div>`;
+                                            const menuHtml = g.rules.map(r => `<button class="fmt-btn fmt-action" style="padding:0.35rem;" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}">${getInnerHtml(r.view_type, r.view_value)}</button>`).join('');
+                                            return `<div class="fmt-dropdown-container"><button class="fmt-btn fmt-dropdown-toggle" title="${conf.title || ''}">${conf.icon_html || ''}</button><div class="dropdown-menu">${menuHtml}</div></div>`;
                                         }
-                                        return g.rules.map(r =>
-                                            `<button class="fmt-btn fmt-action" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}">${getInnerHtml(r.view_type, r.view_value)}</button>`
-                                        ).join('');
+                                        return g.rules.map(r => `<button class="fmt-btn fmt-action" data-type="wrap" data-prefix="${r.prefix}" data-suffix="${r.suffix}" title="${r.title}">${getInnerHtml(r.view_type, r.view_value)}</button>`).join('');
                                     }).join('');
-                                    document.getElementById('dynamic-fmt-btns').innerHTML = btnHtml;
-                                } else {
-                                    this.log('语法配置已加载，但未检测到有效的 [rules]，请检查 syntax_config 内容', 'info');
-                                }
-                            } else {
-                                this.log(`语法配置拉取失败 (HTTP ${synRes.status})，请检查 syntax_config 路径`, 'error');
-                            }
-                        } catch(e) {
-                            this.log(`语法配置解析异常: ${e.message}，请确保格式正确`, 'error');
-                        }
-                    } else {
-                        this.log('提示: 未配置 syntax_config，快捷语法已禁用。如需富文本扩展请配置该项', 'info');
-                    }
-                    if (!this.sysConfig.editor_config) {
-                        this.log('系统配置 config.toml 缺少 [editor_config] 字段', 'error');
-                        return;
-                    }
+                                } else this.log('语法配置已加载，但未检测到有效的 [rules]，请检查 syntax_config 内容', 'info');
+                            } else this.log(`语法配置拉取失败 (HTTP ${synRes.status})，请检查 syntax_config 路径`, 'error');
+                        } catch(e) { this.log(`语法配置解析异常: ${e.message}，请确保格式正确`, 'error'); }
+                    } else this.log('提示: 未配置 syntax_config，快捷语法已禁用。如需富文本扩展请配置该项', 'info');
+                    if (!this.sysConfig.editor_config) return this.log('系统配置 config.toml 缺少 [editor_config] 字段', 'error');
                     this.log('正在解密鉴权配置...', 'info', true);
                     const eRes = await fetch(this.sysConfig.editor_config);
                     const raw = (await eRes.text()).trim();
@@ -403,14 +372,12 @@
                         this.authConfig = parse(decrypted);
                         const reqKeys = ['github_user', 'github_repo', 'github_token', 'commit_user', 'commit_email'];
                         if (reqKeys.some(k => !this.authConfig[k])) {
-                            this.log('配置缺少关键字段，核心功能不可用', 'error');
                             this.editor.disabled = true;
-                            return;
+                            return this.log('配置缺少关键字段，核心功能不可用', 'error');
                         }
                         if (!this.authConfig.data_path && !this.authConfig.private_path) {
-                            this.log('未配置任何数据路径，请检查配置', 'error');
                             this.editor.disabled = true;
-                            return;
+                            return this.log('未配置任何数据路径，请检查配置', 'error');
                         }
                         this.log('配置就绪', 'success');
                         this.updateViewIcon();
@@ -422,45 +389,25 @@
                         sessionStorage.removeItem('editor_pwd');
                         window.location.href = 'index.html';
                     }
-                } catch (e) {
-                    this.log(`初始化失败: ${e.message || '未知错误'}`, 'error');
-                }
+                } catch (e) { this.log(`初始化失败: ${e.message || '未知错误'}`, 'error'); }
             }
             updateViewIcon() {
                 const isActive = this.workspace.classList.contains('split-mode');
                 const icon = this.btnSplit.querySelector('i');
-                if (window.innerWidth <= 768) {
-                    icon.className = isActive ? 'ri-edit-line' : 'ri-eye-line';
-                } else {
-                    icon.className = 'ri-layout-column-line';
-                }
+                window.innerWidth <= 768 ? icon.className = isActive ? 'ri-edit-line' : 'ri-eye-line' : icon.className = 'ri-layout-column-line';
             }
             conditionallyUpdatePreview() {
-                if (this.workspace.classList.contains('split-mode') || window.innerWidth > 768) {
-                    this.updatePreview();
-                }
+                if (this.workspace.classList.contains('split-mode') || window.innerWidth > 768) this.updatePreview();
             }
             hasUnsavedChanges() {
-                if (this.currentMode) {
-                    this.docs[this.currentMode].content = this.editor.value;
-                }
+                if (this.currentMode) this.docs[this.currentMode].content = this.editor.value;
                 return Object.values(this.docs).some(doc => doc.loaded && doc.content !== doc.original);
             }
-            checkDirty() {
-                this.btnSave.style.color = this.hasUnsavedChanges() ? 'var(--rose-ellipsis)' : '';
-            }
+            checkDirty() { this.btnSave.style.color = this.hasUnsavedChanges() ? 'var(--rose-ellipsis)' : ''; }
             bindFormatters() {
-                document.getElementById('btn-undo').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.editor.focus();
-                    document.execCommand('undo');
-                });
-                document.getElementById('btn-redo').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.editor.focus();
-                    document.execCommand('redo');
-                });
-                document.getElementById('btn-locate').addEventListener('click', (e) => {
+                document.getElementById('btn-undo').addEventListener('click', e => { e.preventDefault(); this.editor.focus(); document.execCommand('undo'); });
+                document.getElementById('btn-redo').addEventListener('click', e => { e.preventDefault(); this.editor.focus(); document.execCommand('redo'); });
+                document.getElementById('btn-locate').addEventListener('click', e => {
                     e.preventDefault();
                     if (!this.workspace.classList.contains('split-mode') && window.innerWidth <= 768) {
                         this.workspace.classList.add('split-mode');
@@ -470,25 +417,19 @@
                     const textBefore = this.editor.value.substring(0, this.editor.selectionStart);
                     const index = textBefore.split('\n---\n').length - 1;
                     const items = this.preview.querySelectorAll('.preview-item');
-                    if (items[index]) {
-                        items[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
+                    if (items[index]) items[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
                 });
                 document.querySelectorAll('.fmt-action').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
+                    btn.addEventListener('click', e => {
                         e.preventDefault();
-                        const type = btn.dataset.type;
-                        const pre = btn.dataset.prefix;
-                        const suf = btn.dataset.suffix;
+                        const { type, prefix: pre, suffix: suf } = btn.dataset;
                         const start = this.editor.selectionStart;
                         const end = this.editor.selectionEnd;
                         const selected = this.editor.value.substring(start, end);
                         const replacement = pre + selected + suf;
                         this.editor.focus();
                         this.editor.setSelectionRange(start, end);
-                        if (!document.execCommand('insertText', false, replacement)) {
-                            this.editor.setRangeText(replacement, start, end, 'end');
-                        }
+                        if (!document.execCommand('insertText', false, replacement)) this.editor.setRangeText(replacement, start, end, 'end');
                         if (type === 'link') {
                             const pos = start + pre.length + selected.length + 2;
                             this.editor.setSelectionRange(pos, pos);
@@ -502,11 +443,8 @@
             }
             bindEvents() {
                 this.btnConsoleToggle.addEventListener('click', () => this.consolePanel.classList.toggle('active'));
-                document.getElementById('btn-clear-console').addEventListener('click', () => {
-                    this.consoleLogs.innerHTML = '';
-                    this.log('控制台已清空', 'info');
-                });
-                this.btnCancel.addEventListener('click', (e) => {
+                document.getElementById('btn-clear-console').addEventListener('click', () => { this.consoleLogs.innerHTML = ''; this.log('控制台已清空', 'info'); });
+                this.btnCancel.addEventListener('click', e => {
                     e.stopPropagation();
                     if (this.fetchController) {
                         this.fetchController.abort();
@@ -528,11 +466,9 @@
                 });
                 window.addEventListener('resize', () => {
                     this.updateViewIcon();
-                    if (window.innerWidth > 768 && this.editor.value !== this.docs[this.currentMode].original) {
-                        this.updatePreview();
-                    }
+                    if (window.innerWidth > 768 && this.editor.value !== this.docs[this.currentMode].original) this.updatePreview();
                 });
-                this.preview.addEventListener('click', (e) => {
+                this.preview.addEventListener('click', e => {
                     const link = e.target.closest('a.card-link');
                     if (link) {
                         const href = link.getAttribute('href');
@@ -554,7 +490,7 @@
                     this.conditionallyUpdatePreview();
                     this.checkDirty();
                 });
-                this.editor.addEventListener('paste', (e) => {
+                this.editor.addEventListener('paste', e => {
                     const items = (e.clipboardData || window.clipboardData).items;
                     let hasImage = false;
                     for (let i = 0; i < items.length; i++) {
@@ -582,11 +518,8 @@
                     this.currentDiffIndex = (this.currentDiffIndex + 1) % this.diffNodes.length;
                     this.scrollToDiff(this.currentDiffIndex);
                 });
-                document.getElementById('btn-upload-img').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    document.getElementById('file-upload-input').click();
-                });
-                document.getElementById('file-upload-input').addEventListener('change', (e) => {
+                document.getElementById('btn-upload-img').addEventListener('click', e => { e.preventDefault(); document.getElementById('file-upload-input').click(); });
+                document.getElementById('file-upload-input').addEventListener('change', e => {
                     if (e.target.files && e.target.files[0]) {
                         this.prepareUpload(e.target.files[0], true);
                         e.target.value = '';
@@ -599,18 +532,16 @@
                     if (this.savedSelection) this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
                 });
                 document.getElementById('btn-upload-confirm').addEventListener('click', () => this.executeUpload());
-                this.btnTag.addEventListener('click', (e) => {
+                this.btnTag.addEventListener('click', e => {
                     e.preventDefault();
                     e.stopPropagation();
                     const start = this.editor.selectionStart;
                     const end = this.editor.selectionEnd;
-                    if (!document.execCommand('insertText', false, '#')) {
-                        this.editor.setRangeText('#', start, end, 'end');
-                    }
+                    if (!document.execCommand('insertText', false, '#')) this.editor.setRangeText('#', start, end, 'end');
                     this.editor.dispatchEvent(new Event('input'));
                     this.showTagDropdown();
                 });
-                this.tagDropdown.addEventListener('click', (e) => {
+                this.tagDropdown.addEventListener('click', e => {
                     if (e.target.classList.contains('tag-item')) {
                         const tagText = e.target.dataset.tag;
                         this.editor.focus();
@@ -622,23 +553,15 @@
                         this.tagDropdown.classList.remove('active');
                     }
                 });
-                document.addEventListener('click', (e) => {
-                    if (!e.target.closest('#tag-dropdown') && !e.target.closest('#btn-tag')) {
-                        this.tagDropdown.classList.remove('active');
-                    }
-                    if (!e.target.closest('#console-panel') && !e.target.closest('#status-bar')) {
-                        this.consolePanel.classList.remove('active');
-                    }
+                document.addEventListener('click', e => {
+                    if (!e.target.closest('#tag-dropdown') && !e.target.closest('#btn-tag')) this.tagDropdown.classList.remove('active');
+                    if (!e.target.closest('#console-panel') && !e.target.closest('#status-bar')) this.consolePanel.classList.remove('active');
                     const toggle = e.target.closest('.fmt-dropdown-toggle');
-                    document.querySelectorAll('.dropdown-menu').forEach(menu => {
-                        if (toggle && toggle.nextElementSibling === menu) return; 
-                        menu.classList.remove('active');
-                    });
+                    document.querySelectorAll('.dropdown-menu').forEach(menu => { if (!toggle || toggle.nextElementSibling !== menu) menu.classList.remove('active'); });
                     if (toggle) {
                         e.preventDefault();
                         const menu = toggle.nextElementSibling;
-                        const isActive = menu.classList.contains('active');
-                        if (!isActive) {
+                        if (!menu.classList.contains('active')) {
                             menu.style.setProperty('--shift-x', '-50%'); 
                             const toggleRect = toggle.getBoundingClientRect();
                             const vw = window.innerWidth;
@@ -646,28 +569,18 @@
                             const expectedLeft = toggleRect.left + (toggleRect.width / 2) - (menuWidth / 2);
                             const expectedRight = expectedLeft + menuWidth;
                             let shift = 0;
-                            if (expectedLeft < 5) {
-                                shift = 5 - expectedLeft;
-                            } else if (expectedRight > vw - 5) {
-                                shift = (vw - 5) - expectedRight;
-                            }
-                            if (shift !== 0) {
-                                menu.style.setProperty('--shift-x', `calc(-50% + ${shift}px)`);
-                            }
+                            if (expectedLeft < 5) shift = 5 - expectedLeft;
+                            else if (expectedRight > vw - 5) shift = (vw - 5) - expectedRight;
+                            if (shift !== 0) menu.style.setProperty('--shift-x', `calc(-50% + ${shift}px)`);
                             menu.classList.add('active');
                         }
                     }
                 });
-                document.addEventListener('mousedown', (e) => {
-                    if (e.target.closest('.fmt-btn') || e.target.closest('.dropdown-menu') || e.target.closest('.tag-item')) {
-                        e.preventDefault();
-                    }
+                document.addEventListener('mousedown', e => {
+                    if (e.target.closest('.fmt-btn') || e.target.closest('.dropdown-menu') || e.target.closest('.tag-item')) e.preventDefault();
                 });
-                window.addEventListener('beforeunload', (e) => {
-                    if (this.hasUnsavedChanges()) {
-                        e.preventDefault();
-                        e.returnValue = '';
-                    }
+                window.addEventListener('beforeunload', e => {
+                    if (this.hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; }
                 });
             }
             showTagDropdown() {
@@ -713,10 +626,7 @@
                 this.activeDiffView.scrollTop = this.diffNodes[index].offsetTop - 20;
             }
             prepareUpload(file, isManual = false) {
-                if (!this.authConfig.image?.api_url || !this.authConfig.image?.api_key) {
-                    this.log('图片上传失败：缺少 api_url 或 api_key 配置', 'error');
-                    return;
-                }
+                if (!this.authConfig.image?.api_url || !this.authConfig.image?.api_key) return this.log('图片上传失败：缺少 api_url 或 api_key 配置', 'error');
                 this.isManualUpload = isManual;
                 this.savedSelection = { start: this.editor.selectionStart, end: this.editor.selectionEnd };
                 this.pendingUploadFile = file;
@@ -736,11 +646,8 @@
                 setTimeout(() => {
                     this.uploadPath.focus();
                     const dotIndex = this.uploadPath.value.lastIndexOf('.');
-                    if (dotIndex > -1) {
-                        this.uploadPath.setSelectionRange(cleanDir.length ? cleanDir.length + 1 : 0, dotIndex);
-                    } else {
-                        this.uploadPath.setSelectionRange(this.uploadPath.value.length, this.uploadPath.value.length);
-                    }
+                    if (dotIndex > -1) this.uploadPath.setSelectionRange(cleanDir.length ? cleanDir.length + 1 : 0, dotIndex);
+                    else this.uploadPath.setSelectionRange(this.uploadPath.value.length, this.uploadPath.value.length);
                 }, 100);
             }
             async executeUpload() {
@@ -756,13 +663,9 @@
                 this.editor.focus();
                 if (this.savedSelection) this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
                 if (this.isManualUpload) {
-                    navigator.clipboard.writeText(insertText).then(() => {
-                        this.log('已提取图片链接并复制到剪贴板', 'success');
-                    }).catch(() => this.log('剪贴板写入失败', 'error'));
+                    navigator.clipboard.writeText(insertText).then(() => this.log('已提取图片链接并复制到剪贴板', 'success')).catch(() => this.log('剪贴板写入失败', 'error'));
                 } else {
-                    if (!document.execCommand('insertText', false, insertText)) {
-                        this.editor.setRangeText(insertText, this.editor.selectionStart, this.editor.selectionEnd, 'end');
-                    }
+                    if (!document.execCommand('insertText', false, insertText)) this.editor.setRangeText(insertText, this.editor.selectionStart, this.editor.selectionEnd, 'end');
                     this.editor.dispatchEvent(new Event('input'));
                 }
                 this.log(`准备异步上传图片: ${cleanPath}`, 'info', true);
@@ -773,14 +676,9 @@
                         headers: { 'Authorization': `Bearer ${this.authConfig.image?.api_key}` },
                         body: fileToUpload
                     });
-                    if (res.ok) {
-                        this.log(`图片上传成功: ${cleanPath} | 远端响应: ${await res.text()}`, 'success');
-                    } else {
-                        throw new Error(`HTTP Error: ${res.status} | ${await res.text()}`);
-                    }
-                } catch (e) {
-                    this.log(`图片上传失败: ${e.message}`, 'error');
-                }
+                    if (res.ok) this.log(`图片上传成功: ${cleanPath} | 远端响应: ${await res.text()}`, 'success');
+                    else throw new Error(`HTTP Error: ${res.status} | ${await res.text()}`);
+                } catch (e) { this.log(`图片上传失败: ${e.message}`, 'error'); }
             }
             parseDreamSyntax(raw) {
                 const isAsc = this.sysConfig?.data_order === 'asc';
@@ -791,16 +689,10 @@
                     const lines = block.split('\n');
                     const date = lines.shift().trim();
                     const imgStore = [], linkStore = [];
-                    if (lines.length > 0) {
-                        lines[0] = lines[0].replace(/#([^\s#]+)/g, (_, tag) => `<span class="card-tag">#${tag}</span>`);
-                    }
+                    if (lines.length > 0) lines[0] = lines[0].replace(/#([^\s#]+)/g, (_, tag) => `<span class="card-tag">#${tag}</span>`);
                     let p = lines.join('\n');
-                    p = p.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
-                        imgStore.push({ alt, url }); return `__IMG_${imgStore.length - 1}__`;
-                    });
-                    p = p.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
-                        linkStore.push({ text, url }); return `__LNK_${linkStore.length - 1}__`;
-                    });
+                    p = p.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => { imgStore.push({ alt, url }); return `__IMG_${imgStore.length - 1}__`; });
+                    p = p.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => { linkStore.push({ text, url }); return `__LNK_${linkStore.length - 1}__`; });
                     p = p.replace(/(https?:\/\/[^\s<]+)/g, (match, url) => {
                         let cleanUrl = url, trailing = '';
                         const matchPunc = url.match(/([.,;:!?。，、！？]+)$/);
@@ -838,9 +730,7 @@
                     return `<div class="preview-item" id="preview-post-${id}"><div class="preview-date">${date}</div><div class="preview-card"><span class="preview-card-id">#${id}</span>${finalHtml}</div></div>`;
                 }).join('');
             }
-            updatePreview() {
-                this.preview.innerHTML = this.parseDreamSyntax(this.editor.value);
-            }
+            updatePreview() { this.preview.innerHTML = this.parseDreamSyntax(this.editor.value); }
             async loadTarget(mode) {
                 if (this.currentMode) this.docs[this.currentMode].content = this.editor.value;
                 if (this.fetchController) this.fetchController.abort();
@@ -855,19 +745,12 @@
                     return;
                 }
                 const path = mode === 'public' ? this.authConfig.data_path : this.authConfig.private_path;
-                if (!path) {
-                    this.log(`未配置 ${mode} 对应的远端路径，操作已中断`, 'error');
-                    return;
-                }
+                if (!path) return this.log(`未配置 ${mode} 对应的远端路径，操作已中断`, 'error');
                 this.log(`正在从远端拉取数据...`, 'info', true);
                 this.editor.disabled = true;
                 try {
                     const res = await fetch(`https://api.github.com/repos/${this.authConfig.github_user}/${this.authConfig.github_repo}/contents/${path}`, {
-                        headers: {
-                            'Accept': 'application/vnd.github+json',
-                            'Authorization': `Bearer ${this.authConfig.github_token}`,
-                            'X-GitHub-Api-Version': '2022-11-28'
-                        },
+                        headers: { 'Accept': 'application/vnd.github+json', 'Authorization': `Bearer ${this.authConfig.github_token}`, 'X-GitHub-Api-Version': '2022-11-28' },
                         signal: this.fetchController.signal
                     });
                     if (res.status === 404) {
@@ -880,9 +763,7 @@
                         this.docs[mode] = { content: text, original: text, sha: data.sha, loaded: true };
                         this.editor.value = text;
                         this.log(`数据加载完成`, 'success');
-                    } else {
-                        throw new Error(`HTTP Error: ${res.status} - ${await res.text()}`);
-                    }
+                    } else throw new Error(`HTTP Error: ${res.status} - ${await res.text()}`);
                 } catch (e) {
                     if (e.name !== 'AbortError') this.log(`数据拉取失败: ${e.message}`, 'error');
                 } finally {
@@ -899,14 +780,10 @@
                     const lines = part.value.replace(/\n$/, '').split('\n');
                     if (part.added || part.removed) {
                         if (!inChunk) { inChunk = true; chunkHtml = '<div class="diff-chunk">'; }
-                        lines.forEach(line => {
-                            chunkHtml += `<div class="diff-line ${part.added ? 'diff-add' : 'diff-remove'}">${part.added ? '+' : '-'} ${line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`;
-                        });
+                        lines.forEach(line => { chunkHtml += `<div class="diff-line ${part.added ? 'diff-add' : 'diff-remove'}">${part.added ? '+' : '-'} ${line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`; });
                     } else {
                         if (inChunk) { chunkHtml += '</div>'; html += chunkHtml; inChunk = false; }
-                        lines.forEach(line => {
-                            html += `<div class="diff-line diff-normal">  ${line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`;
-                        });
+                        lines.forEach(line => { html += `<div class="diff-line diff-normal">  ${line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`; });
                     }
                 });
                 return html + (inChunk ? chunkHtml + '</div>' : '');
@@ -929,9 +806,7 @@
                     const now = new Date();
                     const localISOTime = (new Date(now - now.getTimezoneOffset() * 60000)).toISOString().slice(0, 19).replace('T', ' ');
                     this.commitTitle.value = this.authConfig.commit_msg.replace('{{yyyy-mm-dd hh:mm:ss}}', localISOTime);
-                } else {
-                    this.commitTitle.value = '';
-                }
+                } else this.commitTitle.value = '';
                 this.commitDesc.value = '';
                 this.commitModal.classList.add('active');
             }
@@ -954,12 +829,7 @@
                         if (this.docs[mode].sha) payload.sha = this.docs[mode].sha;
                         const res = await fetch(`https://api.github.com/repos/${this.authConfig.github_user}/${this.authConfig.github_repo}/contents/${path}`, {
                             method: 'PUT',
-                            headers: {
-                                'Accept': 'application/vnd.github+json',
-                                'Authorization': `Bearer ${this.authConfig.github_token}`,
-                                'Content-Type': 'application/json',
-                                'X-GitHub-Api-Version': '2022-11-28'
-                            },
+                            headers: { 'Accept': 'application/vnd.github+json', 'Authorization': `Bearer ${this.authConfig.github_token}`, 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2022-11-28' },
                             body: JSON.stringify(payload),
                             signal: this.fetchController.signal
                         });
@@ -968,9 +838,7 @@
                             this.docs[mode].sha = data.content.sha;
                             this.docs[mode].original = this.docs[mode].content;
                             this.log(`保存成功: 数据已同步`, 'success');
-                        } else {
-                            throw new Error(`HTTP Error: ${res.status} - ${await res.text()}`);
-                        }
+                        } else throw new Error(`HTTP Error: ${res.status} - ${await res.text()}`);
                     }
                 } catch (e) {
                     if (e.name !== 'AbortError') this.log(`保存中断: ${e.message}`, 'error');
