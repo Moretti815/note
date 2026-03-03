@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
+readonly BLUE=$'\e[34m'
+readonly GREEN=$'\e[32m'
+readonly OFF=$'\e[0m'
+
 readonly REPO="https://raw.githubusercontent.com/miniyu157/petal-note/main"
 PATH_PART=${REPO#https://raw.githubusercontent.com/}
 _user=${PATH_PART%%/*} _repo=${PATH_PART#*/} _repo=${_repo%%/*}
@@ -11,12 +15,30 @@ mkdir -p "public/assets"
 
 printf "仓库: github.com/%s\n" "$_src"
 
-printf "拉取模板文件 ...\n"
+printf "%s\n" "${GREEN}1${OFF} 拉取模板文件 ..."
 curl -fsSL "$REPO/public/config.toml" -o "public/config.toml"
-curl -fsSL "$REPO/public/syntax.toml" -o "public/syntax.toml"
 curl -fsSL "$REPO/editor.toml" -o "editor.toml"
 
-printf "创建数据模板 ...\n"
+_fetched_syntax=0
+
+cat << EOF
+  ${BLUE}?${OFF} 拉取预设语法文件 'syntax.toml'?
+    推荐跟随仓库更新, 除非你有手写特殊语法的需求。
+    选择 y 将拉取 'syntax.toml' 并加入版本控制，选择 n 将不拉取并加入 .gitignore。
+EOF
+printf "%s" "  ${BLUE}:${OFF} 是否拉取? (Y/n) [=N]: "
+read -r answer < /dev/tty || answer="N"
+: "${answer:=N}"
+if [[ $answer =~ ^[Yy]$ ]]; then
+    curl -fsSL "$REPO/public/syntax.toml" -o "public/syntax.toml"
+    _fetched_syntax=1
+else
+    cat << 'EOF' >> ".gitignore"
+public/syntax.toml
+EOF
+fi
+
+printf "%s\n" "${GREEN}2${OFF} 创建数据模板 ..."
 cat << 'EOF' > ".env"
 KEY_private_source="admin"
 KEY_editor_config="admin"
@@ -41,15 +63,12 @@ Petal Note
 更多信息，请查看 [仓库地址](https://github.com/miniyu157/petal-note?tab=readme-ov-file#-%E7%A7%98%E5%AF%86%E6%97%B6%E9%97%B4%E7%BA%BF)
 EOF
 
-exec 3< /dev/tty
-printf "初始化 git 仓库 ...\n"
-printf "是否创建推荐的 .gitignore 配置? (Y/n): "
-
-read -u 3 -r answer || answer="Y"
-
-answer=${answer:-Y}
+printf "%s\n" "${GREEN}3${OFF} 初始化 git 仓库 ..."
+printf "%s" "  ${BLUE}:${OFF} 是否创建推荐的 .gitignore 配置? (Y/n) [=Y]: "
+read -r answer < /dev/tty || answer="Y"
+: "${answer:=Y}"
 [[ $answer =~ ^[Yy]$ ]] && {
-    cat << 'EOF' > ".gitignore"
+    cat << 'EOF' >> ".gitignore"
 .venv/
 .vscode/
 
@@ -60,20 +79,23 @@ public/editor.toml
 public/private.txt
 EOF
 }
-exec 3<&-
+
 git init -b main > /dev/null 2>&1 || true
 git add . > /dev/null 2>&1 || true
 git commit -m "init petal note project" > /dev/null 2>&1 || true
 
+deploy_args=("index.html")
+
+((_fetched_syntax != 1)) && deploy_args+=("syntax.toml")
+
 cat << EOF
 
-欢迎使用 Petal Note!
-
+欢迎使用 Petal Note！
 你已经成功初始化了一个空项目。
 
 部署命令：
 
-  curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/build.sh | bash -e
+  curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/build.sh | bash -e -s -- ${deploy_args[*]}
 
 部署完成后可以启动本地服务器预览效果。
 EOF
