@@ -60,12 +60,15 @@ curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/c
 2. 在部署设置中, 将 **Build command** 设置为:
 
     ```bash
-    curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/ce399ea/scripts/build.sh | bash -e
+    curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/e310ca1/scripts/build.sh | bash -e -s -- index.html syntax.toml
     ```
 
-    [提交 ce399ea - build.sh](https://github.com/miniyu157/petal-note/commit/ce399ea)
+    [提交 e310ca1 - build.sh](https://github.com/miniyu157/petal-note/commit/e310ca1)
 
 3. 将构建输出目录 **Output Directory** 设置为 `public`
+
+> [!NOTE]
+> 如果希望手动配置语法文件, 而不是跟随仓库更新, 则去掉 **Build command** 末尾的 `syntax.toml`
 
 这样, 你的仓库触发 `Deploy` 时, 都会自动拉取并注入最新版本的 Petal Note 骨架, 同时自动处理各种文件的加密与分发, 均在 `config.toml` 中设置, 个人内容仓库保持纯净
 
