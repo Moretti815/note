@@ -14,8 +14,11 @@ mkdir -p "public"
 
 printf "仓库: github.com/%s\n" "$_src"
 
-printf "拉取 index.html...\n"
-curl -fsSL "$REPO/public/index.html" -o "public/index.html"
+for item in "$@"; do
+    target_path="public/${item}"
+    printf "拉取 %s...\n" "$item"
+    curl -fsSL "${REPO}/${target_path}" -o "$target_path" --create-dirs
+done
 
 mapfile -t PARSED_ITEMS < <(python3 -c '
 import sys, tomllib
@@ -50,6 +53,7 @@ if ((${#TARGET_FILES[@]} > 0)); then
     printf "拉取 cipher-thoughts.py...\n"
     curl -fsSL "$REPO/scripts/cipher-thoughts.py" -o "cipher-thoughts.py"
 
+    printf "准备 Python 环境...\n"
     unset PYTHONPATH
     python3 -m venv .venv
     .venv/bin/pip install -q cryptography
