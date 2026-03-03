@@ -292,6 +292,18 @@ title = "淡绿高亮"
 view_type = "color"
 view_value = "#ebfbee"
 
+[[rules]]
+regex = '\{bg-([A-Za-z0-9#\(\),.\s]+)\}(.*?)\{/bg\}'
+flags = "gs"
+prefix = "{bg-#fff3bf}"
+suffix = "{/bg}"
+replacement = '<span style="background-color: color-mix(in srgb, $1, transparent 60%); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid color-mix(in srgb, $1 60%, var(--text-main) 40%);">$2</span>'
+group = "color"
+title = "自定义颜色高亮"
+view_type = "color"
+view_value = "conic-gradient(from 90deg, #ff8787, #faa2c1, #e599f7, #74c0fc, #8ce99a, #ffd43b, #ff8787)"
+
+
 ####################
 
 [merge_groups.fg_color]
@@ -357,6 +369,17 @@ group = "fg_color"
 title = "紫色"
 view_type = "fg_color"
 view_value = "#cb48e8"
+
+[[rules]]
+regex = '\{fg-([A-Za-z0-9#\(\),.\s]+)\}(.*?)\{/fg\}'
+flags = "gs"
+prefix = "{fg-#cb48e8}"
+suffix = "{/fg}"
+replacement = '<span style="color: $1; font-weight: inherit;">$2</span>'
+group = "fg_color"
+title = "自定义文字颜色"
+view_type = "html"
+view_value = """<i class="ri-palette-line" style="background-image: linear-gradient(to right, #ff8787, #ffd43b, #8ce99a, #74c0fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.1rem;"></i>"""
 
 ####################
 
