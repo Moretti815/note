@@ -128,6 +128,42 @@ title = "粉色马克笔"
 view_type = "marker_group"
 view_value = "#ffc1cc"
 
+[[rules]]
+prefix = "{m_g}"
+suffix = "{/m_g}"
+replacement = '<mark class="marker-green">$1</mark>'
+css = ".marker-green { background: linear-gradient(to bottom, transparent 60%, #c8e6c9 60%); padding: 0 2px; }"
+title = "绿色马克笔"
+view_type = "marker_group"
+view_value = "#c8e6c9"
+
+[[rules]]
+prefix = "{m_b}"
+suffix = "{/m_b}"
+replacement = '<mark class="marker-blue">$1</mark>'
+css = ".marker-blue { background: linear-gradient(to bottom, transparent 60%, #bbdefb 60%); padding: 0 2px; }"
+title = "蓝色马克笔"
+view_type = "marker_group"
+view_value = "#bbdefb"
+
+[[rules]]
+prefix = "{m_u}"
+suffix = "{/m_u}"
+replacement = '<mark class="marker-purple">$1</mark>'
+css = ".marker-purple { background: linear-gradient(to bottom, transparent 60%, #e1bee7 60%); padding: 0 2px; }"
+title = "紫色马克笔"
+view_type = "marker_group"
+view_value = "#e1bee7"
+
+[[rules]]
+prefix = "{m_o}"
+suffix = "{/m_o}"
+replacement = '<mark class="marker-orange">$1</mark>'
+css = ".marker-orange { background: linear-gradient(to bottom, transparent 60%, #ffe0b2 60%); padding: 0 2px; }"
+title = "橙色马克笔"
+view_type = "marker_group"
+view_value = "#ffe0b2"
+
 ####################
 
 [[rules]]
