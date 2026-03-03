@@ -235,9 +235,7 @@ Petal Note 支持基于正则表达式的复杂自定义规则
 > [!NOTE]
 > 当使用正则表达式模式时, 通常也需要设置 `prefix` 和 `suffix` 字段, 此时仅生效与编辑器工具栏的文本插入功能
 
-*用法示例:*
-
-以下这个例子允许渲染十六进制背景色, 还设置了 `flags = "gs"` 以跨行匹配
+*示例:* 允许渲染十六进制背景色, 还设置了 `flags = "gs"` 以跨行匹配
 
 ```toml
 [[rules]]
@@ -245,6 +243,30 @@ regex = '\{bg-([A-Za-z0-9#\(\),.\s]+)\}(.*?)\{/bg\}'
 flags = "gs"
 replacement = '<span style="background-color: color-mix(in srgb, $1, transparent 60%); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid color-mix(in srgb, $1 60%, var(--text-main) 40%);">$2</span>'
 group = "color"
+```
+
+*示例:* 复刻 Markdown 标题层级语法
+
+```toml
+global_css = """
+.md-h { font-family: ui-monospace, monospace; color: var(--text-main); line-height: 1.3; }
+.md-h1 { font-size: 1.8rem; font-weight: 800; margin: 1.5em 0 0.8em; }
+"""
+
+[merge_groups.headings]
+title = "标题层级"
+icon_html = '<i class="ri-heading"></i><i class="ri-arrow-down-s-line" style="font-size: 0.8em; margin-left: -2px;"></i>'
+
+[[rules]]
+regex = "^# (.*)$"
+flags = "gm"
+prefix = "# "
+suffix = ""
+replacement = '<h1 class="md-h md-h1">$1</h1>'
+group = "headings"
+title = "一级标题"
+view_type = "icon_class"
+view_value = "ri-h-1"
 ```
 
 ### Prefix / Suffix 的默认行为
