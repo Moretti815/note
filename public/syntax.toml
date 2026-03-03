@@ -1,3 +1,17 @@
+global_css = """
+.fmt-text { font-size: 0.9rem; font-weight: 700; font-family: ui-monospace, monospace; color: var(--text-main); }
+.fmt-svg { width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center; fill: currentColor; }
+.fmt-b64 { width: 1.1rem; height: 1.1rem; object-fit: contain; pointer-events: none; }
+"""
+
+[view_templates]
+icon_class = '<i class="{{value}}"></i>'
+text = '<span class="fmt-text">{{value}}</span>'
+icon_svg = '<div class="fmt-svg">{{value}}</div>'
+icon_base64 = '<img src="{{value}}" class="fmt-b64" alt="">'
+
+####################
+
 [[merge_groups]]
 target_type = "basic_styles"
 title = "基础样式"
