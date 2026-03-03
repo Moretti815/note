@@ -190,7 +190,8 @@ export default {
 ## 🐏 自定义语法
 
 通过配置 `config.toml` 指向的 `syntax_config` 文件即可定义语法
-*以下是一个简单的示例：*
+
+*以下是一个简单的示例:*
 
 ```toml
 [[rules]]
@@ -199,11 +200,72 @@ prefix = "**"
 suffix = "**"
 
 # 填入元素
-replacement = "<strong class=\"text-bold\">$1</strong>"
+replacement = '<strong class="text-bold">$1</strong>'
 
 # 具体渲染样式
 css = ".text-bold { font-weight: 600; color: var(--text-main); }"
 ```
+
+### 🧩 正则表达式语法解析
+
+Petal Note 支持基于正则表达式的复杂自定义规则
+
+使用 `regex` 定义用于匹配目标文本的正则表达式模式, 可以使用捕获组 (如 `()`) 来提取内容，这些捕获组可以在 `replacement` 字段作为变量被引用
+
+> [!TIP]
+> 可以使用 TOML 单引号或或者块语法避免多重转义
+
+*示例*:
+  
+* `'^> (.*)$'`：匹配块引用
+* `'\[@([\w]+):([^\]]+)\]'`：匹配类似 `[@username:RealName]` 的提及语法，并包含两个捕获组
+
+`replacement` 示例: `<a class='mention' href='user/$1'>$2</a>`
+
+`flags` 字段用于确定匹配范围, 默认为 `g`, 可以组合多个标准 JavaScript RegExp 标志, 例如 `gmi`  
+*以下是关于候选值的说明*
+
+* `"g"`：全局匹配, 匹配所有符合的实例
+* `"i"`：忽略大小写, 例如 `[Aa][Bb]` 也能匹配 `ab`。
+* `"m"`：多行模式, 让 `^` 和 `$` 不仅匹配整个字符串的首尾，还能匹配每一行的首尾，通常用于处理块级结构, 如行首引用
+* `"s"`：点号包含换行符, 允许元字符 `.` 匹配包含换行符在内的任何字符，常用于跨行内容提取
+* `"u"`：Unicode 模式, 准确处理高位 Unicode 字符集 (如 Emoji)
+* `"y"`：粘连模式, 仅从确切的指定位置开始搜索匹配
+
+> [!NOTE]
+> 当使用正则表达式模式时, 通常也需要设置 `prefix` 和 `suffix` 字段, 此时仅生效与编辑器工具栏的文本插入功能
+
+*用法示例:*
+
+以下这个例子允许渲染十六进制背景色, 还设置了 `flags = "gs"` 以跨行匹配
+
+```toml
+[[rules]]
+regex = '\{bg-([A-Za-z0-9#\(\),.\s]+)\}(.*?)\{/bg\}'
+flags = "gs"
+replacement = '<span style="background-color: color-mix(in srgb, $1, transparent 60%); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid color-mix(in srgb, $1 60%, var(--text-main) 40%);">$2</span>'
+group = "color"
+```
+
+### Prefix / Suffix 的默认行为
+
+```toml
+[[rules]]
+prefix = "=="
+suffix = "=="
+replacement = "<mark>$1</mark>"
+```
+
+等同于:
+
+```toml
+[[rules]]
+regex = "(?<!\\\\)==(.+?)(?<!\\\\)=="
+flags = "gs"
+replacement = "<mark>$1</mark>"
+```
+
+仓库内预设的大多数语法都使用了简单 prefix/suffix 匹配规则, 行为和 flags = "gs" 相同, 支持跨行渲染
 
 ### 🦇 编辑器工具栏详解
 
