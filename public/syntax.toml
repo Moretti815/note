@@ -52,44 +52,44 @@ template = '<div style="width: 24px; height: 10px; background: {{value}}; opacit
 
 [merge_groups.basic_styles]
 title = "基础样式"
-icon_html = """<i class="ri-font-size-2"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>"""
+icon_html = """<i class="ri-font-size-2"></i><i class="ri-arrow-down-s-line" style="font-size: 0.8em; margin-left: -2px;"></i>"""
 
 [[rules]]
-group = "basic_styles"
 prefix = "**"
 suffix = "**"
-replacement = "<strong class=\"text-bold\">$1</strong>"
-css = ".text-bold { font-weight: 600; color: var(--text-main); }"
+replacement = '<strong class="text-bold">$1</strong>'
+css = '.text-bold { font-weight: 600; color: var(--text-main); }'
+group = "basic_styles"
 title = "加粗"
 view_type = "basic_styles"
 view_value = "ri-bold"
 
 [[rules]]
-group = "basic_styles"
 prefix = "*"
 suffix = "*"
-replacement = "<em class=\"text-italic\">$1</em>"
-css = ".text-italic { font-style: italic; opacity: 0.9; }"
+replacement = '<em class="text-italic">$1</em>'
+css = '.text-italic { font-style: italic; opacity: 0.9; }'
+group = "basic_styles"
 title = "斜体"
 view_type = "basic_styles"
 view_value = "ri-italic"
 
 [[rules]]
-group = "basic_styles"
 prefix = "~~"
 suffix = "~~"
-replacement = "<span class=\"text-strike\">$1</span>"
-css = ".text-strike { text-decoration: line-through; text-decoration-color: currentColor; text-decoration-thickness: 1px; opacity: 0.95; }"
+replacement = '<span class="text-strike">$1</span>'
+css = '.text-strike { text-decoration: line-through; text-decoration-color: currentColor; text-decoration-thickness: 1px; opacity: 0.95; }'
+group = "basic_styles"
 title = "删除线"
 view_type = "basic_styles"
 view_value = "ri-strikethrough"
 
 [[rules]]
-group = "basic_styles"
 prefix = "%%"
 suffix = "%%"
-replacement = "<span class=\"text-weak\">$1</span>"
-css = ".text-weak { color: var(--text-muted); font-size: 0.9em; opacity: 0.85; }"
+replacement = '<span class="text-weak">$1</span>'
+css = '.text-weak { color: var(--text-muted); font-size: 0.9em; opacity: 0.85; }'
+group = "basic_styles"
 title = "减弱"
 view_type = "basic_styles"
 view_value = "ri-subtract-line"
@@ -98,74 +98,74 @@ view_value = "ri-subtract-line"
 
 [merge_groups.underline_color]
 title = "彩色下划线"
-icon_html = """<i class="ri-underline"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>"""
+icon_html = """<i class="ri-underline"></i><i class="ri-arrow-down-s-line" style="font-size: 0.8em; margin-left: -2px;"></i>"""
 
 [[rules]]
-group = "underline_color"
 prefix = "++"
 suffix = "++"
-replacement = "<span class=\"text-underline\">$1</span>"
-css = ".text-underline { text-decoration: none; border-bottom: 1px solid var(--text-deco); padding-bottom: 1px; }"
+replacement = '<span class="text-underline">$1</span>'
+css = '.text-underline { text-decoration: none; border-bottom: 1px solid var(--text-deco); padding-bottom: 1px; }'
+group = "underline_color"
 title = "下划线"
 view_type = "underline_color"
 view_value = "ri-underline"
 
 [[rules]]
-group = "underline_color"
 prefix = "{u-r}"
 suffix = "{/u-r}"
-replacement = "<span class=\"u-red\">$1</span>"
-css = ".u-red { text-decoration: underline; text-decoration-color: #ff8787; text-decoration-thickness: 2px; text-underline-offset: 2px; }"
+replacement = '<span class="u-red">$1</span>'
+css = '.u-red { text-decoration: underline; text-decoration-color: #ff8787; text-decoration-thickness: 2px; text-underline-offset: 2px; }'
+group = "underline_color"
 title = "红下划线"
 view_type = "underline_color"
 view_value = "#ff8787"
 
 [[rules]]
-group = "underline_color"
 prefix = "{u-p}"
 suffix = "{/u-p}"
-replacement = "<span class=\"u-pink\">$1</span>"
-css = ".u-pink { text-decoration: underline; text-decoration-color: #faa2c1; text-decoration-thickness: 2px; text-underline-offset: 2px; }"
+replacement = '<span class="u-pink">$1</span>'
+css = '.u-pink { text-decoration: underline; text-decoration-color: #faa2c1; text-decoration-thickness: 2px; text-underline-offset: 2px; }'
+group = "underline_color"
 title = "粉下划线"
 view_type = "underline_color"
 view_value = "#faa2c1"
 
 [[rules]]
-group = "underline_color"
 prefix = "{u-g}"
 suffix = "{/u-g}"
-replacement = "<span class=\"u-green\">$1</span>"
-css = ".u-green { text-decoration: underline; text-decoration-color: #8ce99a; text-decoration-thickness: 2px; text-underline-offset: 2px; }"
+replacement = '<span class="u-green">$1</span>'
+css = '.u-green { text-decoration: underline; text-decoration-color: #8ce99a; text-decoration-thickness: 2px; text-underline-offset: 2px; }'
+group = "underline_color"
 title = "绿下划线"
 view_type = "underline_color"
 view_value = "#8ce99a"
 
 [[rules]]
-group = "underline_color"
 prefix = "{u-b}"
 suffix = "{/u-b}"
-replacement = "<span class=\"u-blue\">$1</span>"
-css = ".u-blue { text-decoration: underline; text-decoration-color: #74c0fc; text-decoration-thickness: 2px; text-underline-offset: 2px; }"
+replacement = '<span class="u-blue">$1</span>'
+css = '.u-blue { text-decoration: underline; text-decoration-color: #74c0fc; text-decoration-thickness: 2px; text-underline-offset: 2px; }'
+group = "underline_color"
 title = "蓝下划线"
 view_type = "underline_color"
 view_value = "#74c0fc"
 
 [[rules]]
-group = "underline_color"
 prefix = "{u-y}"
 suffix = "{/u-y}"
-replacement = "<span class=\"u-yellow\">$1</span>"
-css = ".u-yellow { text-decoration: underline; text-decoration-color: #ffd43b; text-decoration-thickness: 2px; text-underline-offset: 2px; }"
+replacement = '<span class="u-yellow">$1</span>'
+css = '.u-yellow { text-decoration: underline; text-decoration-color: #ffd43b; text-decoration-thickness: 2px; text-underline-offset: 2px; }'
+group = "underline_color"
 title = "黄下划线"
 view_type = "underline_color"
 view_value = "#ffd43b"
 
 [[rules]]
-group = "underline_color"
 prefix = "{u-u}"
 suffix = "{/u-u}"
-replacement = "<span class=\"u-purple\">$1</span>"
-css = ".u-purple { text-decoration: underline; text-decoration-color: #e599f7; text-decoration-thickness: 2px; text-underline-offset: 2px; }"
+replacement = '<span class="u-purple">$1</span>'
+css = '.u-purple { text-decoration: underline; text-decoration-color: #e599f7; text-decoration-thickness: 2px; text-underline-offset: 2px; }'
+group = "underline_color"
 title = "紫下划线"
 view_type = "underline_color"
 view_value = "#e599f7"
@@ -174,74 +174,74 @@ view_value = "#e599f7"
 
 [merge_groups.wavy_color]
 title = "彩色波浪线"
-icon_html = """<svg viewBox="0 0 1088 1024" width="1.2em" height="1.2em" style="vertical-align: -0.2em; fill: currentColor;"><path d="M1069.248 424.128l-73.92 116.8a80 80 0 0 1-129.664 7.68l-50.4-61.92a48 48 0 0 0-74.496 0l-56.896 69.952a80 80 0 0 1-124.128 0l-56.896-69.952a48 48 0 0 0-74.464 0l-53.92 66.272a80 80 0 0 1-126.912-3.616l-38.08-52.704a48 48 0 0 0-77.824 0l-86.976 120.32-25.92-18.784 87.008-120.256a80 80 0 0 1 129.632 0l38.08 52.672a48 48 0 0 0 76.16 2.176l53.92-66.24a80 80 0 0 1 124.16 0l56.896 69.92a48 48 0 0 0 74.464 0l56.896-69.952a80 80 0 0 1 124.128 0l50.4 61.952a48 48 0 0 0 77.76-4.64l73.92-116.8 27.072 17.12z"></path></svg><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>"""
+icon_html = """<svg viewBox="0 0 1088 1024" width="1.2em" height="1.2em" style="vertical-align: -0.2em; fill: currentColor;"><path d="M1069.248 424.128l-73.92 116.8a80 80 0 0 1-129.664 7.68l-50.4-61.92a48 48 0 0 0-74.496 0l-56.896 69.952a80 80 0 0 1-124.128 0l-56.896-69.952a48 48 0 0 0-74.464 0l-53.92 66.272a80 80 0 0 1-126.912-3.616l-38.08-52.704a48 48 0 0 0-77.824 0l-86.976 120.32-25.92-18.784 87.008-120.256a80 80 0 0 1 129.632 0l38.08 52.672a48 48 0 0 0 76.16 2.176l53.92-66.24a80 80 0 0 1 124.16 0l56.896 69.92a48 48 0 0 0 74.464 0l56.896-69.952a80 80 0 0 1 124.128 0l50.4 61.952a48 48 0 0 0 77.76-4.64l73.92-116.8 27.072 17.12z"></path></svg><i class="ri-arrow-down-s-line" style="font-size: 0.8em; margin-left: -2px;"></i>"""
 
 [[rules]]
-group = "wavy_color"
 prefix = "^^"
 suffix = "^^"
-replacement = "<span class=\"text-wavy\">$1</span>"
-css = ".text-wavy { text-decoration: underline wavy var(--text-deco); text-underline-offset: 3px; }"
+replacement = '<span class="text-wavy">$1</span>'
+css = '.text-wavy { text-decoration: underline wavy var(--text-deco); text-underline-offset: 3px; }'
+group = "wavy_color"
 title = "波浪线"
 view_type = "wavy_color"
 view_value = "var(--text-main)"
 
 [[rules]]
-group = "wavy_color"
 prefix = "{w-r}"
 suffix = "{/w-r}"
-replacement = "<span class=\"w-red\">$1</span>"
-css = ".w-red { text-decoration: underline wavy #ff8787; text-underline-offset: 3px; }"
+replacement = '<span class="w-red">$1</span>'
+css = '.w-red { text-decoration: underline wavy #ff8787; text-underline-offset: 3px; }'
+group = "wavy_color"
 title = "红波浪线"
 view_type = "wavy_color"
 view_value = "#ff8787"
 
 [[rules]]
-group = "wavy_color"
 prefix = "{w-p}"
 suffix = "{/w-p}"
-replacement = "<span class=\"w-pink\">$1</span>"
-css = ".w-pink { text-decoration: underline wavy #faa2c1; text-underline-offset: 3px; }"
+replacement = '<span class="w-pink">$1</span>'
+css = '.w-pink { text-decoration: underline wavy #faa2c1; text-underline-offset: 3px; }'
+group = "wavy_color"
 title = "粉波浪线"
 view_type = "wavy_color"
 view_value = "#faa2c1"
 
 [[rules]]
-group = "wavy_color"
 prefix = "{w-g}"
 suffix = "{/w-g}"
-replacement = "<span class=\"w-green\">$1</span>"
-css = ".w-green { text-decoration: underline wavy #8ce99a; text-underline-offset: 3px; }"
+replacement = '<span class="w-green">$1</span>'
+css = '.w-green { text-decoration: underline wavy #8ce99a; text-underline-offset: 3px; }'
+group = "wavy_color"
 title = "绿波浪线"
 view_type = "wavy_color"
 view_value = "#8ce99a"
 
 [[rules]]
-group = "wavy_color"
 prefix = "{w-b}"
 suffix = "{/w-b}"
-replacement = "<span class=\"w-blue\">$1</span>"
-css = ".w-blue { text-decoration: underline wavy #74c0fc; text-underline-offset: 3px; }"
+replacement = '<span class="w-blue">$1</span>'
+css = '.w-blue { text-decoration: underline wavy #74c0fc; text-underline-offset: 3px; }'
+group = "wavy_color"
 title = "蓝波浪线"
 view_type = "wavy_color"
 view_value = "#74c0fc"
 
 [[rules]]
-group = "wavy_color"
 prefix = "{w-y}"
 suffix = "{/w-y}"
-replacement = "<span class=\"w-yellow\">$1</span>"
-css = ".w-yellow { text-decoration: underline wavy #ffd43b; text-underline-offset: 3px; }"
+replacement = '<span class="w-yellow">$1</span>'
+css = '.w-yellow { text-decoration: underline wavy #ffd43b; text-underline-offset: 3px; }'
+group = "wavy_color"
 title = "黄波浪线"
 view_type = "wavy_color"
 view_value = "#ffd43b"
 
 [[rules]]
-group = "wavy_color"
 prefix = "{w-u}"
 suffix = "{/w-u}"
-replacement = "<span class=\"w-purple\">$1</span>"
-css = ".w-purple { text-decoration: underline wavy #e599f7; text-underline-offset: 3px; }"
+replacement = '<span class="w-purple">$1</span>'
+css = '.w-purple { text-decoration: underline wavy #e599f7; text-underline-offset: 3px; }'
+group = "wavy_color"
 title = "紫波浪线"
 view_type = "wavy_color"
 view_value = "#e599f7"
@@ -250,44 +250,44 @@ view_value = "#e599f7"
 
 [merge_groups.color]
 title = "背景高亮"
-icon_html = """<i class="ri-ink-bottle-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-4px;"></i>"""
+icon_html = """<i class="ri-ink-bottle-line"></i><i class="ri-arrow-down-s-line" style="font-size: 0.8em; margin-left: -4px;"></i>"""
 
 [[rules]]
-group = "color"
 prefix = "{bg-y}"
 suffix = "{/bg-y}"
-replacement = "<span class=\"hl-yellow\">$1</span>"
-css = ".hl-yellow { background-color: rgba(255, 243, 191, 0.7); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid rgba(240, 140, 0, 0.2); }"
+replacement = '<span class="hl-yellow">$1</span>'
+css = '.hl-yellow { background-color: rgba(255, 243, 191, 0.7); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid rgba(240, 140, 0, 0.2); }'
+group = "color"
 title = "淡黄高亮"
 view_type = "color"
 view_value = "#fff3bf"
 
 [[rules]]
-group = "color"
 prefix = "{bg-p}"
 suffix = "{/bg-p}"
-replacement = "<span class=\"hl-pink\">$1</span>"
-css = ".hl-pink { background-color: rgba(255, 224, 230, 0.7); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid rgba(216, 140, 154, 0.2); }"
+replacement = '<span class="hl-pink">$1</span>'
+css = '.hl-pink { background-color: rgba(255, 224, 230, 0.7); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid rgba(216, 140, 154, 0.2); }'
+group = "color"
 title = "淡粉高亮"
 view_type = "color"
 view_value = "#f4c2c2"
 
 [[rules]]
-group = "color"
 prefix = "{bg-b}"
 suffix = "{/bg-b}"
-replacement = "<span class=\"hl-blue\">$1</span>"
-css = ".hl-blue { background-color: rgba(208, 235, 255, 0.7); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid rgba(34, 139, 230, 0.2); }"
+replacement = '<span class="hl-blue">$1</span>'
+css = '.hl-blue { background-color: rgba(208, 235, 255, 0.7); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid rgba(34, 139, 230, 0.2); }'
+group = "color"
 title = "淡蓝高亮"
 view_type = "color"
 view_value = "#d0ebff"
 
 [[rules]]
-group = "color"
 prefix = "{bg-g}"
 suffix = "{/bg-g}"
-replacement = "<span class=\"hl-green\">$1</span>"
-css = ".hl-green { background-color: rgba(235, 251, 238, 0.7); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid rgba(64, 192, 87, 0.2); }"
+replacement = '<span class="hl-green">$1</span>'
+css = '.hl-green { background-color: rgba(235, 251, 238, 0.7); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid rgba(64, 192, 87, 0.2); }'
+group = "color"
 title = "淡绿高亮"
 view_type = "color"
 view_value = "#ebfbee"
@@ -296,64 +296,64 @@ view_value = "#ebfbee"
 
 [merge_groups.fg_color]
 title = "文字颜色"
-icon_html = """<i class="ri-markup-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>"""
+icon_html = """<i class="ri-markup-line"></i><i class="ri-arrow-down-s-line" style="font-size: 0.8em; margin-left: -2px;"></i>"""
 
 [[rules]]
-group = "fg_color"
 prefix = "{fg-r}"
 suffix = "{/fg-r}"
-replacement = "<span class=\"fg-red\">$1</span>"
-css = ".fg-red { color: #e03131; }"
+replacement = '<span class="fg-red">$1</span>'
+css = '.fg-red { color: #e03131; }'
+group = "fg_color"
 title = "红色"
 view_type = "fg_color"
 view_value = "#e03131"
 
 [[rules]]
-group = "fg_color"
 prefix = "{fg-p}"
 suffix = "{/fg-p}"
-replacement = "<span class=\"fg-pink\">$1</span>"
-css = ".fg-pink { color: #d6336c; }"
+replacement = '<span class="fg-pink">$1</span>'
+css = '.fg-pink { color: #d6336c; }'
+group = "fg_color"
 title = "粉色"
 view_type = "fg_color"
 view_value = "#d6336c"
 
 [[rules]]
-group = "fg_color"
 prefix = "{fg-g}"
 suffix = "{/fg-g}"
-replacement = "<span class=\"fg-green\">$1</span>"
-css = ".fg-green { color: #2f9e44; }"
+replacement = '<span class="fg-green">$1</span>'
+css = '.fg-green { color: #2f9e44; }'
+group = "fg_color"
 title = "绿色"
 view_type = "fg_color"
 view_value = "#2f9e44"
 
 [[rules]]
-group = "fg_color"
 prefix = "{fg-b}"
 suffix = "{/fg-b}"
-replacement = "<span class=\"fg-blue\">$1</span>"
-css = ".fg-blue { color: #1971c2; }"
+replacement = '<span class="fg-blue">$1</span>'
+css = '.fg-blue { color: #1971c2; }'
+group = "fg_color"
 title = "蓝色"
 view_type = "fg_color"
 view_value = "#1971c2"
 
 [[rules]]
-group = "fg_color"
 prefix = "{fg-y}"
 suffix = "{/fg-y}"
-replacement = "<span class=\"fg-yellow\">$1</span>"
-css = ".fg-yellow { color: #f08c00; }"
+replacement = '<span class="fg-yellow">$1</span>'
+css = '.fg-yellow { color: #f08c00; }'
+group = "fg_color"
 title = "黄色"
 view_type = "fg_color"
 view_value = "#f08c00"
 
 [[rules]]
-group = "fg_color"
 prefix = "{fg-u}"
 suffix = "{/fg-u}"
-replacement = "<span class=\"fg-purple\">$1</span>"
-css = ".fg-purple { color: #cb48e8; }"
+replacement = '<span class="fg-purple">$1</span>'
+css = '.fg-purple { color: #cb48e8; }'
+group = "fg_color"
 title = "紫色"
 view_type = "fg_color"
 view_value = "#cb48e8"
@@ -362,64 +362,64 @@ view_value = "#cb48e8"
 
 [merge_groups.marker_group]
 title = "马克笔颜色"
-icon_html = """<i class="ri-mark-pen-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-4px;"></i>"""
+icon_html = """<i class="ri-mark-pen-line"></i><i class="ri-arrow-down-s-line" style="font-size: 0.8em; margin-left: -4px;"></i>"""
 
 [[rules]]
-group = "marker_group"
 prefix = "{m_y}"
 suffix = "{/m_y}"
 replacement = '<mark class="marker-yellow">$1</mark>'
-css = ".marker-yellow { background: linear-gradient(to bottom, transparent 60%, #ffeb3b 60%); padding: 0 2px; }"
+css = '.marker-yellow { background: linear-gradient(to bottom, transparent 60%, #ffeb3b 60%); padding: 0 2px; }'
+group = "marker_group"
 title = "黄色马克笔"
 view_type = "marker_group"
 view_value = "#ffeb3b"
 
 [[rules]]
-group = "marker_group"
 prefix = "{m_p}"
 suffix = "{/m_p}"
 replacement = '<mark class="marker-pink">$1</mark>'
-css = ".marker-pink { background: linear-gradient(to bottom, transparent 60%, #ffc1cc 60%); padding: 0 2px; }"
+css = '.marker-pink { background: linear-gradient(to bottom, transparent 60%, #ffc1cc 60%); padding: 0 2px; }'
+group = "marker_group"
 title = "粉色马克笔"
 view_type = "marker_group"
 view_value = "#ffc1cc"
 
 [[rules]]
-group = "marker_group"
 prefix = "{m_g}"
 suffix = "{/m_g}"
 replacement = '<mark class="marker-green">$1</mark>'
-css = ".marker-green { background: linear-gradient(to bottom, transparent 60%, #c8e6c9 60%); padding: 0 2px; }"
+css = '.marker-green { background: linear-gradient(to bottom, transparent 60%, #c8e6c9 60%); padding: 0 2px; }'
+group = "marker_group"
 title = "绿色马克笔"
 view_type = "marker_group"
 view_value = "#c8e6c9"
 
 [[rules]]
-group = "marker_group"
 prefix = "{m_b}"
 suffix = "{/m_b}"
 replacement = '<mark class="marker-blue">$1</mark>'
-css = ".marker-blue { background: linear-gradient(to bottom, transparent 60%, #bbdefb 60%); padding: 0 2px; }"
+css = '.marker-blue { background: linear-gradient(to bottom, transparent 60%, #bbdefb 60%); padding: 0 2px; }'
+group = "marker_group"
 title = "蓝色马克笔"
 view_type = "marker_group"
 view_value = "#bbdefb"
 
 [[rules]]
-group = "marker_group"
 prefix = "{m_u}"
 suffix = "{/m_u}"
 replacement = '<mark class="marker-purple">$1</mark>'
-css = ".marker-purple { background: linear-gradient(to bottom, transparent 60%, #e1bee7 60%); padding: 0 2px; }"
+css = '.marker-purple { background: linear-gradient(to bottom, transparent 60%, #e1bee7 60%); padding: 0 2px; }'
+group = "marker_group"
 title = "紫色马克笔"
 view_type = "marker_group"
 view_value = "#e1bee7"
 
 [[rules]]
-group = "marker_group"
 prefix = "{m_o}"
 suffix = "{/m_o}"
 replacement = '<mark class="marker-orange">$1</mark>'
-css = ".marker-orange { background: linear-gradient(to bottom, transparent 60%, #ffe0b2 60%); padding: 0 2px; }"
+css = '.marker-orange { background: linear-gradient(to bottom, transparent 60%, #ffe0b2 60%); padding: 0 2px; }'
+group = "marker_group"
 title = "橙色马克笔"
 view_type = "marker_group"
 view_value = "#ffe0b2"
@@ -428,23 +428,22 @@ view_value = "#ffe0b2"
 
 [merge_groups.magic_tools]
 title = "魔法组件"
-icon_html = """<i class="ri-magic-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>"""
+icon_html = """<i class="ri-magic-line"></i><i class="ri-arrow-down-s-line" style="font-size: 0.8em; margin-left: -2px;"></i>"""
 
 [[rules]]
-group = "magic_tools"
 prefix = "||"
 suffix = "||"
-replacement = "<span class=\"text-spoiler\">$1</span>"
-css = ".text-spoiler { filter: blur(4px); transition: filter 0.3s; } .text-spoiler:hover { filter: blur(0); }"
+replacement = '<span class="text-spoiler">$1</span>'
+css = '.text-spoiler { filter: blur(4px); transition: filter 0.3s; } .text-spoiler:hover { filter: blur(0); }'
+group = "magic_tools"
 title = "剧透/模糊"
 view_type = "icon_class"
 view_value = "ri-eye-off-line"
 
 [[rules]]
-group = "magic_tools"
 prefix = "(( "
 suffix = " ))"
-replacement = "<span class=\"washi-tape\">$1</span>"
+replacement = '<span class="washi-tape">$1</span>'
 css = """
 .washi-tape {
     background-color: rgba(255, 200, 200, 0.5);
@@ -458,6 +457,7 @@ css = """
     font-family: inherit;
 }
 """
+group = "magic_tools"
 title = "纸胶带"
 view_type = "icon_svg"
 view_value = """
@@ -465,21 +465,21 @@ view_value = """
 """
 
 [[rules]]
-group = "magic_tools"
 prefix = "↓↓"
 suffix = "↑↑"
-replacement = """<div class="custom-fold"><div class="fold-summary" onclick="this.parentNode.classList.toggle('is-open')">点击展开 / 折叠</div><div class="fold-wrapper"><div class="fold-content"><div class="fold-inner">$1</div></div></div></div>"""
+replacement = '''<div class="custom-fold"><div class="fold-summary" onclick="this.parentNode.classList.toggle('is-open')">点击展开 / 折叠</div><div class="fold-wrapper"><div class="fold-content"><div class="fold-inner">$1</div></div></div></div>'''
 css = """
-.custom-fold{background:#fff5f7;border-radius:16px;border:2px dashed #ffb3c1;margin:1em 0;box-shadow:0 2px 4px rgba(209,107,128,0.12);overflow:hidden}
-.fold-summary{padding:0.8rem 1.2rem;cursor:pointer;font-weight:bold;color:#d16b80;user-select:none;transition:background 0.3s ease}
-.fold-summary::before{content:"🌸";margin-right:8px;display:inline-block;transition:transform 0.4s cubic-bezier(0.68,-0.55,0.26,1.55)}
-.custom-fold.is-open .fold-summary::before{transform:rotate(90deg) scale(1.1)}
-.fold-wrapper{display:grid;grid-template-rows:0fr;transition:grid-template-rows 0.4s cubic-bezier(0.25,0.8,0.25,1)}
-.custom-fold.is-open .fold-wrapper{grid-template-rows:1fr}
-.fold-content{min-height:0;overflow:hidden;opacity:0;transform:translateY(-8px);transition:all 0.4s cubic-bezier(0.25,0.8,0.25,1)}
-.custom-fold.is-open .fold-content{opacity:1;transform:translateY(0)}
-.fold-inner{padding:1.2rem;border-top:2px dashed #ffb3c1;font-size:0.95em;color:#b06a7b;background:rgba(255,255,255,0.6);line-height:1.7}
+.custom-fold { background: #fff5f7; border-radius: 16px; border: 2px dashed #ffb3c1; margin: 1em 0; box-shadow: 0 2px 4px rgba(209,107,128,0.12); overflow: hidden; }
+.fold-summary { padding: 0.8rem 1.2rem; cursor: pointer; font-weight: bold; color: #d16b80; user-select: none; transition: background 0.3s ease; }
+.fold-summary::before { content: "🌸"; margin-right: 8px; display: inline-block; transition: transform 0.4s cubic-bezier(0.68,-0.55,0.26,1.55); }
+.custom-fold.is-open .fold-summary::before { transform: rotate(90deg) scale(1.1); }
+.fold-wrapper { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s cubic-bezier(0.25,0.8,0.25,1); }
+.custom-fold.is-open .fold-wrapper { grid-template-rows: 1fr; }
+.fold-content { min-height: 0; overflow: hidden; opacity: 0; transform: translateY(-8px); transition: all 0.4s cubic-bezier(0.25,0.8,0.25,1); }
+.custom-fold.is-open .fold-content { opacity: 1; transform: translateY(0); }
+.fold-inner { padding: 1.2rem; border-top: 2px dashed #ffb3c1; font-size: 0.95em; color: #b06a7b; background: rgba(255,255,255,0.6); line-height: 1.7; }
 """
+group = "magic_tools"
 title = "折叠块"
 view_type = "html"
 view_value = """<i class="ri-arrow-down-double-line"></i>"""
@@ -489,7 +489,7 @@ view_value = """<i class="ri-arrow-down-double-line"></i>"""
 [[rules]]
 prefix = "{center}"
 suffix = "{/center}"
-replacement = "<div class=\"text-center\">$1</div>"
+replacement = '<div class="text-center">$1</div>'
 css = """
 .text-center {
 text-align: center;
