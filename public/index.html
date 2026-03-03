@@ -796,15 +796,21 @@
                     
                     if (this.syntaxRules && this.syntaxRules.length > 0) {
                         this.syntaxRules.forEach(rule => {
-                            const pre = this.escapeRegExp(rule.prefix);
-                            const suf = this.escapeRegExp(rule.suffix);
-                            const regex = new RegExp(`(?<!\\\\)${pre}(.+?)(?<!\\\\)${suf}`, 'gs');
-                            p = p.replace(regex, rule.replacement);
+                            if (rule.regex) {
+                                p = p.replace(new RegExp(rule.regex, rule.flags || 'g'), rule.replacement);
+                            } else if (rule.prefix && rule.suffix) {
+                                const pre = this.escapeRegExp(rule.prefix);
+                                const suf = this.escapeRegExp(rule.suffix);
+                                const regex = new RegExp(`(?<!\\\\)${pre}(.+?)(?<!\\\\)${suf}`, 'gs');
+                                p = p.replace(regex, rule.replacement);
+                            }
                         });
 
-                        const markers = [...new Set(this.syntaxRules.flatMap(r => [r.prefix, r.suffix]))];
-                        const escapeRegex = new RegExp(`\\\\(${markers.map(m => this.escapeRegExp(m)).join('|')})`, 'g');
-                        p = p.replace(escapeRegex, '$1');
+                        const markers = [...new Set(this.syntaxRules.filter(r => r.prefix && r.suffix).flatMap(r => [r.prefix, r.suffix]))];
+                        if (markers.length > 0) {
+                            const escapeRegex = new RegExp(`\\\\(${markers.map(m => this.escapeRegExp(m)).join('|')})`, 'g');
+                            p = p.replace(escapeRegex, '$1');
+                        }
                     }
 
                     let finalHtml = p.split('\n').join('<div class="manual-br"></div>');
