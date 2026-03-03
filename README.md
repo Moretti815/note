@@ -195,89 +195,104 @@ export default {
 ```toml
 [[rules]]
 # 定义基本语法
-prefix = "<s>"
-suffix = "</s>"
+prefix = "**"
+suffix = "**"
 
 # 填入元素
-replacement = "<span class=\"text-strike\">$1</span>"
+replacement = "<strong class=\"text-bold\">$1</strong>"
 
 # 具体渲染样式
-css = """ .text-strike {
-text-decoration: line-through;
-text-decoration-color: currentColor;
-text-decoration-thickness: 1px;
-opacity: 0.95; }"""
-
-# 工具栏相关属性
-title = "删除线"
-view_type = "icon_class"
-view_value = "ri-strikethrough"
+css = ".text-bold { font-weight: 600; color: var(--text-main); }"
 ```
 
 ### 🦇 编辑器工具栏详解
 
-`view_type` 和 `view_value` 决定了编辑器工具栏上按钮的 UI, 内置支持的基础呈现方式如下：
+#### 工具栏组与合并行为
 
-* **text**: 纯文本，例如 `~`
-* **icon_class**: [Remix Icon Class](https://remixicon.com/) 图标，例如 `ri-strikethrough`
-* **icon_svg**: 嵌入完整的 SVG 代码
-* **icon_base64**: Base64 格式的图片数据
+**group**: 定义组, 两个或两个以上连续的元素, 若组相同, 会在工具栏合并,  
+使用 `[merge_groups.<group_name>]` 定义组的元数据, 仅作用于工具栏上的图标
 
-还可以使用 `[[merge_groups]]` 自定义 `view_type`, 允许手动控制按钮的 UI 模板, 连续的同类型子元素还会被合并渲染
-
-*示例: 定义一个 `color` 组*
+没有定义组的元数据时, 将显示一个默认图标
 
 ```toml
-[[merge_groups]]
-target_type = "color"
-title = "背景高亮"
-icon_html = """<i class="ri-ink-bottle-line"></i><i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-4px;"></i>"""
-item_template = """
-<div style="
-  width: 16px; height: 16px; border-radius: 4px; 
-  background: {{value}};
-  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 15%);">
-</div>"""
+[[rules]]
+# 其它字段...
+group = "basic_styles"
+title = "加粗"
+view_type = "basic_styles"
+view_value = "ri-bold"
+
+# ...
+
+[merge_groups.basic_styles]
+title = "基础样式"
+icon_html = """
+<i class="ri-font-size-2"></i>
+<i class="ri-arrow-down-s-line" style="font-size:0.8em; margin-left:-2px;"></i>
+"""
 ```
 
-* **title**: 工具栏上父级按钮的悬停提示
-* **icon_html**: 定义父级下拉菜单触发按钮的样式
-* **item_template**: 定义下拉菜单内子按钮的 DOM 模板，渲染时自动将 `{{value}}` 替换为对应 rule 的 `view_value`
-* **target_type**: 类型名称
+#### 图标模板
 
-*示例: 定义一个元素, 父级是 `color`*,
+**view_type**: 图标模板, 使用 `[[view_templates]]`, 定义一种图标模板  
+可以在 `[[rules]]` 中使用 `view_type` 和 `view_value` 指定该图标模板
 
-```toml
-# css = "" 语法及渲染定义 ...
+* *示例: 定义一个颜色块图标*  
 
-title = "淡黄高亮"
-view_type = "color"
-view_value = "#fff3bf"
-```
+  ```toml
+  [[view_templates]]
+  type = "color"
+  template = """<div style="width: 16px; height: 16px; border-radius: 4px;
+    background: {{value}};
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 15%);">
+  </div>"""
+  ```
 
-view_value 还支持 **TOML 内联表** 和 **TOML 数组**
+* *示例: 定义一个复杂图标*  
+还支持使用 **TOML 内联表** 和 **TOML 数组** 替换模板变量
 
-例如
+  **TOML 内联表**: 通过 `{{key}}` 来引用
 
-```toml
-item_template = """
-<span class="badge badge-{{color}}">
-  <i class="{{icon}}\"></i> {{text}}
-</span>"""
-# ↑ [[merge_groups]] ... [[rules]] ↓
-view_value = { icon = "ri-check-line", color = "green", text = "成功" }
-```
+  ```toml
+  [[view_templates]]
+  type = "simple_alert"
+  template = "<i class='{{icon}}'></i> <span>{{label}}</span>"
 
-```toml
-item_template = """<div class="icon-stack">
-  <i class="{{0}}"></i><i class="{{1}}"></i>
-</div>"""
-# ↑ [[merge_groups]] ... [[rules]] ↓
-view_value = ["ri-square-line", "ri-check-fill"]
-```
+  [[rules]]
+  view_type = "simple_alert"
+  view_value = { icon = "ri-info", label = "Note" }
+  ```
+
+  **TOML 数组**: 使用 `{{0}}`, `{{1}}` 等索引来引用
+
+  ```toml
+  [[view_templates]]
+  type = "status_bar"
+  template = "状态: <b>{{0}}</b> | 负载: {{1}}%"
+
+  [[rules]]
+  view_type = "status_bar"
+  view_value = ["运行中", 42]
+  ```
+
+* *示例: 定义一个 base64 图片图标*
+
+  ```toml
+  [[view_templates]]
+  type = "icon_base64"
+  template = '<img src="{{value}}" class="fmt-b64" alt="">'
+  ```
+
+* 类似的, 还可以直接定义一个 `html` 图标
+
+  ```toml
+  [[view_templates]]
+  type = "html"
+  template = '{{value}}'
+  ```
 
 > [!TIP]
-> petal-note 仓库预设足够应对大多数场景，可以通过 **[🌸 Live Demo 🌸](https://petal-note.vercel.app/)** 预览，或者[单击查看文件](https://www.google.com/search?q=./public/syntax.toml)。
+> petal-note 仓库预设的语法文件足够应对大多数场景，可以通过 **[🌸 Live Demo 🌸](https://petal-note.vercel.app/)** 预览，或者[单击查看文件](./public/syntax.toml)。
 
 有了这些玩法, 可以实现的效果非常多了, 例如以下这段示例完美复刻了 GitHub Alerts, 可以直接投入使用
 
@@ -285,19 +300,18 @@ view_value = ["ri-square-line", "ri-check-fill"]
 <summary><b>点击展开代码</b></summary>
 
 ```toml
-[[merge_groups]]
-target_type = "github_alerts"
+[[view_templates]]
+type = "github_alerts"
+template = '<div style="display:flex; align-items:center; gap:6px; color:{{color}}; font-size:0.85rem; font-family:ui-monospace,monospace; font-weight:600; "><i class="{{icon}}"></i><span>{{label}}</span></div>'
+
+[merge_groups.github_alerts]
 title = "插入 GitHub Alerts"
 icon_html = """<i class="ri-chat-4-line"></i>"""
-item_template = """<div style="display:flex;align-items:center;gap:6px;color:{{color}};font-size:0.85rem;font-family:ui-monospace,monospace;font-weight:600;"><i class="{{icon}}"></i><span>{{label}}</span></div>"""
 
 [[rules]]
-view_type = "github_alerts"
-title = "Note (常规提示)"
-prefix = ":::note "
-suffix = " :::"
+prefix = ":::note\n"
+suffix = "\n:::"
 replacement = """<div class="gh-alert gh-alert-note"><div class="gh-alert-title"><i class="ri-information-line"></i> Note</div><div class="gh-alert-body">$1</div></div>"""
-view_value = { color = "#0969da", icon = "ri-information-line", label = "Note" }
 css = """
 .gh-alert { border-left: 4px solid; padding: 0.6rem 1rem; margin: 0.8rem 0; border-radius: 0 6px 6px 0; box-shadow: 0 2px 8px rgb(0 0 0 / 2%); }
 .gh-alert-title { display: flex; align-items: center; gap: 0.4rem; font-weight: 600; margin-bottom: 0.2rem; font-size: 0.9rem; }
@@ -305,54 +319,62 @@ css = """
 .gh-alert-note { border-left-color: #0969da; background: rgb(9 105 218 / 4%); }
 .gh-alert-note .gh-alert-title { color: #0969da; }
 """
+group = "github_alerts"
+title = "Note (常规提示)"
+view_type = "github_alerts"
+view_value = { color = "#0969da", icon = "ri-information-line", label = "Note" }
 
 [[rules]]
-view_type = "github_alerts"
-title = "Tip (建议与技巧)"
-prefix = ":::tip "
-suffix = " :::"
+prefix = ":::tip\n"
+suffix = "\n:::"
 replacement = """<div class="gh-alert gh-alert-tip"><div class="gh-alert-title"><i class="ri-lightbulb-line"></i> Tip</div><div class="gh-alert-body">$1</div></div>"""
-view_value = { color = "#1a7f37", icon = "ri-lightbulb-line", label = "Tip" }
 css = """
 .gh-alert-tip { border-left-color: #1a7f37; background: rgb(26 127 55 / 4%); }
 .gh-alert-tip .gh-alert-title { color: #1a7f37; }
 """
+group = "github_alerts"
+title = "Tip (建议与技巧)"
+view_type = "github_alerts"
+view_value = { color = "#1a7f37", icon = "ri-lightbulb-line", label = "Tip" }
 
 [[rules]]
-view_type = "github_alerts"
-title = "Important (重要信息)"
-prefix = ":::important "
-suffix = " :::"
+prefix = ":::important\n"
+suffix = "\n:::"
 replacement = """<div class="gh-alert gh-alert-important"><div class="gh-alert-title"><i class="ri-message-3-line"></i> Important</div><div class="gh-alert-body">$1</div></div>"""
-view_value = { color = "#8250df", icon = "ri-message-3-line", label = "Important" }
 css = """
 .gh-alert-important { border-left-color: #8250df; background: rgb(130 80 223 / 4%); }
 .gh-alert-important .gh-alert-title { color: #8250df; }
 """
+group = "github_alerts"
+title = "Important (重要信息)"
+view_type = "github_alerts"
+view_value = { color = "#8250df", icon = "ri-message-3-line", label = "Important" }
 
 [[rules]]
-view_type = "github_alerts"
-title = "Warning (警告提示)"
-prefix = ":::warning "
-suffix = " :::"
+prefix = ":::warning\n"
+suffix = "\n:::"
 replacement = """<div class="gh-alert gh-alert-warning"><div class="gh-alert-title"><i class="ri-error-warning-line"></i> Warning</div><div class="gh-alert-body">$1</div></div>"""
-view_value = { color = "#9a6700", icon = "ri-error-warning-line", label = "Warning" }
 css = """
 .gh-alert-warning { border-left-color: #9a6700; background: rgb(154 103 0 / 4%); }
 .gh-alert-warning .gh-alert-title { color: #9a6700; }
 """
+group = "github_alerts"
+title = "Warning (警告提示)"
+view_type = "github_alerts"
+view_value = { color = "#9a6700", icon = "ri-error-warning-line", label = "Warning" }
 
 [[rules]]
-view_type = "github_alerts"
-title = "Caution (危险操作)"
-prefix = ":::caution "
-suffix = " :::"
+prefix = ":::caution\n"
+suffix = "\n:::"
 replacement = """<div class="gh-alert gh-alert-caution"><div class="gh-alert-title"><i class="ri-close-circle-line"></i> Caution</div><div class="gh-alert-body">$1</div></div>"""
-view_value = { color = "#d1242f", icon = "ri-close-circle-line", label = "Caution" }
 css = """
 .gh-alert-caution { border-left-color: #d1242f; background: rgb(209 36 47 / 4%); }
 .gh-alert-caution .gh-alert-title { color: #d1242f; }
 """
+group = "github_alerts"
+title = "Caution (危险操作)"
+view_type = "github_alerts"
+view_value = { color = "#d1242f", icon = "ri-close-circle-line", label = "Caution" }
 ```
 
 </details>
