@@ -713,12 +713,12 @@
                             e.preventDefault();
 
                             markReadAndRoute(card);
-                            card.classList.add('locked');
+                            card.classList.add('expanded');
                             
                             requestAnimationFrame(() => {
                                 const inner = card.querySelector('.card-inner');
                                 inner.style.maxHeight = `${inner.scrollHeight}px`;
-                                setTimeout(() => { if (card.classList.contains('locked')) inner.style.maxHeight = 'none'; }, 600);
+                                setTimeout(() => { if (card.classList.contains('expanded')) inner.style.maxHeight = 'none'; }, 600);
                             });
                             
                             triggerRipple(e, card);
