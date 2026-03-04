@@ -388,8 +388,8 @@ title = "马克笔颜色"
 icon_html = """<i class="ri-mark-pen-line"></i><i class="ri-arrow-down-s-line" style="font-size: 0.8em; margin-left: -4px;"></i>"""
 
 [[rules]]
-prefix = "{m_y}"
-suffix = "{/m_y}"
+prefix = "{m-y}"
+suffix = "{/m-y}"
 replacement = '<mark class="marker-yellow">$1</mark>'
 css = '.marker-yellow { background: linear-gradient(to bottom, transparent 60%, #ffeb3b 60%); padding: 0 2px; }'
 group = "marker_group"
@@ -398,8 +398,8 @@ view_type = "marker_group"
 view_value = "#ffeb3b"
 
 [[rules]]
-prefix = "{m_p}"
-suffix = "{/m_p}"
+prefix = "{m-p}"
+suffix = "{/m-p}"
 replacement = '<mark class="marker-pink">$1</mark>'
 css = '.marker-pink { background: linear-gradient(to bottom, transparent 60%, #ffc1cc 60%); padding: 0 2px; }'
 group = "marker_group"
@@ -408,8 +408,8 @@ view_type = "marker_group"
 view_value = "#ffc1cc"
 
 [[rules]]
-prefix = "{m_g}"
-suffix = "{/m_g}"
+prefix = "{m-g}"
+suffix = "{/m-g}"
 replacement = '<mark class="marker-green">$1</mark>'
 css = '.marker-green { background: linear-gradient(to bottom, transparent 60%, #c8e6c9 60%); padding: 0 2px; }'
 group = "marker_group"
@@ -418,8 +418,8 @@ view_type = "marker_group"
 view_value = "#c8e6c9"
 
 [[rules]]
-prefix = "{m_b}"
-suffix = "{/m_b}"
+prefix = "{m-b}"
+suffix = "{/m-b}"
 replacement = '<mark class="marker-blue">$1</mark>'
 css = '.marker-blue { background: linear-gradient(to bottom, transparent 60%, #bbdefb 60%); padding: 0 2px; }'
 group = "marker_group"
@@ -428,8 +428,8 @@ view_type = "marker_group"
 view_value = "#bbdefb"
 
 [[rules]]
-prefix = "{m_u}"
-suffix = "{/m_u}"
+prefix = "{m-u}"
+suffix = "{/m-u}"
 replacement = '<mark class="marker-purple">$1</mark>'
 css = '.marker-purple { background: linear-gradient(to bottom, transparent 60%, #e1bee7 60%); padding: 0 2px; }'
 group = "marker_group"
@@ -438,8 +438,8 @@ view_type = "marker_group"
 view_value = "#e1bee7"
 
 [[rules]]
-prefix = "{m_o}"
-suffix = "{/m_o}"
+prefix = "{m-o}"
+suffix = "{/m-o}"
 replacement = '<mark class="marker-orange">$1</mark>'
 css = '.marker-orange { background: linear-gradient(to bottom, transparent 60%, #ffe0b2 60%); padding: 0 2px; }'
 group = "marker_group"
