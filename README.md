@@ -107,8 +107,6 @@ default_dir = "images"
 
 ![editor_preview](./public/assets/editor.png)
 
----
-
 编辑器允许直接上传图片, 需要配置一个接受 `PUT` 请求的图片上传 API, 并在 `[image]` 块中完成对应设置
 
 例如使用 **Cloudflare R2** 配合 **Workers** 搭建, 只需要创建一个 R2 存储桶和一个 Worker, 并在 Worker 中绑定你的存储桶, 需要设置以下两个变量
@@ -269,7 +267,7 @@ view_type = "icon_class"
 view_value = "ri-h-1"
 ```
 
-### Prefix / Suffix 的默认行为
+#### 🖇️ Prefix / Suffix 的默认行为
 
 ```toml
 [[rules]]
@@ -291,7 +289,7 @@ replacement = "<mark>$1</mark>"
 
 ### 🦇 编辑器工具栏详解
 
-#### 工具栏组与合并行为
+#### 🧩 工具栏组与合并行为
 
 **group**: 定义组, 两个或两个以上连续的元素, 若组相同, 会在工具栏合并,  
 使用 `[merge_groups.<group_name>]` 定义组的元数据, 仅作用于工具栏上的图标
@@ -316,7 +314,7 @@ icon_html = """
 """
 ```
 
-#### 图标模板
+#### 🖌️ 图标模板
 
 **view_type**: 图标模板, 使用 `[[view_templates]]`, 定义一种图标模板  
 可以在 `[[rules]]` 中使用 `view_type` 和 `view_value` 指定该图标模板
