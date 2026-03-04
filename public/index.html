@@ -227,6 +227,7 @@
             box-shadow: 0 4px 15px rgb(0 0 0 / 2%), inset 0 0 0 1px rgb(255 255 255 / 20%);
             transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); cursor: pointer; -webkit-tap-highlight-color: transparent;
             overflow: hidden; transform-origin: center bottom;
+            overflow-anchor: none; touch-action: pan-y;
         }
         .card:active { transform: translateY(2px); box-shadow: 0 2px 12px var(--glow-accent), inset 0 2px 8px rgb(255 255 255 / 60%); border-color: rgb(255 255 255 / 80%); transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1); }
         body.private-mode .card { box-shadow: 0 8px 30px rgb(242 198 208 / 12%), inset 0 0 20px rgb(255 255 255 / 60%); border-color: rgb(255 255 255 / 50%); }
@@ -689,12 +690,14 @@
 
                 const triggerRipple = (e, card) => {
                     if (this.isPrivateMode) {
-                        const rect = card.getBoundingClientRect();
-                        const ripple = document.createElement('div');
-                        ripple.className = 'ripple';
-                        ripple.style.cssText = `left:${e.clientX - rect.left}px; top:${e.clientY - rect.top}px; width:40px; height:40px; transform-origin:center; margin-top:-20px; margin-left:-20px;`;
-                        card.appendChild(ripple);
-                        setTimeout(() => ripple.remove(), 800);
+                        requestAnimationFrame(() => {
+                            const rect = card.getBoundingClientRect();
+                            const ripple = document.createElement('div');
+                            ripple.className = 'ripple';
+                            ripple.style.cssText = `left:${e.clientX - rect.left}px; top:${e.clientY - rect.top}px; width:40px; height:40px; transform-origin:center; margin-top:-20px; margin-left:-20px;`;
+                            card.appendChild(ripple);
+                            setTimeout(() => ripple.remove(), 800);
+                        });
                     }
                 };
 
@@ -712,9 +715,11 @@
                             markReadAndRoute(card);
                             card.classList.add('locked');
                             
-                            const inner = card.querySelector('.card-inner');
-                            inner.style.maxHeight = `${inner.scrollHeight}px`;
-                            setTimeout(() => { if (card.classList.contains('locked')) inner.style.maxHeight = 'none'; }, 600);
+                            requestAnimationFrame(() => {
+                                const inner = card.querySelector('.card-inner');
+                                inner.style.maxHeight = `${inner.scrollHeight}px`;
+                                setTimeout(() => { if (card.classList.contains('locked')) inner.style.maxHeight = 'none'; }, 600);
+                            });
                             
                             triggerRipple(e, card);
                         }
@@ -811,17 +816,19 @@
                         markReadAndRoute(card);
                         
                         if (hasMore) {
-                            const inner = card.querySelector('.card-inner');
-                            if (isCollapsed) {
-                                card.classList.add('expanded');
-                                inner.style.maxHeight = `${inner.scrollHeight}px`;
-                                setTimeout(() => { if (card.classList.contains('expanded')) inner.style.maxHeight = 'none'; }, 600);
-                            } else if (isExpanded) {
-                                inner.style.maxHeight = `${inner.scrollHeight}px`;
-                                inner.offsetHeight;
-                                card.classList.remove('expanded');
-                                inner.style.maxHeight = '';
-                            }
+                            requestAnimationFrame(() => {
+                                const inner = card.querySelector('.card-inner');
+                                if (isCollapsed) {
+                                    card.classList.add('expanded');
+                                    inner.style.maxHeight = `${inner.scrollHeight}px`;
+                                    setTimeout(() => { if (card.classList.contains('expanded')) inner.style.maxHeight = 'none'; }, 600);
+                                } else if (isExpanded) {
+                                    inner.style.maxHeight = `${inner.scrollHeight}px`;
+                                    inner.offsetHeight;
+                                    card.classList.remove('expanded');
+                                    inner.style.maxHeight = '';
+                                }
+                            });
                         }
 
                         triggerRipple(e, card);
