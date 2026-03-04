@@ -579,6 +579,17 @@ view_type = "html"
 view_value = """<i class="ri-arrow-down-double-line"></i>"""
 
 [[rules]]
+regex = '\{rainbow-([^\}]+)\}(.*?)\{/rainbow\}'
+flags = "gs"
+prefix = "{rainbow-90deg, #74c0fc, #e599f7, #faa2c1}"
+suffix = "{/rainbow}"
+replacement = '<span style="background-image: linear-gradient($1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; font-weight: bold;">$2</span>'
+group = "magic_tools"
+title = "彩虹"
+view_type = "html"
+view_value = '<i class="ri-rainbow-line" style="background: linear-gradient(90deg, #74c0fc, #e599f7, #faa2c1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>'
+
+[[rules]]
 prefix = "{rainbow}"
 suffix = "{/rainbow}"
 replacement = '<span class="magic-rainbow">$1</span>'
@@ -588,8 +599,8 @@ css = """
 """
 group = "magic_tools"
 title = "彩虹流光"
-view_type = "icon_class"
-view_value = "ri-rainbow-line"
+view_type = "html"
+view_value = '<i class="ri-rainbow-fill" style="background: linear-gradient(to right, #ff8787, #faa2c1, #e599f7, #74c0fc, #8ce99a, #ffd43b, #ff8787); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: rainbow-shine 4s linear infinite;"></i><style>@keyframes rainbow-shine { to { background-position: 200% center; } }</style>'
 
 [[rules]]
 prefix = "{muse}\n"
