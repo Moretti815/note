@@ -78,21 +78,20 @@ Petal
 当有分类时，自动在时间节点下方显示一个锚点，点击后会取消分类，然后跳转过去。
 ---
 Petal
-#用法 #特殊语法
-除了 markdown 链接语法以外, Petal Note 还内置了一套自定义语法引擎，通过 TOML 配置。仓库中的 [syntax.toml](https://github.com/miniyu157/petal-note/blob/main/public/syntax.toml) 默认也内置了很多常用的语法，例如：
+#用法 #内容 #特殊语法
+Petal Note 内置了一套自定义语法引擎，任何奇妙语法都在 TOML 配置。仓库中的 [syntax.toml](https://github.com/miniyu157/petal-note/blob/main/public/syntax.toml) 也预设了很多常用的语法，例如：
 **加粗** *斜体* ++下划线++ ~~删除线~~ ^^波浪线^^ %%减弱%%
-||剧透/模糊效果|| <- 鼠标悬停查看
-(( 纸胶带 )) {fg-p}彩色前景色{/fg-p} {bg-p}彩色背景色{/bg-p}
-{w-r}彩色{/w-r}{w-g}波浪线{/w-g} {m-y}马克笔{/m-y} {m-u}五颜六色{/m-u}
-{u-u}彩色{/u-u}{u-p}下划线{/u-p}
-使用反斜杠进行转义，例如 {bg-g}\(( 纸胶带 )){/bg-g}
-配置得当，基本可以混合使用。
-
-放心！Petal Note 遵循{u-b}**究极开闭原则**{/u-b}，杜绝一切硬编码。语法引擎是完全开放的，只需一个 TOML 文件定义即可，甚至还可以完美复刻 GitHub Alerts，相关示例代码请 [查看文档](https://github.com/miniyu157/petal-note/tree/main?tab=readme-ov-file#-%E7%BC%96%E8%BE%91%E5%99%A8%E5%B7%A5%E5%85%B7%E6%A0%8F%E8%AF%A6%E8%A7%A3)
-(( ![editor_toolbox](./assets/editor_toolbox.png) 编辑器工具栏还可以合并渲染, 图片标签也可以被特殊语法包裹 ))
-
-从左下角那片小叶子体验内置编辑器 密码: {w-r}✨{/w-r}
-编辑器鉴权使用 AES-GCM 端到端加密，具体用法请查看文档。
+{fg-p}彩色前景色{/fg-p} {bg-p}彩色背景色{/bg-p} {w-r}彩色{/w-r}{w-g}波浪线{/w-g} {m-y}马克笔{/m-y} {m-u}五颜六色{/m-u} {u-u}彩色{/u-u}{u-p}下划线{/u-p} {ud-r}彩色{/ud-r}{ud-g}虚线{/ud-g}{ud-u}下划线{/ud-u}
+**还有一些奇妙语法：**%%包括这个展开/折叠组件都是一个独立的语法定义%% ↓↓{ruby-zhu yin}注音{/ruby} 
+||剧透/模糊效果|| <- 鼠标悬停查看，剧透/模糊效果
+{rainbow-90deg, #74c0fc, #e599f7, #faa2c1}固定色彩虹{/rainbow} {rainbow}流光彩虹{/rainbow}{muse}
+心语引言 (( 纸胶带 ))
+{/muse}↑↑
+使用反斜杠进行转义，例如 {bg-g}\(( 纸胶带 )){/bg-g}。配置得当，基本可以混合使用。
+放心！Petal Note 遵循 {ud-b}**究极开闭原则**{/ud-b}，杜绝一切硬编码。语法引擎是完全开放的，只需一个 TOML 文件定义即可，甚至还可以完美复刻 *GitHub Alerts* 或者 *Markdown* 部分标准语法，相关示例代码请 [查看文档](https://github.com/miniyu157/petal-note/tree/main?tab=readme-ov-file#-%E7%BC%96%E8%BE%91%E5%99%A8%E5%B7%A5%E5%85%B7%E6%A0%8F%E8%AF%A6%E8%A7%A3)
+(( ![editor_toolbox](./assets/editor_toolbox.png) 甚至是编辑器工具栏的合并行为都可以控制，还支持 **TOML 内链表/数组** 定义复杂图标模板 ))
+单击左下角那片小叶子即可体验内置编辑器 密码: {w-r}✨{/w-r}
+关于{ud-u}编辑器鉴权加密{/ud-u}、{ud-r}复杂正则语法定义{/ud-r}等信息，请移步[文档说明]([查看文档](https://github.com/miniyu157/petal-note/tree/main?tab=readme-ov-file#-%E8%87%AA%E5%AE%9A%E4%B9%89%E8%AF%AD%E6%B3%95)
 ---
 Petal
 #用法 #内容
