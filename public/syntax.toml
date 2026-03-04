@@ -605,6 +605,8 @@ view_type = "html"
 view_value = '<i class="ri-rainbow-fill" style="background: linear-gradient(to right, #ff8787, #faa2c1, #e599f7, #74c0fc, #8ce99a, #ffd43b, #ff8787); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: rainbow-shine 4s linear infinite;"></i><style>@keyframes rainbow-shine { to { background-position: 200% center; } }</style>'
 
 [[rules]]
+regex = '\{muse\}\s*(.*?)\s*\{/muse\}'
+flags = "gs"
 prefix = "{muse}\n"
 suffix = "\n{/muse}"
 replacement = '<div class="magic-muse"><i class="ri-double-quotes-l quote-mark"></i><div class="muse-content">$1</div></div>'
@@ -645,15 +647,11 @@ view_value = """
 ####################
 
 [[rules]]
-prefix = "{center}"
-suffix = "{/center}"
-replacement = '<div class="text-center">$1</div>'
-css = """
-.text-center {
-text-align: center;
-margin: 0.5em 0;
-}
-"""
+regex = '\{center\}\s*(.*?)\s*\{/center\}'
+flags = "gs"
+prefix = "{center}\n"
+suffix = "\n{/center}"
+replacement = '<div style="text-align: center;">$1</div>'
 title = "居中"
 view_type = "icon_class"
 view_value = "ri-align-center"
