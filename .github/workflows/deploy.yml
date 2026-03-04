@@ -8,6 +8,7 @@ on:
     paths:
       - 'public/index.html'
       - 'public/editor.html'
+      - 'public/syntax.toml'
 
 jobs:
   notify:
