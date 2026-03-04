@@ -676,6 +676,51 @@
             }
 
             bindGlobalEvents() {
+                const markReadAndRoute = (card) => {
+                    history.replaceState(null, '', '#' + card.dataset.id);
+                    const itemNode = card.closest('.item');
+                    if (itemNode.classList.contains('unread')) {
+                        itemNode.classList.remove('unread');
+                        this.readHashes.add(card.dataset.hash);
+                        localStorage.setItem('dream_read_hashes', JSON.stringify([...this.readHashes]));
+                        this.updateUnreadTagState();
+                    }
+                };
+
+                const triggerRipple = (e, card) => {
+                    if (this.isPrivateMode) {
+                        const rect = card.getBoundingClientRect();
+                        const ripple = document.createElement('div');
+                        ripple.className = 'ripple';
+                        ripple.style.cssText = `left:${e.clientX - rect.left}px; top:${e.clientY - rect.top}px; width:40px; height:40px; transform-origin:center; margin-top:-20px; margin-left:-20px;`;
+                        card.appendChild(ripple);
+                        setTimeout(() => ripple.remove(), 800);
+                    }
+                };
+
+                document.addEventListener('click', (e) => {
+                    const card = e.target.closest('.card');
+                    if (!card) return;
+
+                    const isCollapsed = card.classList.contains('has-more') && !card.classList.contains('expanded') && !card.classList.contains('locked');
+                    
+                    if (isCollapsed) {
+                        if (e.target.closest('a, img, button, [onclick], [data-interactive]')) {
+                            e.stopPropagation();
+                            e.preventDefault();
+
+                            markReadAndRoute(card);
+                            card.classList.add('locked');
+                            
+                            const inner = card.querySelector('.card-inner');
+                            inner.style.maxHeight = `${inner.scrollHeight}px`;
+                            setTimeout(() => { if (card.classList.contains('locked')) inner.style.maxHeight = 'none'; }, 600);
+                            
+                            triggerRipple(e, card);
+                        }
+                    }
+                }, true);
+
                 document.addEventListener('pointerdown', (e) => {
                     const card = e.target.closest('.card');
                     if (card && card.classList.contains('has-more') && !e.target.closest('a') && e.target.tagName !== 'IMG') {
@@ -685,13 +730,21 @@
                         this.pressTimer = setTimeout(() => {
                             this.isLongPress = true;
                             if (navigator.vibrate) navigator.vibrate(50);
-                            card.classList.toggle('locked');
                             const inner = card.querySelector('.card-inner');
-                            if (card.classList.contains('locked')) {
-                                inner.style.maxHeight = `${inner.scrollHeight}px`;
+                            if (!card.classList.contains('locked')) {
+                                const wasExpanded = card.classList.contains('expanded');
+                                card.classList.add('locked');
+                                if (!wasExpanded) {
+                                    inner.style.maxHeight = `${inner.scrollHeight}px`;
+                                    setTimeout(() => { if (card.classList.contains('locked') || card.classList.contains('expanded')) inner.style.maxHeight = 'none'; }, 600);
+                                } else {
+                                    inner.style.maxHeight = 'none';
+                                }
                             } else {
+                                inner.style.maxHeight = `${inner.scrollHeight}px`;
+                                inner.offsetHeight;
+                                card.classList.remove('locked', 'expanded');
                                 inner.style.maxHeight = '';
-                                card.classList.remove('expanded');
                             }
                         }, 500);
                     }
@@ -742,32 +795,36 @@
                     
                     const card = e.target.closest('.card');
                     if (card) {
-                        if (e.target.closest('a') || e.target.tagName === 'IMG') return;
                         if (this.isLongPress) { this.isLongPress = false; return; }
-                        
-                        history.replaceState(null, '', '#' + card.dataset.id);
-                        
-                        const itemNode = card.closest('.item');
-                        if (itemNode.classList.contains('unread')) {
-                            itemNode.classList.remove('unread');
-                            this.readHashes.add(card.dataset.hash);
-                            localStorage.setItem('dream_read_hashes', JSON.stringify([...this.readHashes]));
-                            this.updateUnreadTagState();
+
+                        const hasMore = card.classList.contains('has-more');
+                        const isLocked = card.classList.contains('locked');
+                        const isExpanded = card.classList.contains('expanded');
+                        const isCollapsed = hasMore && !isLocked && !isExpanded;
+
+                        if (e.target.closest('a, img, button, [onclick], [data-interactive]')) {
+                            if (!isCollapsed) return;
+                        } else if (isLocked) {
+                            return;
                         }
                         
-                        if (card.classList.contains('has-more')) {
+                        markReadAndRoute(card);
+                        
+                        if (hasMore) {
                             const inner = card.querySelector('.card-inner');
-                            inner.style.maxHeight = card.classList.toggle('expanded') ? `${inner.scrollHeight}px` : '';
+                            if (isCollapsed) {
+                                card.classList.add('expanded');
+                                inner.style.maxHeight = `${inner.scrollHeight}px`;
+                                setTimeout(() => { if (card.classList.contains('expanded')) inner.style.maxHeight = 'none'; }, 600);
+                            } else if (isExpanded) {
+                                inner.style.maxHeight = `${inner.scrollHeight}px`;
+                                inner.offsetHeight;
+                                card.classList.remove('expanded');
+                                inner.style.maxHeight = '';
+                            }
                         }
 
-                        if (this.isPrivateMode) {
-                            const rect = card.getBoundingClientRect();
-                            const ripple = document.createElement('div');
-                            ripple.className = 'ripple';
-                            ripple.style.cssText = `left:${e.clientX - rect.left}px; top:${e.clientY - rect.top}px; width:40px; height:40px; transform-origin:center; margin-top:-20px; margin-left:-20px;`;
-                            card.appendChild(ripple);
-                            setTimeout(() => ripple.remove(), 800);
-                        }
+                        triggerRipple(e, card);
                         return;
                     }
 
