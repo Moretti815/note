@@ -559,9 +559,11 @@ view_type = "icon_class"
 view_value = "ri-eye-off-line"
 
 [[rules]]
-prefix = "↓↓"
-suffix = "↑↑"
-replacement = '''<div class="custom-fold"><div class="fold-summary" onclick="this.parentNode.classList.toggle('is-open')">点击展开 / 折叠</div><div class="fold-wrapper"><div class="fold-content"><div class="fold-inner">$1</div></div></div></div>'''
+regex = '↓↓\s*([^\n]*?)\s*\r?\n\s*(.*?)\s*\r?\n↑↑'
+flags = "gs"
+prefix = "↓↓ 点击展开 / 折叠\n"
+suffix = "\n↑↑"
+replacement = '''<div class="custom-fold"><div class="fold-summary" onclick="this.parentNode.classList.toggle('is-open')">$1</div><div class="fold-wrapper"><div class="fold-content"><div class="fold-inner">$2</div></div></div></div>'''
 css = """
 .custom-fold { background: #fff5f7; border-radius: 16px; border: 2px dashed #ffb3c1; margin: 1em 0; box-shadow: 0 2px 4px rgba(209,107,128,0.12); overflow: hidden; }
 .fold-summary { padding: 0.8rem 1.2rem; cursor: pointer; font-weight: bold; color: #d16b80; user-select: none; transition: background 0.3s ease; }
