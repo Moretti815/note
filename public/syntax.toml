@@ -33,6 +33,10 @@ type = "underline_color"
 template = '<span style="font-size: 1.1rem; font-family: ui-monospace, monospace; text-decoration: underline; text-decoration-color: {{value}}; text-decoration-thickness: 2px; text-underline-offset: 2px; line-height: 1;">U</span>'
 
 [[view_templates]]
+type = "underline_dashed_color"
+template = '<span style="font-size: 1.1rem; font-family: ui-monospace, monospace; text-decoration: underline dashed; text-decoration-color: {{value}}; text-decoration-thickness: 2px; text-underline-offset: 2px; line-height: 1;">U</span>'
+
+[[view_templates]]
 type = "wavy_color"
 template = '<span style="font-size: 1.1rem; font-family: ui-monospace, monospace; text-decoration: underline wavy {{value}}; text-underline-offset: 3px; line-height: 1;">W</span>'
 
@@ -97,7 +101,7 @@ view_value = "ri-subtract-line"
 ####################
 
 [merge_groups.underline_color]
-title = "彩色下划线"
+title = "下划线"
 icon_html = """<i class="ri-underline"></i><i class="ri-arrow-down-s-line" style="font-size: 0.8em; margin-left: -2px;"></i>"""
 
 [[rules]]
@@ -172,8 +176,84 @@ view_value = "#e599f7"
 
 ####################
 
+[merge_groups.underline_dashed_color]
+title = "虚线"
+icon_html = """<i class="ri-underline"></i><i class="ri-mist-line" style="font-size: 0.75em; margin-left: -4px; vertical-align: bottom; opacity: 0.8;"></i>"""
+
+[[rules]]
+prefix = "+_+"
+suffix = "+_+"
+replacement = '<span class="ud-default">$1</span>'
+css = '.ud-default { text-decoration: underline dashed currentColor 2px; text-underline-offset: 3px; text-decoration-skip-ink: none; }'
+group = "underline_dashed_color"
+title = "虚线"
+view_type = "underline_dashed_color"
+view_value = "currentColor"
+
+[[rules]]
+prefix = "{ud-r}"
+suffix = "{/ud-r}"
+replacement = '<span class="ud-red">$1</span>'
+css = '.ud-red { text-decoration: underline dashed #ff8787 2px; text-underline-offset: 3px; text-decoration-skip-ink: none; }'
+group = "underline_dashed_color"
+title = "红虚线"
+view_type = "underline_dashed_color"
+view_value = "#ff8787"
+
+[[rules]]
+prefix = "{ud-p}"
+suffix = "{/ud-p}"
+replacement = '<span class="ud-pink">$1</span>'
+css = '.ud-pink { text-decoration: underline dashed #faa2c1 2px; text-underline-offset: 3px; text-decoration-skip-ink: none; }'
+group = "underline_dashed_color"
+title = "粉虚线"
+view_type = "underline_dashed_color"
+view_value = "#faa2c1"
+
+[[rules]]
+prefix = "{ud-g}"
+suffix = "{/ud-g}"
+replacement = '<span class="ud-green">$1</span>'
+css = '.ud-green { text-decoration: underline dashed #8ce99a 2px; text-underline-offset: 3px; text-decoration-skip-ink: none; }'
+group = "underline_dashed_color"
+title = "绿虚线"
+view_type = "underline_dashed_color"
+view_value = "#8ce99a"
+
+[[rules]]
+prefix = "{ud-b}"
+suffix = "{/ud-b}"
+replacement = '<span class="ud-blue">$1</span>'
+css = '.ud-blue { text-decoration: underline dashed #74c0fc 2px; text-underline-offset: 3px; text-decoration-skip-ink: none; }'
+group = "underline_dashed_color"
+title = "蓝虚线"
+view_type = "underline_dashed_color"
+view_value = "#74c0fc"
+
+[[rules]]
+prefix = "{ud-y}"
+suffix = "{/ud-y}"
+replacement = '<span class="ud-yellow">$1</span>'
+css = '.ud-yellow { text-decoration: underline dashed #ffd43b 2px; text-underline-offset: 3px; text-decoration-skip-ink: none; }'
+group = "underline_dashed_color"
+title = "黄虚线"
+view_type = "underline_dashed_color"
+view_value = "#ffd43b"
+
+[[rules]]
+prefix = "{ud-u}"
+suffix = "{/ud-u}"
+replacement = '<span class="ud-purple">$1</span>'
+css = '.ud-purple { text-decoration: underline dashed #e599f7 2px; text-underline-offset: 3px; text-decoration-skip-ink: none; }'
+group = "underline_dashed_color"
+title = "紫虚线"
+view_type = "underline_dashed_color"
+view_value = "#e599f7"
+
+####################
+
 [merge_groups.wavy_color]
-title = "彩色波浪线"
+title = "波浪线"
 icon_html = """<svg viewBox="0 0 1088 1024" width="1.2em" height="1.2em" style="vertical-align: -0.2em; fill: currentColor;"><path d="M1069.248 424.128l-73.92 116.8a80 80 0 0 1-129.664 7.68l-50.4-61.92a48 48 0 0 0-74.496 0l-56.896 69.952a80 80 0 0 1-124.128 0l-56.896-69.952a48 48 0 0 0-74.464 0l-53.92 66.272a80 80 0 0 1-126.912-3.616l-38.08-52.704a48 48 0 0 0-77.824 0l-86.976 120.32-25.92-18.784 87.008-120.256a80 80 0 0 1 129.632 0l38.08 52.672a48 48 0 0 0 76.16 2.176l53.92-66.24a80 80 0 0 1 124.16 0l56.896 69.92a48 48 0 0 0 74.464 0l56.896-69.952a80 80 0 0 1 124.128 0l50.4 61.952a48 48 0 0 0 77.76-4.64l73.92-116.8 27.072 17.12z"></path></svg><i class="ri-arrow-down-s-line" style="font-size: 0.8em; margin-left: -2px;"></i>"""
 
 [[rules]]
