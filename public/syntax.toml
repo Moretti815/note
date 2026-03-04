@@ -118,7 +118,7 @@ view_value = "ri-underline"
 prefix = "{u-r}"
 suffix = "{/u-r}"
 replacement = '<span class="u-red">$1</span>'
-css = '.u-red { text-decoration: underline; text-decoration-color: #ff8787; text-decoration-thickness: 2px; text-underline-offset: 2px; }'
+css = '.u-red { text-decoration: underline; text-decoration-color: #ff8787; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }'
 group = "underline_color"
 title = "红下划线"
 view_type = "underline_color"
@@ -128,7 +128,7 @@ view_value = "#ff8787"
 prefix = "{u-p}"
 suffix = "{/u-p}"
 replacement = '<span class="u-pink">$1</span>'
-css = '.u-pink { text-decoration: underline; text-decoration-color: #faa2c1; text-decoration-thickness: 2px; text-underline-offset: 2px; }'
+css = '.u-pink { text-decoration: underline; text-decoration-color: #faa2c1; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }'
 group = "underline_color"
 title = "粉下划线"
 view_type = "underline_color"
@@ -138,7 +138,7 @@ view_value = "#faa2c1"
 prefix = "{u-g}"
 suffix = "{/u-g}"
 replacement = '<span class="u-green">$1</span>'
-css = '.u-green { text-decoration: underline; text-decoration-color: #8ce99a; text-decoration-thickness: 2px; text-underline-offset: 2px; }'
+css = '.u-green { text-decoration: underline; text-decoration-color: #8ce99a; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }'
 group = "underline_color"
 title = "绿下划线"
 view_type = "underline_color"
@@ -148,7 +148,7 @@ view_value = "#8ce99a"
 prefix = "{u-b}"
 suffix = "{/u-b}"
 replacement = '<span class="u-blue">$1</span>'
-css = '.u-blue { text-decoration: underline; text-decoration-color: #74c0fc; text-decoration-thickness: 2px; text-underline-offset: 2px; }'
+css = '.u-blue { text-decoration: underline; text-decoration-color: #74c0fc; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }'
 group = "underline_color"
 title = "蓝下划线"
 view_type = "underline_color"
@@ -158,7 +158,7 @@ view_value = "#74c0fc"
 prefix = "{u-y}"
 suffix = "{/u-y}"
 replacement = '<span class="u-yellow">$1</span>'
-css = '.u-yellow { text-decoration: underline; text-decoration-color: #ffd43b; text-decoration-thickness: 2px; text-underline-offset: 2px; }'
+css = '.u-yellow { text-decoration: underline; text-decoration-color: #ffd43b; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }'
 group = "underline_color"
 title = "黄下划线"
 view_type = "underline_color"
@@ -168,7 +168,7 @@ view_value = "#ffd43b"
 prefix = "{u-u}"
 suffix = "{/u-u}"
 replacement = '<span class="u-purple">$1</span>'
-css = '.u-purple { text-decoration: underline; text-decoration-color: #e599f7; text-decoration-thickness: 2px; text-underline-offset: 2px; }'
+css = '.u-purple { text-decoration: underline; text-decoration-color: #e599f7; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }'
 group = "underline_color"
 title = "紫下划线"
 view_type = "underline_color"
@@ -184,7 +184,7 @@ icon_html = """<i class="ri-underline"></i><i class="ri-mist-line" style="font-s
 prefix = "+_+"
 suffix = "+_+"
 replacement = '<span class="ud-default">$1</span>'
-css = '.ud-default { text-decoration: underline dashed currentColor 2px; text-underline-offset: 3px; text-decoration-skip-ink: none; }'
+css = '.ud-default { text-decoration: underline dashed currentColor 1.5px; text-underline-offset: 4px; text-decoration-skip-ink: none; }'
 group = "underline_dashed_color"
 title = "虚线"
 view_type = "underline_dashed_color"
@@ -194,7 +194,7 @@ view_value = "currentColor"
 prefix = "{ud-r}"
 suffix = "{/ud-r}"
 replacement = '<span class="ud-red">$1</span>'
-css = '.ud-red { text-decoration: underline dashed #ff8787 2px; text-underline-offset: 3px; text-decoration-skip-ink: none; }'
+css = '.ud-red { text-decoration: underline dashed #ff8787 1.5px; text-underline-offset: 4px; text-decoration-skip-ink: none; }'
 group = "underline_dashed_color"
 title = "红虚线"
 view_type = "underline_dashed_color"
@@ -204,7 +204,7 @@ view_value = "#ff8787"
 prefix = "{ud-p}"
 suffix = "{/ud-p}"
 replacement = '<span class="ud-pink">$1</span>'
-css = '.ud-pink { text-decoration: underline dashed #faa2c1 2px; text-underline-offset: 3px; text-decoration-skip-ink: none; }'
+css = '.ud-pink { text-decoration: underline dashed #faa2c1 1.5px; text-underline-offset: 4px; text-decoration-skip-ink: none; }'
 group = "underline_dashed_color"
 title = "粉虚线"
 view_type = "underline_dashed_color"
@@ -214,7 +214,7 @@ view_value = "#faa2c1"
 prefix = "{ud-g}"
 suffix = "{/ud-g}"
 replacement = '<span class="ud-green">$1</span>'
-css = '.ud-green { text-decoration: underline dashed #8ce99a 2px; text-underline-offset: 3px; text-decoration-skip-ink: none; }'
+css = '.ud-green { text-decoration: underline dashed #8ce99a 1.5px; text-underline-offset: 4px; text-decoration-skip-ink: none; }'
 group = "underline_dashed_color"
 title = "绿虚线"
 view_type = "underline_dashed_color"
@@ -224,7 +224,7 @@ view_value = "#8ce99a"
 prefix = "{ud-b}"
 suffix = "{/ud-b}"
 replacement = '<span class="ud-blue">$1</span>'
-css = '.ud-blue { text-decoration: underline dashed #74c0fc 2px; text-underline-offset: 3px; text-decoration-skip-ink: none; }'
+css = '.ud-blue { text-decoration: underline dashed #74c0fc 1.5px; text-underline-offset: 4px; text-decoration-skip-ink: none; }'
 group = "underline_dashed_color"
 title = "蓝虚线"
 view_type = "underline_dashed_color"
@@ -234,7 +234,7 @@ view_value = "#74c0fc"
 prefix = "{ud-y}"
 suffix = "{/ud-y}"
 replacement = '<span class="ud-yellow">$1</span>'
-css = '.ud-yellow { text-decoration: underline dashed #ffd43b 2px; text-underline-offset: 3px; text-decoration-skip-ink: none; }'
+css = '.ud-yellow { text-decoration: underline dashed #ffd43b 1.5px; text-underline-offset: 4px; text-decoration-skip-ink: none; }'
 group = "underline_dashed_color"
 title = "黄虚线"
 view_type = "underline_dashed_color"
@@ -244,7 +244,7 @@ view_value = "#ffd43b"
 prefix = "{ud-u}"
 suffix = "{/ud-u}"
 replacement = '<span class="ud-purple">$1</span>'
-css = '.ud-purple { text-decoration: underline dashed #e599f7 2px; text-underline-offset: 3px; text-decoration-skip-ink: none; }'
+css = '.ud-purple { text-decoration: underline dashed #e599f7 1.5px; text-underline-offset: 4px; text-decoration-skip-ink: none; }'
 group = "underline_dashed_color"
 title = "紫虚线"
 view_type = "underline_dashed_color"
@@ -260,7 +260,7 @@ icon_html = """<svg viewBox="0 0 1088 1024" width="1.2em" height="1.2em" style="
 prefix = "^^"
 suffix = "^^"
 replacement = '<span class="text-wavy">$1</span>'
-css = '.text-wavy { text-decoration: underline wavy var(--text-deco); text-underline-offset: 3px; }'
+css = '.text-wavy { text-decoration: underline wavy var(--text-deco); text-underline-offset: 4px; }'
 group = "wavy_color"
 title = "波浪线"
 view_type = "wavy_color"
@@ -270,7 +270,7 @@ view_value = "var(--text-main)"
 prefix = "{w-r}"
 suffix = "{/w-r}"
 replacement = '<span class="w-red">$1</span>'
-css = '.w-red { text-decoration: underline wavy #ff8787; text-underline-offset: 3px; }'
+css = '.w-red { text-decoration: underline wavy #ff8787; text-underline-offset: 4px; }'
 group = "wavy_color"
 title = "红波浪线"
 view_type = "wavy_color"
@@ -280,7 +280,7 @@ view_value = "#ff8787"
 prefix = "{w-p}"
 suffix = "{/w-p}"
 replacement = '<span class="w-pink">$1</span>'
-css = '.w-pink { text-decoration: underline wavy #faa2c1; text-underline-offset: 3px; }'
+css = '.w-pink { text-decoration: underline wavy #faa2c1; text-underline-offset: 4px; }'
 group = "wavy_color"
 title = "粉波浪线"
 view_type = "wavy_color"
@@ -290,7 +290,7 @@ view_value = "#faa2c1"
 prefix = "{w-g}"
 suffix = "{/w-g}"
 replacement = '<span class="w-green">$1</span>'
-css = '.w-green { text-decoration: underline wavy #8ce99a; text-underline-offset: 3px; }'
+css = '.w-green { text-decoration: underline wavy #8ce99a; text-underline-offset: 4px; }'
 group = "wavy_color"
 title = "绿波浪线"
 view_type = "wavy_color"
@@ -300,7 +300,7 @@ view_value = "#8ce99a"
 prefix = "{w-b}"
 suffix = "{/w-b}"
 replacement = '<span class="w-blue">$1</span>'
-css = '.w-blue { text-decoration: underline wavy #74c0fc; text-underline-offset: 3px; }'
+css = '.w-blue { text-decoration: underline wavy #74c0fc; text-underline-offset: 4px; }'
 group = "wavy_color"
 title = "蓝波浪线"
 view_type = "wavy_color"
@@ -310,7 +310,7 @@ view_value = "#74c0fc"
 prefix = "{w-y}"
 suffix = "{/w-y}"
 replacement = '<span class="w-yellow">$1</span>'
-css = '.w-yellow { text-decoration: underline wavy #ffd43b; text-underline-offset: 3px; }'
+css = '.w-yellow { text-decoration: underline wavy #ffd43b; text-underline-offset: 4px; }'
 group = "wavy_color"
 title = "黄波浪线"
 view_type = "wavy_color"
@@ -320,7 +320,7 @@ view_value = "#ffd43b"
 prefix = "{w-u}"
 suffix = "{/w-u}"
 replacement = '<span class="w-purple">$1</span>'
-css = '.w-purple { text-decoration: underline wavy #e599f7; text-underline-offset: 3px; }'
+css = '.w-purple { text-decoration: underline wavy #e599f7; text-underline-offset: 4px; }'
 group = "wavy_color"
 title = "紫波浪线"
 view_type = "wavy_color"
