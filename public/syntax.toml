@@ -581,6 +581,27 @@ view_type = "html"
 view_value = """<i class="ri-arrow-down-double-line"></i>"""
 
 [[rules]]
+regex = '\{tabs:\s*([^|]+?)\s*\|\s*([^}]+?)\}\s*(.*?)\s*\r?\n===\r?\n\s*(.*?)\s*\{/tabs\}'
+flags = "gs"
+prefix = "{tabs: 选项卡1 | 选项卡2}\n这里是第一个选项卡的内容...\n===\n"
+suffix = "这里是第二个选项卡的内容...\n{/tabs}"
+replacement = '''<div class="custom-tabs"><div class="tabs-nav"><div class="tab-btn active" onclick="this.parentElement.nextElementSibling.children[0].style.display='block'; this.parentElement.nextElementSibling.children[1].style.display='none'; this.classList.add('active'); this.nextElementSibling.classList.remove('active');">$1</div><div class="tab-btn" onclick="this.parentElement.nextElementSibling.children[0].style.display='none'; this.parentElement.nextElementSibling.children[1].style.display='block'; this.classList.add('active'); this.previousElementSibling.classList.remove('active');">$2</div></div><div class="tabs-content"><div class="tab-pane" style="display:block;">$3</div><div class="tab-pane" style="display:none;">$4</div></div></div>'''
+css = """
+.custom-tabs { background: #fff5f7; border-radius: 16px; border: 2px dashed #ffb3c1; margin: 1em 0; box-shadow: 0 2px 4px rgba(209,107,128,0.12); overflow: hidden; }
+.tabs-nav { display: flex; border-bottom: 2px dashed #ffb3c1; background: rgba(255,179,193,0.15); }
+.tab-btn { flex: 1; text-align: center; padding: 0.8rem 1.2rem; cursor: pointer; font-weight: bold; color: #d16b80; user-select: none; transition: all 0.3s ease; opacity: 0.5; }
+.tab-btn:first-child { border-right: 2px dashed #ffb3c1; }
+.tab-btn.active { opacity: 1; background: rgba(255,255,255,0.6); color: #b06a7b; }
+.tabs-content { background: rgba(255,255,255,0.6); }
+.tab-pane { padding: 1.2rem; font-size: 0.95em; color: #b06a7b; line-height: 1.7; animation: tabFadeIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
+@keyframes tabFadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+"""
+group = "magic_tools"
+title = "双栏选项卡"
+view_type = "icon_class"
+view_value = "ri-layout-column-line"
+
+[[rules]]
 regex = '\{rainbow-([^\}]+)\}(.*?)\{/rainbow\}'
 flags = "gs"
 prefix = "{rainbow-90deg, #74c0fc, #e599f7, #faa2c1}"
