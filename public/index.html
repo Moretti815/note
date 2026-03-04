@@ -228,20 +228,21 @@
             transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); cursor: pointer; -webkit-tap-highlight-color: transparent;
             overflow: hidden; transform-origin: center bottom;
         }
-        .card:active { transform: scale(0.99); box-shadow: 0 8px 25px var(--glow-accent), inset 0 0 0 1px rgb(255 255 255 / 40%); border-color: rgb(255 255 255 / 80%); transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1); }
-
+        .card:active { transform: translateY(2px); box-shadow: 0 2px 12px var(--glow-accent), inset 0 2px 8px rgb(255 255 255 / 60%); border-color: rgb(255 255 255 / 80%); transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1); }
         body.private-mode .card { box-shadow: 0 8px 30px rgb(242 198 208 / 12%), inset 0 0 20px rgb(255 255 255 / 60%); border-color: rgb(255 255 255 / 50%); }
-        body.private-mode .card:active { transform: scale(0.99); box-shadow: 0 8px 30px rgb(242 198 208 / 30%), inset 0 0 25px rgb(255 255 255 / 80%); }
+        body.private-mode .card:active { transform: translateY(2px); box-shadow: 0 2px 15px rgb(242 198 208 / 30%), inset 0 2px 10px rgb(255 255 255 / 70%); border-color: rgb(255 255 255 / 90%); }
+        .card.locked { border-color: var(--timeline-accent); box-shadow: 0 6px 20px var(--glow-accent), inset 0 0 0 1px rgb(255 255 255 / 80%); }
+        body.private-mode .card.locked { border-color: var(--private-accent); box-shadow: 0 6px 25px rgb(242 198 208 / 30%), inset 0 0 0 1px rgb(255 255 255 / 90%); }
 
         .card-id {
             position: absolute; top: 1.2rem; right: 1.4rem; font-size: 0.75rem;
             font-family: system-ui, sans-serif; color: var(--text-muted); opacity: 0.25;
             pointer-events: none; transition: opacity 0.3s ease; z-index: 2;
         }
-        .card:active .card-id { opacity: 0.5; }
+        .card:active .card-id, .card.locked .card-id { opacity: 0.5; }
 
         .card-inner { padding: 1.2rem 1.4rem; line-height: 1.7; font-size: 0.95rem; max-height: calc(1.7em * 5 + 2.4rem); overflow: hidden; transition: max-height 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
-        .card.expanded .card-inner { max-height: 2000px; }
+        .card.expanded .card-inner, .card.locked .card-inner { max-height: 2000px; }
         .card-tag { color: var(--rose-ellipsis); margin-inline-end: 0.4rem; display: inline-block; font-family: system-ui, sans-serif; font-size: 0.85rem; }
         .card-link { color: var(--rose-ellipsis); text-decoration: none; border-bottom: 1px dashed rgb(216 140 154 / 40%); transition: all 0.3s ease; padding-bottom: 1px; word-break: break-all; }
         .card-link:hover { border-bottom-color: var(--rose-ellipsis); background: rgb(216 140 154 / 10%); }
@@ -252,7 +253,7 @@
         .gallery.grid-2 { grid-template-columns: repeat(2, 1fr); }
         .gallery.grid-3 { grid-template-columns: repeat(3, 1fr); }
         .gallery .card-img { margin: 0; aspect-ratio: 1; object-fit: cover; width: 100%; height: 100%; }
-        .card.has-more:not(.expanded) .card-img, .card.has-more:not(.expanded) .gallery { pointer-events: none; }
+        .card.has-more:not(.expanded):not(.locked) .card-img, .card.has-more:not(.expanded):not(.locked) .gallery { pointer-events: none; }
 
         .card-mask {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 3.5rem;
@@ -261,8 +262,8 @@
             opacity: 1; transition: opacity 0.4s ease; pointer-events: none; z-index: 1;
         }
         body.private-mode .card-mask { background: linear-gradient(to bottom, transparent, rgb(255 253 254 / 85%) 50%, rgb(255 253 254 / 98%) 100%); }
-        .card.has-more:not(.expanded) .card-mask { display: flex; }
-        .card.has-more.expanded .card-mask { display: flex; opacity: 0; }
+        .card.has-more:not(.expanded):not(.locked) .card-mask { display: flex; }
+        .card.has-more.expanded .card-mask, .card.has-more.locked .card-mask { display: flex; opacity: 0; }
         .ellipsis { color: var(--rose-ellipsis); font-size: 1.2rem; letter-spacing: 0.15em; line-height: 1; transform: translateY(2px); user-select: none; -webkit-user-select: none; }
         .empty-tip { text-align: center; color: var(--text-muted); font-size: 0.95rem; letter-spacing: 0.1em; margin-block-start: 2.5rem; font-style: italic; opacity: 0; }
     </style>
@@ -446,6 +447,11 @@
                 this.unlockMode = null;
                 this.readHashes = new Set(JSON.parse(localStorage.getItem('dream_read_hashes') || '[]'));
                 this.zoomInstance = null;
+
+                this.pressTimer = null;
+                this.isLongPress = false;
+                this.startX = 0;
+                this.startY = 0;
             }
 
             cleanDeadHashes() {
@@ -670,6 +676,43 @@
             }
 
             bindGlobalEvents() {
+                document.addEventListener('pointerdown', (e) => {
+                    const card = e.target.closest('.card');
+                    if (card && card.classList.contains('has-more') && !e.target.closest('a') && e.target.tagName !== 'IMG') {
+                        this.isLongPress = false;
+                        this.startX = e.clientX;
+                        this.startY = e.clientY;
+                        this.pressTimer = setTimeout(() => {
+                            this.isLongPress = true;
+                            if (navigator.vibrate) navigator.vibrate(50);
+                            card.classList.toggle('locked');
+                            const inner = card.querySelector('.card-inner');
+                            if (card.classList.contains('locked')) {
+                                inner.style.maxHeight = `${inner.scrollHeight}px`;
+                            } else {
+                                inner.style.maxHeight = '';
+                                card.classList.remove('expanded');
+                            }
+                        }, 500);
+                    }
+                });
+
+                const clearPress = (e) => {
+                    if (this.pressTimer) {
+                        if (e.type === 'pointermove') {
+                            if (Math.abs(e.clientX - this.startX) > 10 || Math.abs(e.clientY - this.startY) > 10) {
+                                clearTimeout(this.pressTimer);
+                            }
+                        } else {
+                            clearTimeout(this.pressTimer);
+                        }
+                    }
+                };
+
+                document.addEventListener('pointermove', clearPress);
+                document.addEventListener('pointerup', clearPress);
+                document.addEventListener('pointercancel', clearPress);
+
                 document.addEventListener('click', (e) => {
                     const isDiamond = e.target.closest('.diamond-link');
                     const isInternalLink = e.target.closest('a.card-link') && e.target.closest('a.card-link').getAttribute('href').startsWith('#');
@@ -700,6 +743,8 @@
                     const card = e.target.closest('.card');
                     if (card) {
                         if (e.target.closest('a') || e.target.tagName === 'IMG') return;
+                        if (this.isLongPress) { this.isLongPress = false; return; }
+                        
                         history.replaceState(null, '', '#' + card.dataset.id);
                         
                         const itemNode = card.closest('.item');
