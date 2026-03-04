@@ -70,7 +70,7 @@ curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/c
 > [!NOTE]
 > 如果希望手动配置语法文件, 而不是跟随仓库更新, 则去掉 **Build command** 末尾的 `syntax.toml`
 
-这样, 你的仓库触发 `Deploy` 时, 都会自动拉取并注入最新版本的 Petal Note 骨架, 同时自动处理各种文件的加密与分发, 均在 `config.toml` 中设置, 个人内容仓库保持纯净
+这样, 你的仓库触发 `Deploy` 时, 都会自动拉取并注入最新版本的 Petal Note 骨架, 同时自动处理 **各种文件的加密** 与 **分发** , 个人内容仓库保持纯净
 
 > 若想要仅更新骨架, 手动运行一次 `Redeploy`
 
