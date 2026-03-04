@@ -251,6 +251,10 @@ global_css = """
 .md-h1 { font-size: 1.8rem; font-weight: 800; margin: 1.5em 0 0.8em; }
 """
 
+[[view_templates]]
+type = "icon_class"
+template = '<i class="{{value}}"></i>'
+
 [merge_groups.headings]
 title = "标题层级"
 icon_html = '<i class="ri-heading"></i><i class="ri-arrow-down-s-line" style="font-size: 0.8em; margin-left: -2px;"></i>'
