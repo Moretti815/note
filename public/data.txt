@@ -83,7 +83,7 @@ Petal
 **加粗** *斜体* ++下划线++ ~~删除线~~ ^^波浪线^^ %%减弱%%
 ||剧透/模糊效果|| <- 鼠标悬停查看
 (( 纸胶带 )) {fg-p}彩色前景色{/fg-p} {bg-p}彩色背景色{/bg-p}
-{w-r}彩色{/w-r}{w-g}波浪线{/w-g} {m_y}马克笔{/m_y} {m_u}五颜六色{/m_u}
+{w-r}彩色{/w-r}{w-g}波浪线{/w-g} {m-y}马克笔{/m-y} {m-u}五颜六色{/m-u}
 {u-u}彩色{/u-u}{u-p}下划线{/u-p}
 使用反斜杠进行转义，例如 {bg-g}\(( 纸胶带 )){/bg-g}
 配置得当，基本可以混合使用。
@@ -118,4 +118,3 @@ Petal
 如果你喜欢，请在 [GitHub](https://github.com/miniyu157/petal-note) 上帮我点个 Star 哦！✨
 也欢迎在 [Issues](https://github.com/miniyu157/petal-note/issues) 中提出任何建议和意见。
 也可以通过上方标签列表快速筛选。
----
