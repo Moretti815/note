@@ -563,16 +563,16 @@ regex = '↓↓\s*([^\n]*?)\s*\r?\n\s*(.*?)\s*\r?\n↑↑'
 flags = "gs"
 prefix = "↓↓ 点击展开 / 折叠\n"
 suffix = "\n↑↑"
-replacement = '''<div class="custom-fold"><div class="fold-summary" onclick="this.parentNode.classList.toggle('is-open')">$1</div><div class="fold-wrapper"><div class="fold-content"><div class="fold-inner">$2</div></div></div></div>'''
+replacement = '''<div class="custom-fold"><div class="fold-summary" onclick="event.stopImmediatePropagation();this.parentNode.classList.toggle('is-open')">$1</div><div class="fold-wrapper"><div class="fold-content"><div class="fold-inner">$2</div></div></div></div>'''
 css = """
 .custom-fold { background: #fff5f7; border-radius: 16px; border: 2px dashed #ffb3c1; margin: 1em 0; box-shadow: 0 2px 4px rgba(209,107,128,0.12); overflow: hidden; }
 .fold-summary { padding: 0.8rem 1.2rem; cursor: pointer; font-weight: bold; color: #d16b80; user-select: none; transition: background 0.3s ease; }
 .fold-summary::before { content: "🌸"; margin-right: 8px; display: inline-block; transition: transform 0.4s cubic-bezier(0.68,-0.55,0.26,1.55); }
-.custom-fold.is-open .fold-summary::before { transform: rotate(90deg) scale(1.1); }
+.custom-fold.is-open > .fold-summary::before { transform: rotate(90deg) scale(1.1); }
 .fold-wrapper { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s cubic-bezier(0.25,0.8,0.25,1); }
-.custom-fold.is-open .fold-wrapper { grid-template-rows: 1fr; }
+.custom-fold.is-open > .fold-wrapper { grid-template-rows: 1fr; }
 .fold-content { min-height: 0; overflow: hidden; opacity: 0; transform: translateY(-8px); transition: all 0.4s cubic-bezier(0.25,0.8,0.25,1); }
-.custom-fold.is-open .fold-content { opacity: 1; transform: translateY(0); }
+.custom-fold.is-open > .fold-wrapper > .fold-content { opacity: 1; transform: translateY(0); }
 .fold-inner { padding: 1.2rem; border-top: 2px dashed #ffb3c1; font-size: 0.95em; color: #b06a7b; background: rgba(255,255,255,0.6); line-height: 1.7; }
 """
 group = "magic_tools"
