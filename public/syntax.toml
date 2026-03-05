@@ -425,6 +425,8 @@ view_value = "#ebfbee"
 [[rules]]
 regex = '\{bg-([A-Za-z0-9#\(\),.\s]+)\}(.*?)\{/bg\}'
 flags = "gs"
+openTag = "{bg-"
+closeTag = "{/bg}"
 prefix = "{bg-#fff3bf}"
 suffix = "{/bg}"
 replacement = '<span style="background-color: color-mix(in srgb, $1, transparent 60%); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid color-mix(in srgb, $1 60%, var(--text-main) 40%);">$2</span>'
@@ -503,6 +505,8 @@ view_value = "#cb48e8"
 [[rules]]
 regex = '\{fg-([A-Za-z0-9#\(\),.\s]+)\}(.*?)\{/fg\}'
 flags = "gs"
+openTag = "{fg-"
+closeTag = "{/fg}"
 prefix = "{fg-#cb48e8}"
 suffix = "{/fg}"
 replacement = '<span style="color: $1; font-weight: inherit;">$2</span>'
@@ -586,6 +590,8 @@ icon_html = """<i class="ri-magic-line"></i><i class="ri-arrow-down-s-line" styl
 [[rules]]
 regex = '\{ruby-([^\}]+)\}(.*?)\{/ruby\}'
 flags = "g"
+openTag = "{ruby-"
+closeTag = "{/ruby}"
 prefix = "{ruby-zhu yin}"
 suffix = "{/ruby}"
 replacement = '<ruby class="magic-ruby">$2<rt>$1</rt></ruby>'
@@ -611,6 +617,8 @@ view_value = "ri-eye-off-line"
 [[rules]]
 regex = '↓↓\s*([^\n]*?)\s*\r?\n\s*(.*?)\s*\r?\n↑↑'
 flags = "gs"
+openTag = "↓↓"
+closeTag = "↑↑"
 prefix = "↓↓ 点击展开 / 折叠\n"
 suffix = "\n↑↑"
 replacement = '''<div class="custom-fold"><div class="fold-summary" onclick="event.stopImmediatePropagation();this.parentNode.classList.toggle('is-open')">$1</div><div class="fold-wrapper"><div class="fold-content"><div class="fold-inner">$2</div></div></div></div>'''
@@ -633,6 +641,8 @@ view_value = """<i class="ri-arrow-down-double-line"></i>"""
 [[rules]]
 regex = '\{tabs:\s*([^|]+?)\s*\|\s*([^}]+?)\}\s*(.*?)\s*\r?\n===\r?\n\s*(.*?)\s*\{/tabs\}'
 flags = "gs"
+openTag = "{tabs:"
+closeTag = "{/tabs}"
 prefix = "{tabs: 选项卡1 | 选项卡2}\n这里是第一个选项卡的内容...\n===\n"
 suffix = "这里是第二个选项卡的内容...\n{/tabs}"
 replacement = '''<div class="custom-tabs"><div class="tabs-nav"><div class="tab-btn active" onclick="this.parentElement.nextElementSibling.children[0].style.display='block'; this.parentElement.nextElementSibling.children[1].style.display='none'; this.classList.add('active'); this.nextElementSibling.classList.remove('active');">$1</div><div class="tab-btn" onclick="this.parentElement.nextElementSibling.children[0].style.display='none'; this.parentElement.nextElementSibling.children[1].style.display='block'; this.classList.add('active'); this.previousElementSibling.classList.remove('active');">$2</div></div><div class="tabs-content"><div class="tab-pane" style="display:block;">$3</div><div class="tab-pane" style="display:none;">$4</div></div></div>'''
@@ -654,6 +664,8 @@ view_value = "ri-layout-column-line"
 [[rules]]
 regex = '\{rainbow-([^\}]+)\}(.*?)\{/rainbow\}'
 flags = "gs"
+openTag = "{rainbow-"
+closeTag = "{/rainbow}"
 prefix = "{rainbow-90deg, #74c0fc, #e599f7, #faa2c1}"
 suffix = "{/rainbow}"
 replacement = '<span style="background-image: linear-gradient($1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; font-weight: bold;">$2</span>'
@@ -678,6 +690,8 @@ view_value = '<i class="ri-rainbow-fill" style="background: linear-gradient(to r
 [[rules]]
 regex = '\{muse\}\s*(.*?)\s*\{/muse\}'
 flags = "gs"
+openTag = "{muse}"
+closeTag = "{/muse}"
 prefix = "{muse}\n"
 suffix = "\n{/muse}"
 replacement = '<div class="magic-muse"><i class="ri-double-quotes-l quote-mark"></i><div class="muse-content">$1</div></div>'
@@ -720,6 +734,8 @@ view_value = """
 [[rules]]
 regex = '\{center\}\s*(.*?)\s*\{/center\}'
 flags = "gs"
+openTag = "{center}"
+closeTag = "{/center}"
 prefix = "{center}\n"
 suffix = "\n{/center}"
 replacement = '<div style="text-align: center;">$1</div>'
