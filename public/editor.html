@@ -6,7 +6,7 @@
     <title>内容编辑器</title>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.9.1/fonts/remixicon.min.css" rel="stylesheet">
     <style>
-        :root { --text-main: #5c4b51; --text-muted: #ab9ba0; --timeline-accent: #f4c2c2; --card-bg-blur: rgb(255 255 255 / 75%); --rose-ellipsis: #d88c9a; --bg-gradient-start: #fdfbfb; --bg-gradient-end: #f1f3f4; --danger-color: #e5989b; --success-color: #b5c99a; --text-deco: rgb(171 155 160 / 60%); --v-height: 100dvh; }
+        :root { --text-main: #5c4b51; --text-muted: #ab9ba0; --timeline-accent: #f4c2c2; --card-bg-blur: rgb(255 255 255 / 75%); --rose-ellipsis: #d88c9a; --bg-gradient-start: #fdfbfb; --bg-gradient-end: #f1f3f4; --danger-color: #e5989b; --success-color: #7b9666; --text-deco: rgb(171 155 160 / 60%); --v-height: 100dvh; }
         *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -14,14 +14,32 @@
         ::-webkit-scrollbar-thumb:hover { background: rgb(216 140 154 / 50%); }
         html, body { overscroll-behavior: none; }
         body { margin: 0; top: 0; left: 0; font-family: system-ui, -apple-system, sans-serif; background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%); color: var(--text-main); height: var(--v-height); overflow: hidden; display: flex; flex-direction: column; position: fixed; width: 100%; }
-        .toolbar { touch-action: none; display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background: var(--card-bg-blur); backdrop-filter: blur(12px); border-bottom: 1px solid rgb(255 255 255 / 40%); z-index: 10; flex-shrink: 0; }
+        .toolbar { touch-action: none; display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background: var(--card-bg-blur); backdrop-filter: blur(12px); border-bottom: 1px solid rgb(255 255 255 / 40%); z-index: 20; flex-shrink: 0; position: relative; }
         .tools-group { display: flex; gap: 1rem; align-items: center; }
+        .file-path-display { font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; padding: 0.2rem 0.6rem; background: rgb(255 255 255 / 40%); border-radius: 4px; border: 1px dashed rgb(216 140 154 / 30%); }
         .btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 0.4rem; border-radius: 6px; transition: background 0.3s ease, color 0.3s ease; display: flex; align-items: center; gap: 0.4rem; }
-        .btn span { font-size: 0.85rem; font-family: system-ui, sans-serif; letter-spacing: 0.05em; }
         .btn:hover { color: var(--rose-ellipsis); background: rgb(216 140 154 / 10%); }
         .btn.active { color: var(--rose-ellipsis); background: rgb(216 140 154 / 15%); }
         .btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-        .workspace { flex: 1; display: flex; position: relative; overflow: hidden; }
+        .main-container { flex: 1; display: flex; overflow: hidden; position: relative; }
+        .sidebar-wrapper { width: 260px; flex-shrink: 0; background: var(--card-bg-blur); backdrop-filter: blur(12px); border-right: 1px solid rgb(255 255 255 / 40%); display: flex; flex-direction: column; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), margin-left 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 15; overflow: hidden; }
+        .sidebar-wrapper.collapsed { margin-left: -260px; }
+        .sidebar-header { padding: 0.8rem 1.2rem; border-bottom: 1px dashed rgb(216 140 154 / 30%); font-size: 0.9rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; font-weight: 500; flex-shrink: 0; }
+        .repo-name-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-tree-container { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0.8rem 0; font-size: 0.85rem; scrollbar-gutter: stable; }
+        details.tree-folder > summary { cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 1.2rem; color: var(--text-main); user-select: none; transition: background 0.2s; outline: none; }
+        details.tree-folder > summary:hover { background: rgb(216 140 154 / 10%); }
+        details.tree-folder > summary::-webkit-details-marker { display: none; }
+        details.tree-folder[open] > summary i.ri-arrow-right-s-line { transform: rotate(90deg); transition: transform 0.2s; }
+        .summary-content, .file-content { display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .tree-actions { display: flex; opacity: 0; pointer-events: none; gap: 0.2rem; flex-shrink: 0; transition: opacity 0.2s; }
+        details.tree-folder > summary:hover .tree-actions, .tree-file:hover .tree-actions { opacity: 1; pointer-events: auto; }
+        .tree-action-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0.2rem; border-radius: 4px; font-size: 0.95rem; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .tree-action-btn:hover { color: var(--rose-ellipsis); background: rgb(216 140 154 / 20%); }
+        .tree-file { cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 1.2rem; color: var(--text-muted); transition: all 0.2s; }
+        .tree-file:hover, .tree-file.active { background: rgb(216 140 154 / 15%); color: var(--rose-ellipsis); }
+        .dirty-dot { width: 6px; height: 6px; background: var(--timeline-accent); border-radius: 50%; margin-left: 0.4rem; flex-shrink: 0; }
+        .workspace { flex: 1; display: flex; position: relative; overflow: hidden; background: rgb(253 251 251 / 30%); }
         .pane { flex: 1; height: 100%; overflow-y: auto; overflow-x: hidden; scrollbar-gutter: stable; overscroll-behavior-y: none; }
         #editor-pane { display: flex; flex-direction: column; padding: 0; position: relative; }
         .format-bar { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.6rem 1.5rem; background: rgb(253 251 251 / 40%); border-bottom: 1px dashed rgb(216 140 154 / 20%); align-items: center; flex-shrink: 0; position: relative; }
@@ -30,8 +48,6 @@
         .fmt-divider { width: 1px; height: 1.2rem; background: rgb(216 140 154 / 30%); margin: 0 0.4rem; flex-shrink: 0; }
         #editor { width: 100%; flex: 1; resize: none; border: none; background: transparent; color: var(--text-main); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 1.05rem; line-height: 1.8; outline: none; padding: 1.5rem 2rem; }
         #preview { background: rgb(253 251 251 / 60%); scroll-behavior: smooth; padding: 1.5rem 2rem; display: none; }
-        @media (min-width: 769px) { #btn-split { display: none !important; } #editor-pane { width: 50%; flex: none; display: flex; } #preview { width: 50%; flex: none; display: block; border-left: 1px dashed rgb(216 140 154 / 30%); } }
-        @media (max-width: 768px) { .toolbar { padding: 0.8rem 1rem; } #editor-pane { display: flex; flex-direction: column; width: 100%; flex: 1; } .format-bar { padding: 0.5rem 1rem; } #editor { padding: 1.2rem 1.2rem; } #preview { padding: 1.2rem 1.2rem; display: none; width: 100%; flex: 1; } .split-mode #editor-pane { display: none; } .split-mode #preview { display: block; } }
         .preview-item { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 2.5rem; }
         .preview-date { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.05em; margin-left: 0.2rem; }
         .preview-card { position: relative; background: var(--card-bg-blur); backdrop-filter: blur(12px) saturate(120%); -webkit-backdrop-filter: blur(12px) saturate(120%); border-radius: 8px; border: 1px solid rgb(255 255 255 / 60%); box-shadow: 0 4px 15px rgb(0 0 0 / 2%), inset 0 0 0 1px rgb(255 255 255 / 30%); padding: 1.2rem 1.4rem; line-height: 1.7; font-size: 0.95rem; word-wrap: break-word; }
@@ -47,19 +63,20 @@
         .gallery .card-img { margin: 0; aspect-ratio: 1; object-fit: cover; width: 100%; height: 100%; }
         .modal-overlay { position: fixed; inset: 0; background: rgb(253 251 251 / 60%); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal-box { background: var(--card-bg-blur); border: 1px solid rgb(255 255 255 / 80%); border-radius: 12px; padding: 2rem; width: 680px; max-width: 90vw; box-shadow: 0 15px 35px rgb(0 0 0 / 4%), inset 0 0 0 1px rgb(255 255 255 / 50%); display: flex; flex-direction: column; gap: 1.2rem; }
+        .modal-box { background: var(--card-bg-blur); border: 1px solid rgb(255 255 255 / 80%); border-radius: 12px; padding: 2rem; width: 850px; max-width: 95vw; box-shadow: 0 15px 35px rgb(0 0 0 / 4%), inset 0 0 0 1px rgb(255 255 255 / 50%); display: flex; flex-direction: column; gap: 1.2rem; }
         .modal-box.sm { width: 420px; }
         .modal-input-group { display: flex; flex-direction: column; gap: 0.8rem; }
         .modal-field { width: 100%; padding: 0.8rem 1rem; border: 1px solid rgb(216 140 154 / 30%); border-radius: 6px; background: rgb(255 255 255 / 60%); font-family: inherit; color: var(--text-main); font-size: 0.95rem; outline: none; transition: border-color 0.3s ease, background 0.3s ease; }
         .modal-field:focus { border-color: var(--timeline-accent); background: rgb(255 255 255 / 90%); }
         textarea.modal-field { resize: vertical; min-height: 80px; }
-        .diff-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: -0.5rem; border-bottom: 1px dashed rgb(216 140 154 / 30%); padding-bottom: 0.5rem; }
-        .diff-tabs { display: flex; gap: 0.5rem; }
-        .diff-tab { padding: 0.3rem 0.8rem; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; border-radius: 4px; transition: all 0.2s; }
-        .diff-tab.active { background: rgb(216 140 154 / 15%); color: var(--rose-ellipsis); }
+        .commit-layout { display: flex; height: 380px; max-height: 50vh; border: 1px solid rgb(216 140 154 / 30%); border-radius: 6px; overflow: hidden; background: rgb(255 255 255 / 40%); }
+        .commit-sidebar { width: 260px; border-right: 1px solid rgb(216 140 154 / 30%); overflow-y: auto; overflow-x: hidden; background: rgb(253 251 251 / 50%); padding: 0.8rem 0; font-size: 0.85rem; }
+        .commit-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        .commit-file-checkbox { cursor: pointer; accent-color: var(--timeline-accent); width: 14px; height: 14px; margin: 0; flex-shrink: 0; }
+        .diff-header { display: flex; justify-content: flex-end; align-items: center; padding: 0.4rem 0.8rem; border-bottom: 1px dashed rgb(216 140 154 / 30%); background: rgb(255 255 255 / 40%); }
         .diff-nav { display: flex; gap: 0.5rem; }
-        .diff-nav .btn { padding: 0.2rem; font-size: 1.2rem; }
-        .diff-container { position: relative; border-radius: 6px; background: rgb(0 0 0 / 2%); border: 1px solid rgb(0 0 0 / 5%); max-height: 280px; overflow-y: auto; padding: 0.5rem 0; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.85rem; line-height: 1.5; scroll-behavior: smooth; }
+        .diff-nav .btn { padding: 0.2rem; font-size: 1.1rem; }
+        .diff-container { flex: 1; position: relative; background: rgb(0 0 0 / 2%); overflow-y: auto; padding: 0.5rem 0; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.85rem; line-height: 1.5; scroll-behavior: smooth; }
         .diff-chunk { border-left: 3px solid var(--timeline-accent); padding-left: 0.5rem; margin: 0.4rem 0; background: rgb(255 255 255 / 40%); border-radius: 0 4px 4px 0; }
         .diff-line { padding: 0.1rem 0.5rem; white-space: pre-wrap; word-break: break-all; }
         .diff-add { background: rgb(181 201 154 / 25%); color: #4a5d3c; }
@@ -67,8 +84,8 @@
         .modal-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 0.5rem; }
         .btn-solid { background: var(--timeline-accent); color: #fff; padding: 0.6rem 1.5rem; border-radius: 6px; border: none; cursor: pointer; font-size: 0.95rem; font-family: inherit; transition: opacity 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 4px 10px rgb(244 194 194 / 30%); }
         .btn-solid:hover { opacity: 0.9; box-shadow: 0 6px 15px rgb(244 194 194 / 40%); }
-        .bottom-area { position: relative; flex-shrink: 0; touch-action: none; }
-        .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 1.5rem; padding-bottom: max(0.4rem, env(safe-area-inset-bottom)); background: rgb(253 251 251 / 80%); backdrop-filter: blur(12px); border-top: 1px dashed rgb(216 140 154 / 30%); font-size: 0.8rem; color: var(--text-muted); z-index: 20; }
+        .bottom-area { position: relative; flex-shrink: 0; touch-action: none; z-index: 20; }
+        .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 1.5rem; padding-bottom: max(0.4rem, env(safe-area-inset-bottom)); background: rgb(253 251 251 / 80%); backdrop-filter: blur(12px); border-top: 1px dashed rgb(216 140 154 / 30%); font-size: 0.8rem; color: var(--text-muted); }
         .status-left { display: flex; align-items: center; gap: 0.6rem; cursor: pointer; transition: color 0.2s; padding: 0.2rem 0; flex: 1; min-width: 0; }
         .status-left:hover { color: var(--text-main); }
         .status-indicator { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
@@ -95,30 +112,45 @@
         .fmt-dropdown-container { position: relative; display: flex; align-items: center; }
         .dropdown-menu { position: absolute; top: calc(100% + 4px); left: 50%; background: var(--card-bg-blur); backdrop-filter: blur(16px); border: 1px solid rgb(255 255 255 / 80%); border-radius: 8px; box-shadow: 0 8px 25px rgb(0 0 0 / 8%), inset 0 0 0 1px rgb(255 255 255 / 40%); padding: 0.4rem; z-index: 100; display: flex; gap: 0.3rem; flex-wrap: wrap; width: max-content; max-width: 260px; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1); transform: translateX(var(--shift-x, -50%)) translateY(-4px) scale(0.95); transform-origin: top center; }
         .dropdown-menu.active { opacity: 1; visibility: visible; transform: translateX(var(--shift-x, -50%)) translateY(0) scale(1); }
+        .sidebar-overlay { display: none; }
+        @media (min-width: 769px) { #btn-split { display: none !important; } #editor-pane { width: 50%; flex: none; display: flex; } #preview { width: 50%; flex: none; display: block; border-left: 1px dashed rgb(216 140 154 / 30%); } }
+        @media (max-width: 768px) { .toolbar { padding: 0.8rem 1rem; } #editor-pane { display: flex; flex-direction: column; width: 100%; flex: 1; } .format-bar { padding: 0.5rem 1rem; } #editor { padding: 1.2rem 1.2rem; } #preview { padding: 1.2rem 1.2rem; display: none; width: 100%; flex: 1; } .split-mode #editor-pane { display: none; } .split-mode #preview { display: block; } .sidebar-wrapper { position: absolute; height: 100%; left: 0; transform: translateX(0); margin-left: 0; box-shadow: 4px 0 25px rgb(0 0 0 / 10%); } .sidebar-wrapper.collapsed { transform: translateX(-100%); margin-left: 0; } .sidebar-overlay { position: absolute; inset: 0; background: rgb(253 251 251 / 40%); backdrop-filter: blur(4px); z-index: 10; display: none; } .sidebar-overlay.active { display: block; } .file-path-display { display: none; } .commit-layout { flex-direction: column; height: auto; max-height: 70vh; } .commit-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgb(216 140 154 / 30%); max-height: 150px; } .diff-container { min-height: 150px; } }
     </style>
 </head>
 <body>
+    <div id="dialog-modal" class="modal-overlay">
+        <div class="modal-box sm">
+            <div class="modal-input-group">
+                <div id="dialog-msg" style="font-size:0.95rem; color:var(--text-main); margin-bottom:0.2rem;"></div>
+                <input type="text" id="dialog-input" class="modal-field">
+            </div>
+            <div class="modal-actions">
+                <button class="btn" id="btn-dialog-cancel">取消</button>
+                <button class="btn-solid" id="btn-dialog-confirm">确认</button>
+            </div>
+        </div>
+    </div>
     <div id="commit-modal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-input-group">
                 <input type="text" id="commit-title" class="modal-field" placeholder="摘要">
                 <textarea id="commit-desc" class="modal-field" placeholder="补充详细描述..."></textarea>
             </div>
-            <div class="diff-header">
-                <div class="diff-tabs" id="diff-tabs">
-                    <div class="diff-tab" id="diff-tab-public" data-target="public">Public</div>
-                    <div class="diff-tab" id="diff-tab-private" data-target="private">Private</div>
-                </div>
-                <div class="diff-nav">
-                    <button class="btn" id="btn-diff-prev" title="上一处"><i class="ri-arrow-up-s-line"></i></button>
-                    <button class="btn" id="btn-diff-next" title="下一处"><i class="ri-arrow-down-s-line"></i></button>
+            <div class="commit-layout">
+                <div class="commit-sidebar" id="commit-file-list"></div>
+                <div class="commit-main">
+                    <div class="diff-header">
+                        <div class="diff-nav">
+                            <button class="btn" id="btn-diff-prev" title="上一处"><i class="ri-arrow-up-s-line"></i></button>
+                            <button class="btn" id="btn-diff-next" title="下一处"><i class="ri-arrow-down-s-line"></i></button>
+                        </div>
+                    </div>
+                    <div class="diff-container" id="diff-view"></div>
                 </div>
             </div>
-            <div class="diff-container" id="diff-view-public" style="display: none;"></div>
-            <div class="diff-container" id="diff-view-private" style="display: none;"></div>
             <div class="modal-actions">
                 <button class="btn" id="btn-commit-cancel">取消</button>
-                <button class="btn-solid" id="btn-commit-confirm">保存</button>
+                <button class="btn-solid" id="btn-commit-confirm">提交</button>
             </div>
         </div>
     </div>
@@ -136,35 +168,47 @@
     <div class="toolbar">
         <div class="tools-group">
             <button class="btn" id="btn-back" title="返回"><i class="ri-arrow-left-line"></i></button>
-            <button class="btn" id="btn-public" title="公开数据"><span>Public</span></button>
-            <button class="btn" id="btn-private" title="私有数据"><span>Private</span></button>
+            <button class="btn" id="btn-sidebar" title="资源管理器"><i class="ri-folder-3-line"></i></button>
+            <div class="file-path-display" id="current-file-path">未选择文件</div>
         </div>
         <div class="tools-group">
             <button class="btn" id="btn-split" title="预览切换"><i class="ri-layout-column-line"></i></button>
-            <button class="btn" id="btn-save" title="保存"><i class="ri-save-3-line"></i></button>
         </div>
     </div>
-    <div class="workspace" id="workspace">
-        <div class="pane" id="editor-pane">
-            <div class="format-bar">
-                <button class="fmt-btn" id="btn-undo" title="撤销"><i class="ri-arrow-go-back-line"></i></button>
-                <button class="fmt-btn" id="btn-redo" title="重做"><i class="ri-arrow-go-forward-line"></i></button>
-                <div class="fmt-divider"></div>
-                <div id="dynamic-fmt-btns" style="display:contents;"></div>
-                <div class="fmt-divider"></div>
-                <button class="fmt-btn fmt-action" data-type="link" data-prefix="[" data-suffix="]()" title="链接"><i class="ri-link"></i></button>
-                <button class="fmt-btn fmt-action" data-type="link" data-prefix="![" data-suffix="]()" title="图片"><i class="ri-image-line"></i></button>
-                <button class="fmt-btn" id="btn-upload-img" title="上传图片"><i class="ri-image-add-line"></i></button>
-                <input type="file" id="file-upload-input" accept="image/*" style="display: none;">
-                <button class="fmt-btn" id="btn-tag" title="标签"><i class="ri-hashtag"></i></button>
-                <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="---" data-suffix="" title="分割线"><i class="ri-separator"></i></button>
-                <div class="fmt-divider"></div>
-                <button class="fmt-btn" id="btn-locate" title="定位预览位置"><i class="ri-crosshair-2-line"></i></button>
+    <div class="main-container">
+        <div class="sidebar-wrapper" id="sidebar">
+            <div class="sidebar-header">
+                <i class="ri-git-repository-line"></i> <span class="repo-name-label" id="repo-name-display">初始化中...</span>
+                <div style="display:flex; gap:0.2rem;">
+                    <button class="btn" style="padding:0.2rem" id="btn-new-root" title="新建"><i class="ri-add-line"></i></button>
+                    <button class="btn" style="padding:0.2rem" id="btn-save" title="提交变更"><i class="ri-save-3-line"></i></button>
+                </div>
             </div>
-            <textarea id="editor" spellcheck="false"></textarea>
-            <div id="tag-dropdown" class="tag-dropdown"></div>
+            <div class="file-tree-container" id="file-tree"></div>
         </div>
-        <div class="pane" id="preview"></div>
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+        <div class="workspace" id="workspace">
+            <div class="pane" id="editor-pane">
+                <div class="format-bar">
+                    <button class="fmt-btn" id="btn-undo" title="撤销"><i class="ri-arrow-go-back-line"></i></button>
+                    <button class="fmt-btn" id="btn-redo" title="重做"><i class="ri-arrow-go-forward-line"></i></button>
+                    <div class="fmt-divider"></div>
+                    <div id="dynamic-fmt-btns" style="display:contents;"></div>
+                    <div class="fmt-divider"></div>
+                    <button class="fmt-btn fmt-action" data-type="link" data-prefix="[" data-suffix="]()" title="链接"><i class="ri-link"></i></button>
+                    <button class="fmt-btn fmt-action" data-type="link" data-prefix="![" data-suffix="]()" title="图片"><i class="ri-image-line"></i></button>
+                    <button class="fmt-btn" id="btn-upload-img" title="上传图片"><i class="ri-image-add-line"></i></button>
+                    <input type="file" id="file-upload-input" accept="image/*" style="display: none;">
+                    <button class="fmt-btn" id="btn-tag" title="标签"><i class="ri-hashtag"></i></button>
+                    <button class="fmt-btn fmt-action" data-type="wrap" data-prefix="---" data-suffix="" title="分割线"><i class="ri-separator"></i></button>
+                    <div class="fmt-divider"></div>
+                    <button class="fmt-btn" id="btn-locate" title="定位预览位置"><i class="ri-crosshair-2-line"></i></button>
+                </div>
+                <textarea id="editor" spellcheck="false" disabled></textarea>
+                <div id="tag-dropdown" class="tag-dropdown"></div>
+            </div>
+            <div class="pane" id="preview"></div>
+        </div>
     </div>
     <div class="bottom-area">
         <div class="console-panel" id="console-panel">
@@ -208,11 +252,11 @@
             encode(str) {
                 const bytes = new TextEncoder().encode(str);
                 let bin = '';
-                for (let i = 0; i < bytes.byteLength; i++) bin += String.fromCharCode(bytes[i]);
+                for (let i = 0; i < bytes.byteLength; i += 1024) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 1024));
                 return btoa(bin);
             },
             decode(b64) {
-                const bin = atob(b64);
+                const bin = atob(b64.replace(/\s/g, ''));
                 const bytes = new Uint8Array(bin.length);
                 for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
                 return new TextDecoder().decode(bytes);
@@ -228,19 +272,13 @@
                         if (m) {
                             openTag = m[1].replace(/\\/g, '');
                             if (openTag === '↓↓') closeTag = '↑↑';
-                            else if (openTag.startsWith('{')) {
-                                closeTag = openTag.endsWith('}') ? '{/' + openTag.substring(1) : '{/' + openTag.substring(1).replace(/[:\-].*/, '') + '}';
-                            }
+                            else if (openTag.startsWith('{')) closeTag = openTag.endsWith('}') ? '{/' + openTag.substring(1) : '{/' + openTag.substring(1).replace(/[:\-].*/, '') + '}';
                         }
                     }
                     return { ...r, openTag, closeTag };
                 });
             }
-
-            parse(str) {
-                return this.render(this.tokenize(str));
-            }
-
+            parse(str) { return this.render(this.tokenize(str)); }
             tokenize(str) {
                 let tokens = [], i = 0, len = str.length;
                 while (i < len) {
@@ -259,7 +297,6 @@
                             if (c2 > -1) { tokens.push({ type: 'link', content: this.tokenize(str.slice(i + 1, c1)), url: str.slice(c1 + 2, c2) }); i = c2 + 1; continue; }
                         }
                     }
-
                     let matched = false;
                     for (let r of this.customRules) {
                         if (r.regex) {
@@ -277,10 +314,7 @@
                                     if (outer.indexOf(r.openTag, r.openTag.length) > -1) {
                                         let out = outer.substring(0, r.openTag.length), innerD = 0, sIdx = -1;
                                         for (let k = r.openTag.length; k < outer.length - r.closeTag.length; ) {
-                                            if (outer[k] === '\\' && k + 1 < outer.length) { 
-                                                if (innerD === 0) out += outer.substring(k, k+2); 
-                                                k += 2; continue; 
-                                            }
+                                            if (outer[k] === '\\' && k + 1 < outer.length) { if (innerD === 0) out += outer.substring(k, k+2); k += 2; continue; }
                                             if (outer.startsWith(r.openTag, k)) { if (innerD === 0) sIdx = k; innerD++; k += r.openTag.length; }
                                             else if (outer.startsWith(r.closeTag, k)) {
                                                 innerD--; k += r.closeTag.length;
@@ -318,7 +352,6 @@
                         }
                     }
                     if (matched) continue;
-
                     let urlMatch = str.slice(i).match(/^https?:\/\/[^\s<]+/);
                     if (urlMatch) {
                         let url = urlMatch[0], trailing = '';
@@ -335,7 +368,6 @@
                     else a.push(c); return a;
                 }, []);
             }
-
             render(tokens) {
                 return tokens.map(t => {
                     if (t.type === 'text') return t.val;
@@ -353,22 +385,21 @@
                 this.commitModal = document.getElementById('commit-modal');
                 this.commitTitle = document.getElementById('commit-title');
                 this.commitDesc = document.getElementById('commit-desc');
-                this.diffViewPub = document.getElementById('diff-view-public');
-                this.diffViewPriv = document.getElementById('diff-view-private');
-                this.diffTabs = document.getElementById('diff-tabs');
-                this.tabPub = document.getElementById('diff-tab-public');
-                this.tabPriv = document.getElementById('diff-tab-private');
+                this.commitFileList = document.getElementById('commit-file-list');
+                this.diffView = document.getElementById('diff-view');
                 this.uploadModal = document.getElementById('upload-modal');
                 this.uploadPath = document.getElementById('upload-path');
                 this.editor = document.getElementById('editor');
                 this.preview = document.getElementById('preview');
                 this.workspace = document.getElementById('workspace');
+                this.sidebar = document.getElementById('sidebar');
+                this.sidebarOverlay = document.getElementById('sidebar-overlay');
                 this.btnCancel = document.getElementById('btn-cancel');
                 this.btnBack = document.getElementById('btn-back');
-                this.btnPub = document.getElementById('btn-public');
-                this.btnPriv = document.getElementById('btn-private');
+                this.btnSidebar = document.getElementById('btn-sidebar');
                 this.btnSplit = document.getElementById('btn-split');
                 this.btnSave = document.getElementById('btn-save');
+                this.btnNewRoot = document.getElementById('btn-new-root');
                 this.btnTag = document.getElementById('btn-tag');
                 this.tagDropdown = document.getElementById('tag-dropdown');
                 this.consolePanel = document.getElementById('console-panel');
@@ -376,22 +407,20 @@
                 this.btnConsoleToggle = document.getElementById('btn-console-toggle');
                 this.statusMsg = document.getElementById('status-msg');
                 this.statusIndicator = document.getElementById('status-indicator');
+                this.filePathDisplay = document.getElementById('current-file-path');
                 this.sysConfig = null;
                 this.authConfig = null;
                 this.syntaxRules = [];
-                this.currentMode = null; 
+                this.vfs = {};
+                this.currentPath = null;
                 this.fetchController = null;
                 this.pendingUploadFile = null;
                 this.savedSelection = null;
                 this.isManualUpload = false;
-                this.modesToCommit = [];
-                this.activeDiffView = null;
+                this.stagedFiles = new Set();
+                this.activeDiffPath = null;
                 this.diffNodes = [];
                 this.currentDiffIndex = 0;
-                this.docs = {
-                    public: { content: '', original: '', sha: null, loaded: false },
-                    private: { content: '', original: '', sha: null, loaded: false }
-                };
                 this.init();
                 this.initViewportHandler();
             }
@@ -417,13 +446,27 @@
                 this.consoleLogs.scrollTop = this.consoleLogs.scrollHeight;
                 this.statusMsg.innerText = msg;
                 this.statusIndicator.className = `status-indicator bg-${type}`;
-                if (loading) {
-                    this.statusIndicator.classList.add('loading-pulse');
-                    this.btnCancel.style.display = 'block';
-                } else {
-                    this.statusIndicator.classList.remove('loading-pulse');
-                    this.btnCancel.style.display = 'none';
-                }
+                if (loading) { this.statusIndicator.classList.add('loading-pulse'); this.btnCancel.style.display = 'block'; }
+                else { this.statusIndicator.classList.remove('loading-pulse'); this.btnCancel.style.display = 'none'; }
+            }
+            promptDialog(msg, defaultVal = '') {
+                return new Promise(resolve => {
+                    const modal = document.getElementById('dialog-modal'), msgEl = document.getElementById('dialog-msg'), inputEl = document.getElementById('dialog-input'), btnCancel = document.getElementById('btn-dialog-cancel'), btnConfirm = document.getElementById('btn-dialog-confirm');
+                    msgEl.innerText = msg; inputEl.style.display = 'block'; inputEl.value = defaultVal; modal.classList.add('active'); inputEl.focus(); inputEl.setSelectionRange(defaultVal.length, defaultVal.length);
+                    const cleanup = () => { modal.classList.remove('active'); btnCancel.replaceWith(btnCancel.cloneNode(true)); btnConfirm.replaceWith(btnConfirm.cloneNode(true)); inputEl.replaceWith(inputEl.cloneNode(true)); };
+                    document.getElementById('btn-dialog-cancel').addEventListener('click', () => { cleanup(); resolve(null); });
+                    document.getElementById('btn-dialog-confirm').addEventListener('click', () => { const val = document.getElementById('dialog-input').value.trim(); cleanup(); resolve(val); });
+                    document.getElementById('dialog-input').addEventListener('keyup', e => { if (e.key === 'Enter') document.getElementById('btn-dialog-confirm').click(); });
+                });
+            }
+            confirmDialog(msg) {
+                return new Promise(resolve => {
+                    const modal = document.getElementById('dialog-modal'), msgEl = document.getElementById('dialog-msg'), inputEl = document.getElementById('dialog-input'), btnCancel = document.getElementById('btn-dialog-cancel'), btnConfirm = document.getElementById('btn-dialog-confirm');
+                    msgEl.innerText = msg; inputEl.style.display = 'none'; modal.classList.add('active');
+                    const cleanup = () => { modal.classList.remove('active'); btnCancel.replaceWith(btnCancel.cloneNode(true)); btnConfirm.replaceWith(btnConfirm.cloneNode(true)); };
+                    document.getElementById('btn-dialog-cancel').addEventListener('click', () => { cleanup(); resolve(false); });
+                    document.getElementById('btn-dialog-confirm').addEventListener('click', () => { cleanup(); resolve(true); });
+                });
             }
             async init() {
                 try {
@@ -440,40 +483,11 @@
                                 const synData = parse(await synRes.text());
                                 this.syntaxRules = synData.rules || [];
                                 if (this.syntaxRules.length > 0 || synData.global_css) {
-                                    const style = document.createElement('style');
-                                    style.textContent = `${synData.global_css || ''}\n${this.syntaxRules.map(r => r.css).filter(Boolean).join('\n')}`;
-                                    document.head.appendChild(style);
-                                    
-                                    const viewTemplates = (synData.view_templates || []).reduce((a, t) => {
-                                        const k = t.type || t.id || t.name || Object.keys(t)[0];
-                                        const v = t.template || t.html || Object.values(t)[0];
-                                        if (k) a[k] = v;
-                                        return a;
-                                    }, {});
-                                    
-                                    const mg = synData.merge_groups;
-                                    const mergeMap = Array.isArray(mg) ? mg.reduce((a, g) => {
-                                        const k = g.id || g.group || g.name || Object.keys(g)[0];
-                                        if (k) a[k] = g;
-                                        return a;
-                                    }, {}) : (mg || {});
-                                    
-                                    const groups = [];
-                                    this.syntaxRules.forEach(r => {
-                                        const last = groups[groups.length - 1];
-                                        if (r.group && last && last.id === r.group) last.rules.push(r);
-                                        else groups.push({ id: r.group, rules: [r] });
-                                    });
-                                    
-                                    const getInnerHtml = (type, val) => {
-                                        const tpl = viewTemplates[type];
-                                        if (!tpl) return val || '';
-                                        if (typeof val === 'object' && val !== null) {
-                                            return Object.entries(val).reduce((acc, [k, v]) => acc.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'gi'), String(v)), tpl);
-                                        }
-                                        return tpl.replace(/\{\{value\}\}/gi, String(val || ''));
-                                    };
-                                    
+                                    const style = document.createElement('style'); style.textContent = `${synData.global_css || ''}\n${this.syntaxRules.map(r => r.css).filter(Boolean).join('\n')}`; document.head.appendChild(style);
+                                    const viewTemplates = (synData.view_templates || []).reduce((a, t) => { const k = t.type || t.id || t.name || Object.keys(t)[0]; const v = t.template || t.html || Object.values(t)[0]; if (k) a[k] = v; return a; }, {});
+                                    const mg = synData.merge_groups, mergeMap = Array.isArray(mg) ? mg.reduce((a, g) => { const k = g.id || g.group || g.name || Object.keys(g)[0]; if (k) a[k] = g; return a; }, {}) : (mg || {});
+                                    const groups = []; this.syntaxRules.forEach(r => { const last = groups[groups.length - 1]; if (r.group && last && last.id === r.group) last.rules.push(r); else groups.push({ id: r.group, rules: [r] }); });
+                                    const getInnerHtml = (type, val) => { const tpl = viewTemplates[type]; if (!tpl) return val || ''; if (typeof val === 'object' && val !== null) { return Object.entries(val).reduce((acc, [k, v]) => acc.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'gi'), String(v)), tpl); } return tpl.replace(/\{\{value\}\}/gi, String(val || '')); };
                                     document.getElementById('dynamic-fmt-btns').innerHTML = groups.map(g => {
                                         if (g.id && g.rules.length > 1) {
                                             const conf = mergeMap[g.id] || { title: g.id, icon_html: '<i class="ri-function-line"></i>' };
@@ -482,49 +496,28 @@
                                         }
                                         return g.rules.map(r => `<button class="fmt-btn fmt-action" data-type="wrap" data-prefix="${r.prefix || ''}" data-suffix="${r.suffix || ''}" title="${r.title || ''}">${getInnerHtml(r.view_type, r.view_value)}</button>`).join('');
                                     }).join('');
-                                } else this.log('语法配置已加载，但未检测到有效的 [rules]，请检查 syntax_config 内容', 'info');
-                            } else this.log(`语法配置拉取失败 (HTTP ${synRes.status})，请检查 syntax_config 路径`, 'error');
-                        } catch(e) { this.log(`语法配置解析异常: ${e.message}，请确保格式正确`, 'error'); }
-                    } else this.log('提示: 未配置 syntax_config，快捷语法已禁用。如需富文本扩展请配置该项', 'info');
-                    if (!this.sysConfig.editor_config) return this.log('系统配置 config.toml 缺少 [editor_config] 字段', 'error');
+                                }
+                            }
+                        } catch(e) {}
+                    }
+                    if (!this.sysConfig.editor_config) return this.log('系统配置缺少 [editor_config]', 'error');
                     this.log('正在解密鉴权配置...', 'info', true);
                     const eRes = await fetch(this.sysConfig.editor_config);
-                    const raw = (await eRes.text()).trim();
-                    const decrypted = await CryptoSys.decrypt(raw, pwd);
+                    const raw = (await eRes.text()).trim(), decrypted = await CryptoSys.decrypt(raw, pwd);
                     if (decrypted) {
                         this.authConfig = parse(decrypted);
                         const reqKeys = ['github_user', 'github_repo', 'github_token', 'commit_user', 'commit_email'];
-                        if (reqKeys.some(k => !this.authConfig[k])) {
-                            this.editor.disabled = true;
-                            return this.log('配置缺少关键字段，核心功能不可用', 'error');
-                        }
-                        if (!this.authConfig.data_path && !this.authConfig.private_path) {
-                            this.editor.disabled = true;
-                            return this.log('未配置任何数据路径，请检查配置', 'error');
-                        }
-                        this.log('配置就绪', 'success');
-                        this.updateViewIcon();
-                        this.bindEvents();
-                        this.bindFormatters();
-                        if (this.authConfig.data_path) this.loadTarget('public');
-                        else this.loadTarget('private');
-                    } else {
-                        sessionStorage.removeItem('editor_pwd');
-                        window.location.href = 'index.html';
-                    }
+                        if (reqKeys.some(k => !this.authConfig[k])) return this.log('配置缺少关键字段', 'error');
+                        document.getElementById('repo-name-display').innerText = this.authConfig.github_repo;
+                        this.log('配置就绪', 'success'); this.updateViewIcon(); this.bindEvents(); this.bindFormatters(); this.loadRepository();
+                    } else { sessionStorage.removeItem('editor_pwd'); window.location.href = 'index.html'; }
                 } catch (e) { this.log(`初始化失败: ${e.message || '未知错误'}`, 'error'); }
             }
-            updateViewIcon() {
-                const isActive = this.workspace.classList.contains('split-mode');
-                const icon = this.btnSplit.querySelector('i');
-                window.innerWidth <= 768 ? icon.className = isActive ? 'ri-edit-line' : 'ri-eye-line' : icon.className = 'ri-layout-column-line';
-            }
-            conditionallyUpdatePreview() {
-                if (this.workspace.classList.contains('split-mode') || window.innerWidth > 768) this.updatePreview();
-            }
+            updateViewIcon() { const isActive = this.workspace.classList.contains('split-mode'), icon = this.btnSplit.querySelector('i'); window.innerWidth <= 768 ? icon.className = isActive ? 'ri-edit-line' : 'ri-eye-line' : icon.className = 'ri-layout-column-line'; }
+            conditionallyUpdatePreview() { if (!this.currentPath) { this.preview.innerHTML = ''; return; } if (this.workspace.classList.contains('split-mode') || window.innerWidth > 768) this.updatePreview(); }
             hasUnsavedChanges() {
-                if (this.currentMode) this.docs[this.currentMode].content = this.editor.value;
-                return Object.values(this.docs).some(doc => doc.loaded && doc.content !== doc.original);
+                if (this.currentPath && this.vfs[this.currentPath] && !this.vfs[this.currentPath].deleted) this.vfs[this.currentPath].content = this.editor.value;
+                return Object.values(this.vfs).some(node => (node.isNew && !node.deleted) || (node.deleted && node.original !== null) || (!node.deleted && !node.isNew && node.loaded && node.content !== node.original));
             }
             checkDirty() { this.btnSave.style.color = this.hasUnsavedChanges() ? 'var(--rose-ellipsis)' : ''; }
             bindFormatters() {
@@ -532,34 +525,18 @@
                 document.getElementById('btn-redo').addEventListener('click', e => { e.preventDefault(); this.editor.focus(); document.execCommand('redo'); });
                 document.getElementById('btn-locate').addEventListener('click', e => {
                     e.preventDefault();
-                    if (!this.workspace.classList.contains('split-mode') && window.innerWidth <= 768) {
-                        this.workspace.classList.add('split-mode');
-                        this.updateViewIcon();
-                        this.updatePreview();
-                    }
-                    const textBefore = this.editor.value.substring(0, this.editor.selectionStart);
-                    const index = textBefore.split('\n---\n').length - 1;
-                    const items = this.preview.querySelectorAll('.preview-item');
+                    if (!this.workspace.classList.contains('split-mode') && window.innerWidth <= 768) { this.workspace.classList.add('split-mode'); this.updateViewIcon(); this.updatePreview(); }
+                    const textBefore = this.editor.value.substring(0, this.editor.selectionStart), index = textBefore.split('\n---\n').length - 1, items = this.preview.querySelectorAll('.preview-item');
                     if (items[index]) items[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
                 });
                 document.querySelectorAll('.fmt-action').forEach(btn => {
                     btn.addEventListener('click', e => {
                         e.preventDefault();
-                        const { type, prefix: pre, suffix: suf } = btn.dataset;
-                        const start = this.editor.selectionStart;
-                        const end = this.editor.selectionEnd;
-                        const selected = this.editor.value.substring(start, end);
-                        const replacement = pre + selected + suf;
-                        this.editor.focus();
-                        this.editor.setSelectionRange(start, end);
+                        const { type, prefix: pre, suffix: suf } = btn.dataset, start = this.editor.selectionStart, end = this.editor.selectionEnd, selected = this.editor.value.substring(start, end), replacement = pre + selected + suf;
+                        this.editor.focus(); this.editor.setSelectionRange(start, end);
                         if (!document.execCommand('insertText', false, replacement)) this.editor.setRangeText(replacement, start, end, 'end');
-                        if (type === 'link') {
-                            const pos = start + pre.length + selected.length + 2;
-                            this.editor.setSelectionRange(pos, pos);
-                        } else if (!selected && type === 'wrap' && pre !== '---') {
-                            const pos = start + pre.length;
-                            this.editor.setSelectionRange(pos, pos);
-                        }
+                        if (type === 'link') { const pos = start + pre.length + selected.length + 2; this.editor.setSelectionRange(pos, pos); }
+                        else if (!selected && type === 'wrap' && pre !== '---') { const pos = start + pre.length; this.editor.setSelectionRange(pos, pos); }
                         this.editor.dispatchEvent(new Event('input'));
                     });
                 });
@@ -567,113 +544,54 @@
             bindEvents() {
                 this.btnConsoleToggle.addEventListener('click', () => this.consolePanel.classList.toggle('active'));
                 document.getElementById('btn-clear-console').addEventListener('click', () => { this.consoleLogs.innerHTML = ''; this.log('控制台已清空', 'info'); });
-                this.btnCancel.addEventListener('click', e => {
-                    e.stopPropagation();
-                    if (this.fetchController) {
-                        this.fetchController.abort();
-                        this.fetchController = null;
-                        this.log('用户取消了请求', 'info');
-                    }
-                });
-                this.btnBack.addEventListener('click', () => {
-                    if (this.hasUnsavedChanges() && !confirm('当前有未保存的修改，确定要离开吗？')) return;
-                    window.location.href = 'index.html';
-                });
-                this.btnPub.addEventListener('click', () => this.loadTarget('public'));
-                this.btnPriv.addEventListener('click', () => this.loadTarget('private'));
-                this.btnSplit.addEventListener('click', () => {
-                    this.workspace.classList.toggle('split-mode');
-                    this.btnSplit.classList.toggle('active', this.workspace.classList.contains('split-mode'));
-                    this.updateViewIcon();
-                    this.conditionallyUpdatePreview();
-                });
-                window.addEventListener('resize', () => {
-                    this.updateViewIcon();
-                    if (window.innerWidth > 768 && this.editor.value !== this.docs[this.currentMode].original) this.updatePreview();
-                });
+                this.btnCancel.addEventListener('click', e => { e.stopPropagation(); if (this.fetchController) { this.fetchController.abort(); this.fetchController = null; this.log('用户取消了请求', 'info'); } });
+                this.btnBack.addEventListener('click', () => { if (this.hasUnsavedChanges() && !confirm('当前有未保存的修改，确定要离开吗？')) return; window.location.href = 'index.html'; });
+                this.btnSidebar.addEventListener('click', () => { this.sidebar.classList.toggle('collapsed'); this.sidebarOverlay.classList.toggle('active'); });
+                this.sidebarOverlay.addEventListener('click', () => { this.sidebar.classList.add('collapsed'); this.sidebarOverlay.classList.remove('active'); });
+                this.btnSplit.addEventListener('click', () => { this.workspace.classList.toggle('split-mode'); this.btnSplit.classList.toggle('active', this.workspace.classList.contains('split-mode')); this.updateViewIcon(); this.conditionallyUpdatePreview(); });
+                window.addEventListener('resize', () => { this.updateViewIcon(); if (window.innerWidth > 768 && this.currentPath && this.vfs[this.currentPath] && this.editor.value !== this.vfs[this.currentPath].original) this.updatePreview(); if (window.innerWidth > 768) { this.sidebarOverlay.classList.remove('active'); } });
                 this.preview.addEventListener('click', e => {
                     const link = e.target.closest('a.card-link');
-                    if (link) {
-                        const href = link.getAttribute('href');
-                        if (href && href.startsWith('#')) {
-                            e.preventDefault();
-                            const targetEl = document.getElementById('preview-post-' + href.substring(1));
-                            if (targetEl) {
-                                targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                targetEl.querySelector('.preview-card').animate([
-                                    { boxShadow: '0 0 0 2px var(--timeline-accent)' },
-                                    { boxShadow: '0 4px 15px rgb(0 0 0 / 2%), inset 0 0 0 1px rgb(255 255 255 / 30%)' }
-                                ], { duration: 1500, easing: 'ease-out' });
-                            }
-                        }
+                    if (link && link.getAttribute('href')?.startsWith('#')) {
+                        e.preventDefault(); const targetEl = document.getElementById('preview-post-' + link.getAttribute('href').substring(1));
+                        if (targetEl) { targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); targetEl.querySelector('.preview-card').animate([{ boxShadow: '0 0 0 2px var(--timeline-accent)' }, { boxShadow: '0 4px 15px rgb(0 0 0 / 2%), inset 0 0 0 1px rgb(255 255 255 / 30%)' }], { duration: 1500, easing: 'ease-out' }); }
                     }
                 });
-                this.editor.addEventListener('input', () => {
-                    if (this.currentMode) this.docs[this.currentMode].content = this.editor.value;
-                    this.conditionallyUpdatePreview();
-                    this.checkDirty();
-                });
+                this.editor.addEventListener('input', () => { if (this.currentPath && this.vfs[this.currentPath]) this.vfs[this.currentPath].content = this.editor.value; this.conditionallyUpdatePreview(); this.checkDirty(); this.renderFileTree(); });
                 this.editor.addEventListener('paste', e => {
-                    const items = (e.clipboardData || window.clipboardData).items;
-                    let hasImage = false;
-                    for (let i = 0; i < items.length; i++) {
-                        if (items[i].type.indexOf('image') !== -1) {
-                            e.preventDefault();
-                            this.prepareUpload(items[i].getAsFile(), false);
-                            hasImage = true;
-                            break;
-                        }
-                    }
+                    const items = (e.clipboardData || window.clipboardData).items; let hasImage = false;
+                    for (let i = 0; i < items.length; i++) { if (items[i].type.indexOf('image') !== -1) { e.preventDefault(); this.prepareUpload(items[i].getAsFile(), false); hasImage = true; break; } }
                     if (!hasImage) setTimeout(() => this.conditionallyUpdatePreview(), 0);
+                });
+                this.btnNewRoot.addEventListener('click', () => this.handleCreateFile(''));
+                document.getElementById('file-tree').addEventListener('click', e => {
+                    const btnAdd = e.target.closest('.action-add'), btnDel = e.target.closest('.action-del'), fileItem = e.target.closest('.tree-file');
+                    if (btnAdd) { e.stopPropagation(); e.preventDefault(); this.handleCreateFile(btnAdd.dataset.path); }
+                    else if (btnDel) { e.stopPropagation(); e.preventDefault(); this.handleDelete(btnDel.dataset.path); }
+                    else if (fileItem) { e.stopPropagation(); this.openFile(fileItem.dataset.path); if (window.innerWidth <= 768) { this.sidebar.classList.add('collapsed'); this.sidebarOverlay.classList.remove('active'); } }
+                });
+                document.getElementById('commit-file-list').addEventListener('click', e => {
+                    const cb = e.target.closest('.commit-file-checkbox'), item = e.target.closest('.commit-item-clickable');
+                    if (cb) { const p = cb.dataset.path; if (cb.checked) this.stagedFiles.add(p); else this.stagedFiles.delete(p); }
+                    if (item && !e.target.closest('.tree-folder')) {
+                        this.activeDiffPath = item.dataset.path; document.querySelectorAll('.commit-item-clickable').forEach(el => el.classList.toggle('active', el.dataset.path === this.activeDiffPath)); this.renderDiff();
+                    }
                 });
                 this.btnSave.addEventListener('click', () => this.showCommitModal());
                 document.getElementById('btn-commit-cancel').addEventListener('click', () => this.commitModal.classList.remove('active'));
                 document.getElementById('btn-commit-confirm').addEventListener('click', () => this.executeCommit());
-                this.tabPub.addEventListener('click', () => this.switchDiffTab('public'));
-                this.tabPriv.addEventListener('click', () => this.switchDiffTab('private'));
-                document.getElementById('btn-diff-prev').addEventListener('click', () => {
-                    if (!this.diffNodes.length) return;
-                    this.currentDiffIndex = (this.currentDiffIndex - 1 + this.diffNodes.length) % this.diffNodes.length;
-                    this.scrollToDiff(this.currentDiffIndex);
-                });
-                document.getElementById('btn-diff-next').addEventListener('click', () => {
-                    if (!this.diffNodes.length) return;
-                    this.currentDiffIndex = (this.currentDiffIndex + 1) % this.diffNodes.length;
-                    this.scrollToDiff(this.currentDiffIndex);
-                });
+                document.getElementById('btn-diff-prev').addEventListener('click', () => { if (!this.diffNodes.length) return; this.currentDiffIndex = (this.currentDiffIndex - 1 + this.diffNodes.length) % this.diffNodes.length; this.scrollToDiff(this.currentDiffIndex); });
+                document.getElementById('btn-diff-next').addEventListener('click', () => { if (!this.diffNodes.length) return; this.currentDiffIndex = (this.currentDiffIndex + 1) % this.diffNodes.length; this.scrollToDiff(this.currentDiffIndex); });
                 document.getElementById('btn-upload-img').addEventListener('click', e => { e.preventDefault(); document.getElementById('file-upload-input').click(); });
-                document.getElementById('file-upload-input').addEventListener('change', e => {
-                    if (e.target.files && e.target.files[0]) {
-                        this.prepareUpload(e.target.files[0], true);
-                        e.target.value = '';
-                    }
-                });
-                document.getElementById('btn-upload-cancel').addEventListener('click', () => {
-                    this.uploadModal.classList.remove('active');
-                    this.pendingUploadFile = null;
-                    this.editor.focus();
-                    if (this.savedSelection) this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
-                });
+                document.getElementById('file-upload-input').addEventListener('change', e => { if (e.target.files && e.target.files[0]) { this.prepareUpload(e.target.files[0], true); e.target.value = ''; } });
+                document.getElementById('btn-upload-cancel').addEventListener('click', () => { this.uploadModal.classList.remove('active'); this.pendingUploadFile = null; this.editor.focus(); if (this.savedSelection) this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end); });
                 document.getElementById('btn-upload-confirm').addEventListener('click', () => this.executeUpload());
-                this.btnTag.addEventListener('click', e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const start = this.editor.selectionStart;
-                    const end = this.editor.selectionEnd;
-                    if (!document.execCommand('insertText', false, '#')) this.editor.setRangeText('#', start, end, 'end');
-                    this.editor.dispatchEvent(new Event('input'));
-                    this.showTagDropdown();
-                });
+                this.btnTag.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); const start = this.editor.selectionStart, end = this.editor.selectionEnd; if (!document.execCommand('insertText', false, '#')) this.editor.setRangeText('#', start, end, 'end'); this.editor.dispatchEvent(new Event('input')); this.showTagDropdown(); });
                 this.tagDropdown.addEventListener('click', e => {
                     if (e.target.classList.contains('tag-item')) {
-                        const tagText = e.target.dataset.tag;
-                        this.editor.focus();
-                        if (!document.execCommand('insertText', false, tagText + ' ')) {
-                            const start = this.editor.selectionStart;
-                            this.editor.setRangeText(tagText + ' ', start, start, 'end');
-                        }
-                        this.editor.dispatchEvent(new Event('input'));
-                        this.tagDropdown.classList.remove('active');
+                        const tagText = e.target.dataset.tag; this.editor.focus();
+                        if (!document.execCommand('insertText', false, tagText + ' ')) { const start = this.editor.selectionStart; this.editor.setRangeText(tagText + ' ', start, start, 'end'); }
+                        this.editor.dispatchEvent(new Event('input')); this.tagDropdown.classList.remove('active');
                     }
                 });
                 document.addEventListener('click', e => {
@@ -682,194 +600,148 @@
                     const toggle = e.target.closest('.fmt-dropdown-toggle');
                     document.querySelectorAll('.dropdown-menu').forEach(menu => { if (!toggle || toggle.nextElementSibling !== menu) menu.classList.remove('active'); });
                     if (toggle) {
-                        e.preventDefault();
-                        const menu = toggle.nextElementSibling;
+                        e.preventDefault(); const menu = toggle.nextElementSibling;
                         if (!menu.classList.contains('active')) {
-                            menu.style.setProperty('--shift-x', '-50%'); 
-                            const toggleRect = toggle.getBoundingClientRect();
-                            const vw = window.innerWidth;
-                            const menuWidth = menu.offsetWidth;
-                            const expectedLeft = toggleRect.left + (toggleRect.width / 2) - (menuWidth / 2);
-                            const expectedRight = expectedLeft + menuWidth;
-                            let shift = 0;
-                            if (expectedLeft < 5) shift = 5 - expectedLeft;
-                            else if (expectedRight > vw - 5) shift = (vw - 5) - expectedRight;
-                            if (shift !== 0) menu.style.setProperty('--shift-x', `calc(-50% + ${shift}px)`);
-                            menu.classList.add('active');
+                            menu.style.setProperty('--shift-x', '-50%'); const toggleRect = toggle.getBoundingClientRect(), expectedLeft = toggleRect.left + (toggleRect.width / 2) - (menu.offsetWidth / 2), expectedRight = expectedLeft + menu.offsetWidth;
+                            let shift = 0; if (expectedLeft < 5) shift = 5 - expectedLeft; else if (expectedRight > window.innerWidth - 5) shift = (window.innerWidth - 5) - expectedRight;
+                            if (shift !== 0) menu.style.setProperty('--shift-x', `calc(-50% + ${shift}px)`); menu.classList.add('active');
                         }
                     }
                 });
-                document.addEventListener('mousedown', e => {
-                    if (e.target.closest('.fmt-btn') || e.target.closest('.dropdown-menu') || e.target.closest('.tag-item')) e.preventDefault();
-                });
-                window.addEventListener('beforeunload', e => {
-                    if (this.hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; }
-                });
+                document.addEventListener('mousedown', e => { if (e.target.closest('.fmt-btn') || e.target.closest('.dropdown-menu') || e.target.closest('.tag-item')) e.preventDefault(); });
+                window.addEventListener('beforeunload', e => { if (this.hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; } });
+            }
+            async handleCreateFile(prefix = '') {
+                const path = await this.promptDialog('请输入新建文件/目录的路径 (以 / 结尾表示目录)', prefix);
+                if (!path) return;
+                let finalPath = path.replace(/^\/+/, '');
+                if (finalPath.endsWith('/')) finalPath += '.gitkeep';
+                if (this.vfs[finalPath] && !this.vfs[finalPath].deleted) return this.log('文件已存在', 'error');
+                this.vfs[finalPath] = { sha: null, original: null, content: '', loaded: true, isNew: true, deleted: false };
+                this.renderFileTree(); this.checkDirty();
+                if (!finalPath.endsWith('.gitkeep')) this.openFile(finalPath);
+            }
+            async handleDelete(path) {
+                const isDir = path.endsWith('/'), msg = isDir ? `确定要删除目录及所有内容吗？` : `确定要删除文件吗？`;
+                if (!(await this.confirmDialog(msg))) return;
+                if (isDir) { Object.keys(this.vfs).forEach(p => { if (p.startsWith(path)) this.vfs[p].deleted = true; }); }
+                else if (this.vfs[path]) this.vfs[path].deleted = true;
+                if (this.currentPath && (this.currentPath === path || this.currentPath.startsWith(path))) {
+                    this.currentPath = null; this.editor.value = ''; this.editor.disabled = true; this.filePathDisplay.innerText = '未选择文件'; this.preview.innerHTML = '';
+                }
+                this.renderFileTree(); this.checkDirty();
             }
             showTagDropdown() {
-                const tags = new Set();
-                const content = this.editor.value;
-                if (!content) return;
-                const blocks = content.split('\n---\n').map(b => b.trim()).filter(Boolean);
-                blocks.forEach(block => {
-                    const lines = block.split('\n');
-                    if (lines.length >= 2) {
-                        const matches = lines[1].match(/#([^\s#]+)/g) || [];
-                        matches.forEach(m => tags.add(m.substring(1)));
-                    }
-                });
+                const tags = new Set(), content = this.editor.value; if (!content) return;
+                content.split('\n---\n').map(b => b.trim()).filter(Boolean).forEach(block => { const lines = block.split('\n'); if (lines.length >= 2) { (lines[1].match(/#([^\s#]+)/g) || []).forEach(m => tags.add(m.substring(1))); } });
                 if (tags.size === 0) return;
                 this.tagDropdown.innerHTML = Array.from(tags).map(t => `<div class="tag-item" data-tag="${t}">${t}</div>`).join('');
                 this.tagDropdown.classList.add('active');
-                const rect = this.btnTag.getBoundingClientRect();
-                const paneRect = document.getElementById('editor-pane').getBoundingClientRect();
-                const dropRect = this.tagDropdown.getBoundingClientRect();
-                const vw = window.innerWidth;
-                const vh = window.innerHeight;
-                let top = rect.bottom - paneRect.top + 5;
-                let left = rect.left - paneRect.left;
-                if (rect.left + dropRect.width > vw - 5) left = (vw - 5 - dropRect.width) - paneRect.left;
+                const rect = this.btnTag.getBoundingClientRect(), paneRect = document.getElementById('editor-pane').getBoundingClientRect(), dropRect = this.tagDropdown.getBoundingClientRect();
+                let top = rect.bottom - paneRect.top + 5, left = rect.left - paneRect.left;
+                if (rect.left + dropRect.width > window.innerWidth - 5) left = (window.innerWidth - 5 - dropRect.width) - paneRect.left;
                 if (left + paneRect.left < 5) left = 5 - paneRect.left;
-                if (rect.bottom + dropRect.height > vh - 5) top = rect.top - paneRect.top - dropRect.height - 5;
-                this.tagDropdown.style.top = `${top}px`;
-                this.tagDropdown.style.left = `${left}px`;
-            }
-            switchDiffTab(mode) {
-                this.tabPub.classList.toggle('active', mode === 'public');
-                this.tabPriv.classList.toggle('active', mode === 'private');
-                this.diffViewPub.style.display = mode === 'public' ? 'block' : 'none';
-                this.diffViewPriv.style.display = mode === 'private' ? 'block' : 'none';
-                this.activeDiffView = mode === 'public' ? this.diffViewPub : this.diffViewPriv;
-                this.diffNodes = Array.from(this.activeDiffView.querySelectorAll('.diff-chunk'));
-                this.currentDiffIndex = 0;
-                if (this.diffNodes.length > 0) setTimeout(() => this.scrollToDiff(0), 50);
-            }
-            scrollToDiff(index) {
-                if (!this.diffNodes[index] || !this.activeDiffView) return;
-                this.activeDiffView.scrollTop = this.diffNodes[index].offsetTop - 20;
+                if (rect.bottom + dropRect.height > window.innerHeight - 5) top = rect.top - paneRect.top - dropRect.height - 5;
+                this.tagDropdown.style.top = `${top}px`; this.tagDropdown.style.left = `${left}px`;
             }
             prepareUpload(file, isManual = false) {
-                if (!this.authConfig.image?.api_url || !this.authConfig.image?.api_key) return this.log('图片上传失败：缺少 api_url 或 api_key 配置', 'error');
-                this.isManualUpload = isManual;
-                this.savedSelection = { start: this.editor.selectionStart, end: this.editor.selectionEnd };
-                this.pendingUploadFile = file;
-                let ext = 'png';
-                if (file.name) {
-                    const parts = file.name.split('.');
-                    if (parts.length > 1) ext = parts.pop();
-                }
-                let name = file.name;
-                if (!name || name === 'image.png' || name === 'image.jpg') {
-                    const now = new Date();
-                    name = `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getTime()}.${ext}`;
-                }
+                if (!this.authConfig.image?.api_url || !this.authConfig.image?.api_key) return this.log('缺少 api_url 或 api_key 配置', 'error');
+                this.isManualUpload = isManual; this.savedSelection = { start: this.editor.selectionStart, end: this.editor.selectionEnd }; this.pendingUploadFile = file;
+                let ext = 'png', name = file.name; if (file.name) { const parts = file.name.split('.'); if (parts.length > 1) ext = parts.pop(); }
+                if (!name || name === 'image.png' || name === 'image.jpg') { const now = new Date(); name = `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getTime()}.${ext}`; }
                 const cleanDir = (this.authConfig.image?.default_dir || 'img').replace(/^\/|\/$/g, '');
-                this.uploadPath.value = cleanDir ? `${cleanDir}/${name}` : name;
-                this.uploadModal.classList.add('active');
-                setTimeout(() => {
-                    this.uploadPath.focus();
-                    const dotIndex = this.uploadPath.value.lastIndexOf('.');
-                    if (dotIndex > -1) this.uploadPath.setSelectionRange(cleanDir.length ? cleanDir.length + 1 : 0, dotIndex);
-                    else this.uploadPath.setSelectionRange(this.uploadPath.value.length, this.uploadPath.value.length);
-                }, 100);
+                this.uploadPath.value = cleanDir ? `${cleanDir}/${name}` : name; this.uploadModal.classList.add('active');
+                setTimeout(() => { this.uploadPath.focus(); const dotIndex = this.uploadPath.value.lastIndexOf('.'); if (dotIndex > -1) this.uploadPath.setSelectionRange(cleanDir.length ? cleanDir.length + 1 : 0, dotIndex); else this.uploadPath.setSelectionRange(this.uploadPath.value.length, this.uploadPath.value.length); }, 100);
             }
             async executeUpload() {
-                const path = this.uploadPath.value.trim();
-                if (!path) return;
-                const domain = (this.authConfig.image?.img_domain || '').replace(/\/$/, '');
-                const cleanPath = path.replace(/^\//, '');
-                const fullUrl = domain ? `${domain}/${cleanPath}` : cleanPath;
-                const insertText = `![${this.pendingUploadFile.name}](${fullUrl})`;
-                const fileToUpload = this.pendingUploadFile;
-                this.pendingUploadFile = null;
-                this.uploadModal.classList.remove('active');
-                this.editor.focus();
+                const path = this.uploadPath.value.trim(); if (!path) return;
+                const cleanPath = path.replace(/^\//, ''), fullUrl = (this.authConfig.image?.img_domain || '').replace(/\/$/, '') ? `${(this.authConfig.image?.img_domain || '').replace(/\/$/, '')}/${cleanPath}` : cleanPath;
+                const insertText = `![${this.pendingUploadFile.name}](${fullUrl})`, fileToUpload = this.pendingUploadFile;
+                this.pendingUploadFile = null; this.uploadModal.classList.remove('active'); this.editor.focus();
                 if (this.savedSelection) this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end);
-                if (this.isManualUpload) {
-                    navigator.clipboard.writeText(insertText).then(() => this.log('已提取图片链接并复制到剪贴板', 'success')).catch(() => this.log('剪贴板写入失败', 'error'));
-                } else {
-                    if (!document.execCommand('insertText', false, insertText)) this.editor.setRangeText(insertText, this.editor.selectionStart, this.editor.selectionEnd, 'end');
-                    this.editor.dispatchEvent(new Event('input'));
-                }
-                this.log(`准备异步上传图片: ${cleanPath}`, 'info', true);
+                if (this.isManualUpload) { navigator.clipboard.writeText(insertText).then(() => this.log('已提取链接并复制', 'success')).catch(() => this.log('写入失败', 'error')); }
+                else { if (!document.execCommand('insertText', false, insertText)) this.editor.setRangeText(insertText, this.editor.selectionStart, this.editor.selectionEnd, 'end'); this.editor.dispatchEvent(new Event('input')); }
+                this.log(`准备上传: ${cleanPath}`, 'info', true);
                 try {
-                    const apiUrl = (this.authConfig.image?.api_url || '').replace(/\/$/, '');
-                    const res = await fetch(`${apiUrl}/${cleanPath}`, {
-                        method: 'PUT',
-                        headers: { 'Authorization': `Bearer ${this.authConfig.image?.api_key}` },
-                        body: fileToUpload
-                    });
-                    if (res.ok) this.log(`图片上传成功: ${cleanPath} | 远端响应: ${await res.text()}`, 'success');
-                    else throw new Error(`HTTP Error: ${res.status} | ${await res.text()}`);
-                } catch (e) { this.log(`图片上传失败: ${e.message}`, 'error'); }
+                    const res = await fetch(`${(this.authConfig.image?.api_url || '').replace(/\/$/, '')}/${cleanPath}`, { method: 'PUT', headers: { 'Authorization': `Bearer ${this.authConfig.image?.api_key}` }, body: fileToUpload });
+                    if (res.ok) this.log(`上传成功`, 'success'); else throw new Error(`HTTP ${res.status}`);
+                } catch (e) { this.log(`上传失败: ${e.message}`, 'error'); }
             }
             parseDreamSyntax(raw) {
-                const isAsc = this.sysConfig?.data_order === 'asc';
-                const blocks = raw.split('\n---\n').map(b => b.trim()).filter(b => b && b.split('\n').length >= 2);
-                const total = blocks.length;
-                const ast = new ASTEngine(this.syntaxRules);
+                const blocks = raw.split('\n---\n').map(b => b.trim()).filter(b => b && b.split('\n').length >= 2), total = blocks.length, ast = new ASTEngine(this.syntaxRules), isAsc = this.sysConfig?.data_order === 'asc';
                 return blocks.map((block, index) => {
-                    const id = isAsc ? index + 1 : total - index;
-                    const lines = block.split('\n');
-                    const date = lines.shift().trim();
+                    const id = isAsc ? index + 1 : total - index, lines = block.split('\n'), date = lines.shift().trim();
                     if (lines.length > 0) lines[0] = lines[0].replace(/#([^\s#]+)/g, (_, tag) => `<span class="card-tag">#${tag}</span>`);
-                    let p = ast.parse(lines.join('\n'));
-                    let finalHtml = p.split('\n').join('<div class="manual-br"></div>');
-                    finalHtml = finalHtml.replace(/(?:<div class="manual-br"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="manual-br"><\/div>)*/g, '$1');
-                    finalHtml = finalHtml.replace(/(<img[^>]+>){2,}/g, match => {
-                        const count = (match.match(/<img/g) || []).length;
-                        return `<div class="gallery ${(count === 2 || count === 4) ? 'grid-2' : 'grid-3'}">${match}</div>`;
-                    });
+                    let finalHtml = ast.parse(lines.join('\n')).split('\n').join('<div class="manual-br"></div>').replace(/(?:<div class="manual-br"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="manual-br"><\/div>)*/g, '$1').replace(/(<img[^>]+>){2,}/g, match => `<div class="gallery ${((match.match(/<img/g) || []).length === 2 || (match.match(/<img/g) || []).length === 4) ? 'grid-2' : 'grid-3'}">${match}</div>`);
                     return `<div class="preview-item" id="preview-post-${id}"><div class="preview-date">${date}</div><div class="preview-card"><span class="preview-card-id">#${id}</span>${finalHtml}</div></div>`;
                 }).join('');
             }
             updatePreview() { this.preview.innerHTML = this.parseDreamSyntax(this.editor.value); }
-            async loadTarget(mode) {
-                if (this.currentMode) this.docs[this.currentMode].content = this.editor.value;
-                if (this.fetchController) this.fetchController.abort();
-                this.fetchController = new AbortController();
-                this.currentMode = mode;
-                this.btnPub.classList.toggle('active', mode === 'public');
-                this.btnPriv.classList.toggle('active', mode === 'private');
-                if (this.docs[mode].loaded) {
-                    this.editor.value = this.docs[mode].content;
-                    this.conditionallyUpdatePreview();
-                    this.checkDirty();
-                    return;
-                }
-                const path = mode === 'public' ? this.authConfig.data_path : this.authConfig.private_path;
-                if (!path) return this.log(`未配置 ${mode} 对应的远端路径，操作已中断`, 'error');
-                this.log(`正在从远端拉取数据...`, 'info', true);
-                this.editor.disabled = true;
+            async loadRepository() {
+                this.log('正在拉取全量文件树...', 'info', true); this.editor.disabled = true;
+                if (this.fetchController) this.fetchController.abort(); this.fetchController = new AbortController();
                 try {
-                    const res = await fetch(`https://api.github.com/repos/${this.authConfig.github_user}/${this.authConfig.github_repo}/contents/${path}`, {
-                        headers: { 'Accept': 'application/vnd.github+json', 'Authorization': `Bearer ${this.authConfig.github_token}`, 'X-GitHub-Api-Version': '2022-11-28' },
-                        signal: this.fetchController.signal
-                    });
-                    if (res.status === 404) {
-                        this.docs[mode] = { content: '', original: '', sha: null, loaded: true };
-                        this.editor.value = '';
-                        this.log(`未找到远端文件，已创建新档`, 'info');
-                    } else if (res.ok) {
-                        const data = await res.json();
-                        const text = Base64.decode(data.content.replace(/\n/g, ''));
-                        this.docs[mode] = { content: text, original: text, sha: data.sha, loaded: true };
-                        this.editor.value = text;
-                        this.log(`数据加载完成`, 'success');
-                    } else throw new Error(`HTTP Error: ${res.status} - ${await res.text()}`);
-                } catch (e) {
-                    if (e.name !== 'AbortError') this.log(`数据拉取失败: ${e.message}`, 'error');
-                } finally {
-                    this.editor.disabled = false;
-                    this.fetchController = null;
-                    this.conditionallyUpdatePreview();
-                    this.checkDirty();
+                    const res = await fetch(`https://api.github.com/repos/${this.authConfig.github_user}/${this.authConfig.github_repo}/git/trees/${this.sysConfig.github_branch || 'main'}?recursive=1`, { headers: { 'Accept': 'application/vnd.github+json', 'Authorization': `Bearer ${this.authConfig.github_token}`, 'X-GitHub-Api-Version': '2022-11-28' }, signal: this.fetchController.signal });
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    this.vfs = {}; (await res.json()).tree.forEach(n => { if (n.type === 'blob') this.vfs[n.path] = { sha: n.sha, original: null, content: null, loaded: false, isNew: false, deleted: false }; });
+                    this.log('文件树加载完成', 'success'); this.renderFileTree();
+                } catch(e) { if (e.name !== 'AbortError') this.log(`仓库拉取失败: ${e.message}`, 'error'); }
+                finally { this.editor.disabled = false; this.fetchController = null; }
+            }
+            buildHtml(node, pathPrefix = '', indent = 0.5, isCommit = false) {
+                let html = '';
+                const keys = Object.keys(node).sort((a,b) => { const aObj = typeof node[a] === 'object', bObj = typeof node[b] === 'object'; if(aObj && !bObj) return -1; if(!aObj && bObj) return 1; return a.localeCompare(b); });
+                for(const key of keys) {
+                    const fullPath = pathPrefix ? `${pathPrefix}/${key}` : key;
+                    if(typeof node[key] === 'object') {
+                        let folderActions = isCommit ? '' : `<div class="tree-actions"><button class="tree-action-btn action-add" data-path="${fullPath}/" title="新建"><i class="ri-file-add-line"></i></button><button class="tree-action-btn action-del" data-path="${fullPath}/" title="删除"><i class="ri-delete-bin-line"></i></button></div>`;
+                        html += `<details class="tree-folder" open><summary style="padding-left: ${indent}rem"><div class="summary-content"><i class="ri-arrow-right-s-line"></i><i class="ri-folder-2-line"></i> ${key}</div>${folderActions}</summary><div class="tree-children">${this.buildHtml(node[key], fullPath, indent + 0.8, isCommit)}</div></details>`;
+                    } else {
+                        const vNode = this.vfs[fullPath];
+                        if (vNode.deleted && !isCommit && vNode.original !== null) continue;
+                        if (vNode.deleted && !isCommit) continue;
+                        const isDirty = (vNode.isNew && !vNode.deleted) || (vNode.deleted && vNode.original !== null) || (!vNode.deleted && !vNode.isNew && vNode.loaded && vNode.content !== vNode.original);
+                        if(isCommit) {
+                            let cb = isDirty ? `<input type="checkbox" class="commit-file-checkbox" data-path="${fullPath}" ${this.stagedFiles.has(fullPath) ? 'checked' : ''}>` : `<span style="width:14px;display:inline-block;flex-shrink:0;"></span>`;
+                            let tag = vNode.deleted ? '<del>' : (vNode.isNew ? '<ins style="text-decoration:none;color:var(--success-color);">' : '<span>'), tagEnd = vNode.deleted ? '</del>' : (vNode.isNew ? '</ins>' : '</span>');
+                            html += `<div class="tree-file commit-item-clickable ${this.activeDiffPath === fullPath ? 'active' : ''}" data-path="${fullPath}" style="padding-left: ${indent + 0.5}rem"><div class="file-content">${cb} <i class="ri-file-text-line"></i> ${tag}${key}${tagEnd}</div></div>`;
+                        } else {
+                            let actions = `<div class="tree-actions"><button class="tree-action-btn action-del" data-path="${fullPath}" title="删除"><i class="ri-delete-bin-line"></i></button></div>`;
+                            let dot = isDirty ? '<span class="dirty-dot"></span>' : '';
+                            html += `<div class="tree-file ${this.currentPath === fullPath ? 'active' : ''}" data-path="${fullPath}" style="padding-left: ${indent + 0.5}rem"><div class="file-content"><i class="ri-file-text-line"></i> ${key}</div>${dot}${actions}</div>`;
+                        }
+                    }
                 }
+                return html;
+            }
+            renderFileTree() {
+                const root = {}; Object.keys(this.vfs).forEach(path => {
+                    if (this.vfs[path].deleted && this.vfs[path].original === null) return;
+                    if (this.vfs[path].deleted) return;
+                    const parts = path.split('/'); let current = root;
+                    for (let i = 0; i < parts.length - 1; i++) { if (!current[parts[i]]) current[parts[i]] = {}; current = current[parts[i]]; }
+                    current[parts[parts.length - 1]] = path;
+                });
+                document.getElementById('file-tree').innerHTML = this.buildHtml(root);
+            }
+            async openFile(path) {
+                if (this.currentPath && this.vfs[this.currentPath]) this.vfs[this.currentPath].content = this.editor.value;
+                this.currentPath = path; this.filePathDisplay.innerText = path; this.filePathDisplay.title = path; this.editor.disabled = false;
+                if (this.vfs[path].loaded) { this.editor.value = this.vfs[path].content; this.renderFileTree(); this.conditionallyUpdatePreview(); this.checkDirty(); return; }
+                if (this.fetchController) this.fetchController.abort(); this.fetchController = new AbortController();
+                this.log(`加载: ${path}...`, 'info', true); this.editor.disabled = true;
+                try {
+                    const res = await fetch(`https://api.github.com/repos/${this.authConfig.github_user}/${this.authConfig.github_repo}/git/blobs/${this.vfs[path].sha}`, { headers: { 'Accept': 'application/vnd.github+json', 'Authorization': `Bearer ${this.authConfig.github_token}`, 'X-GitHub-Api-Version': '2022-11-28' }, signal: this.fetchController.signal });
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    const text = Base64.decode((await res.json()).content);
+                    this.vfs[path].original = text; this.vfs[path].content = text; this.vfs[path].loaded = true; this.editor.value = text;
+                    this.log('加载成功', 'success');
+                } catch (e) { if (e.name !== 'AbortError') { this.log(`加载失败: ${e.message}`, 'error'); this.editor.value = ''; } }
+                finally { this.editor.disabled = false; this.fetchController = null; this.renderFileTree(); this.conditionallyUpdatePreview(); this.checkDirty(); }
             }
             genDiffHtml(original, content) {
-                const differences = diffLines(original, content);
                 let html = '', chunkHtml = '', inChunk = false;
-                differences.forEach(part => {
+                diffLines(original || '', content || '').forEach(part => {
                     const lines = part.value.replace(/\n$/, '').split('\n');
                     if (part.added || part.removed) {
                         if (!inChunk) { inChunk = true; chunkHtml = '<div class="diff-chunk">'; }
@@ -881,67 +753,56 @@
                 });
                 return html + (inChunk ? chunkHtml + '</div>' : '');
             }
+            scrollToDiff(index) { if (this.diffNodes[index]) this.diffView.scrollTop = this.diffNodes[index].offsetTop - 20; }
             showCommitModal() {
-                if (this.currentMode) this.docs[this.currentMode].content = this.editor.value;
-                const pubDirty = this.docs.public.loaded && this.docs.public.content !== this.docs.public.original;
-                const privDirty = this.docs.private.loaded && this.docs.private.content !== this.docs.private.original;
-                if (!pubDirty && !privDirty) return;
-                this.modesToCommit = [];
-                if (pubDirty) this.modesToCommit.push('public');
-                if (privDirty) this.modesToCommit.push('private');
-                if (pubDirty) this.diffViewPub.innerHTML = this.genDiffHtml(this.docs.public.original, this.docs.public.content);
-                if (privDirty) this.diffViewPriv.innerHTML = this.genDiffHtml(this.docs.private.original, this.docs.private.content);
-                this.diffTabs.style.display = (pubDirty && privDirty) ? 'flex' : 'none';
-                this.tabPub.style.display = pubDirty ? 'block' : 'none';
-                this.tabPriv.style.display = privDirty ? 'block' : 'none';
-                this.switchDiffTab((pubDirty && privDirty) ? this.currentMode : (pubDirty ? 'public' : 'private'));
-                if (this.authConfig.commit_msg) {
-                    const now = new Date();
-                    const localISOTime = (new Date(now - now.getTimezoneOffset() * 60000)).toISOString().slice(0, 19).replace('T', ' ');
-                    this.commitTitle.value = this.authConfig.commit_msg.replace('{{yyyy-mm-dd hh:mm:ss}}', localISOTime);
-                } else this.commitTitle.value = '';
-                this.commitDesc.value = '';
-                this.commitModal.classList.add('active');
+                if (this.currentPath && this.vfs[this.currentPath]) this.vfs[this.currentPath].content = this.editor.value;
+                this.stagedFiles = new Set();
+                const dirtyList = Object.keys(this.vfs).filter(p => { const n = this.vfs[p]; return (n.isNew && !n.deleted) || (n.deleted && n.original !== null) || (!n.deleted && !n.isNew && n.loaded && n.content !== n.original); });
+                if (dirtyList.length === 0) return this.log('没有需要提交的变更', 'info');
+                dirtyList.forEach(f => this.stagedFiles.add(f)); this.activeDiffPath = dirtyList[0];
+                const root = {}; Object.keys(this.vfs).forEach(path => {
+                    if (this.vfs[path].deleted && this.vfs[path].original === null) return;
+                    const parts = path.split('/'); let current = root;
+                    for (let i = 0; i < parts.length - 1; i++) { if (!current[parts[i]]) current[parts[i]] = {}; current = current[parts[i]]; }
+                    current[parts[parts.length - 1]] = path;
+                });
+                this.commitFileList.innerHTML = this.buildHtml(root, '', 0.5, true); this.renderDiff();
+                if (this.authConfig.commit_msg) { const now = new Date(); this.commitTitle.value = this.authConfig.commit_msg.replace('{{yyyy-mm-dd hh:mm:ss}}', (new Date(now - now.getTimezoneOffset() * 60000)).toISOString().slice(0, 19).replace('T', ' ')); } else this.commitTitle.value = '';
+                this.commitDesc.value = ''; this.commitModal.classList.add('active');
+            }
+            renderDiff() {
+                if (!this.activeDiffPath) { this.diffView.innerHTML = ''; return; }
+                const node = this.vfs[this.activeDiffPath]; this.diffView.innerHTML = this.genDiffHtml(node.original, node.deleted ? '' : node.content);
+                this.diffNodes = Array.from(this.diffView.querySelectorAll('.diff-chunk')); this.currentDiffIndex = 0; if (this.diffNodes.length > 0) setTimeout(() => this.scrollToDiff(0), 50);
             }
             async executeCommit() {
-                if (this.fetchController) this.fetchController.abort();
-                this.fetchController = new AbortController();
-                this.commitModal.classList.remove('active');
-                this.editor.disabled = true;
-                this.btnSave.disabled = true;
-                const commitMsg = this.commitDesc.value.trim() ? `${this.commitTitle.value.trim()}\n\n${this.commitDesc.value.trim()}` : this.commitTitle.value.trim();
+                if (this.stagedFiles.size === 0) return this.log('未选择任何文件', 'error');
+                if (this.fetchController) this.fetchController.abort(); this.fetchController = new AbortController();
+                this.commitModal.classList.remove('active'); this.editor.disabled = true; this.btnSave.disabled = true;
                 try {
-                    for (const mode of this.modesToCommit) {
-                        this.log(`正在同步 ${mode} 数据至远端...`, 'info', true);
-                        const path = mode === 'public' ? this.authConfig.data_path : this.authConfig.private_path;
-                        const payload = {
-                            message: commitMsg,
-                            content: Base64.encode(this.docs[mode].content),
-                            committer: { name: this.authConfig.commit_user, email: this.authConfig.commit_email }
-                        };
-                        if (this.docs[mode].sha) payload.sha = this.docs[mode].sha;
-                        const res = await fetch(`https://api.github.com/repos/${this.authConfig.github_user}/${this.authConfig.github_repo}/contents/${path}`, {
-                            method: 'PUT',
-                            headers: { 'Accept': 'application/vnd.github+json', 'Authorization': `Bearer ${this.authConfig.github_token}`, 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2022-11-28' },
-                            body: JSON.stringify(payload),
-                            signal: this.fetchController.signal
-                        });
-                        if (res.ok) {
-                            const data = await res.json();
-                            this.docs[mode].sha = data.content.sha;
-                            this.docs[mode].original = this.docs[mode].content;
-                            this.log(`保存成功: 数据已同步`, 'success');
-                        } else throw new Error(`HTTP Error: ${res.status} - ${await res.text()}`);
+                    const branch = this.sysConfig.github_branch || 'main', api = `https://api.github.com/repos/${this.authConfig.github_user}/${this.authConfig.github_repo}/git`, h = { 'Accept': 'application/vnd.github+json', 'Authorization': `Bearer ${this.authConfig.github_token}`, 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2022-11-28' };
+                    this.log('正在获取分支状态...', 'info', true);
+                    const ref = await (await fetch(`${api}/refs/heads/${branch}`, { headers: h, signal: this.fetchController.signal })).json(), curCommit = ref.object.sha;
+                    const baseTree = (await (await fetch(`${api}/commits/${curCommit}`, { headers: h, signal: this.fetchController.signal })).json()).tree.sha, treeNodes = [];
+                    this.log('正在生成对象流...', 'info', true);
+                    for (const path of Array.from(this.stagedFiles)) {
+                        const vNode = this.vfs[path];
+                        if (vNode.deleted) { if (vNode.original !== null) treeNodes.push({ path, mode: '100644', type: 'blob', sha: null }); }
+                        else { const blob = await (await fetch(`${api}/blobs`, { method: 'POST', headers: h, body: JSON.stringify({ content: Base64.encode(vNode.content), encoding: 'base64' }), signal: this.fetchController.signal })).json(); treeNodes.push({ path, mode: '100644', type: 'blob', sha: blob.sha }); }
                     }
-                } catch (e) {
-                    if (e.name !== 'AbortError') this.log(`保存中断: ${e.message}`, 'error');
-                } finally {
-                    this.editor.disabled = false;
-                    this.btnSave.disabled = false;
-                    this.fetchController = null;
-                    if (this.currentMode) this.editor.value = this.docs[this.currentMode].content;
-                    this.checkDirty();
-                }
+                    this.log('正在构建提交树...', 'info', true);
+                    const tree = await (await fetch(`${api}/trees`, { method: 'POST', headers: h, body: JSON.stringify({ base_tree: baseTree, tree: treeNodes }), signal: this.fetchController.signal })).json();
+                    const author = { name: this.authConfig.commit_user, email: this.authConfig.commit_email }, commitMsg = this.commitDesc.value.trim() ? `${this.commitTitle.value.trim()}\n\n${this.commitDesc.value.trim()}` : this.commitTitle.value.trim();
+                    const newCommit = await (await fetch(`${api}/commits`, { method: 'POST', headers: h, body: JSON.stringify({ message: commitMsg, tree: tree.sha, parents: [curCommit], author, committer: author }), signal: this.fetchController.signal })).json();
+                    this.log('正在更新远端引用...', 'info', true);
+                    await fetch(`${api}/refs/heads/${branch}`, { method: 'PATCH', headers: h, body: JSON.stringify({ sha: newCommit.sha }), signal: this.fetchController.signal });
+                    Array.from(this.stagedFiles).forEach(path => {
+                        if (this.vfs[path].deleted) delete this.vfs[path];
+                        else { this.vfs[path].sha = treeNodes.find(n => n.path === path).sha; this.vfs[path].original = this.vfs[path].content; this.vfs[path].isNew = false; }
+                    });
+                    this.stagedFiles.clear(); this.log('保存成功: 数据已同步', 'success');
+                } catch (e) { if (e.name !== 'AbortError') this.log(`保存中断: ${e.message}`, 'error'); }
+                finally { this.editor.disabled = false; this.btnSave.disabled = false; this.fetchController = null; this.renderFileTree(); this.checkDirty(); }
             }
         }
         document.addEventListener('DOMContentLoaded', () => new EditorCore());
