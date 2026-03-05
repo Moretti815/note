@@ -629,9 +629,14 @@
                     if (toggle) {
                         e.preventDefault(); const menu = toggle.nextElementSibling;
                         if (!menu.classList.contains('active')) {
-                            menu.style.setProperty('--shift-x', '-50%'); const toggleRect = toggle.getBoundingClientRect(), expectedLeft = toggleRect.left + (toggleRect.width / 2) - (menu.offsetWidth / 2), expectedRight = expectedLeft + menu.offsetWidth;
-                            let shift = 0; if (expectedLeft < 5) shift = 5 - expectedLeft; else if (expectedRight > window.innerWidth - 5) shift = (window.innerWidth - 5) - expectedRight;
-                            if (shift !== 0) menu.style.setProperty('--shift-x', `calc(-50% + ${shift}px)`); menu.classList.add('active');
+                            menu.style.setProperty('--shift-x', '-50%');
+                            const toggleRect = toggle.getBoundingClientRect(), paneRect = document.getElementById('editor-pane').getBoundingClientRect();
+                            const expectedLeft = toggleRect.left + (toggleRect.width / 2) - (menu.offsetWidth / 2), expectedRight = expectedLeft + menu.offsetWidth;
+                            let shift = 0;
+                            if (expectedLeft < paneRect.left + 5) shift = (paneRect.left + 5) - expectedLeft;
+                            else if (expectedRight > paneRect.right - 5) shift = (paneRect.right - 5) - expectedRight;
+                            if (shift !== 0) menu.style.setProperty('--shift-x', `calc(-50% + ${shift}px)`);
+                            menu.classList.add('active');
                         }
                     }
                 });
@@ -666,8 +671,8 @@
                 this.tagDropdown.classList.add('active');
                 const rect = this.btnTag.getBoundingClientRect(), paneRect = document.getElementById('editor-pane').getBoundingClientRect(), dropRect = this.tagDropdown.getBoundingClientRect();
                 let top = rect.bottom - paneRect.top + 5, left = rect.left - paneRect.left;
-                if (rect.left + dropRect.width > window.innerWidth - 5) left = (window.innerWidth - 5 - dropRect.width) - paneRect.left;
-                if (left + paneRect.left < 5) left = 5 - paneRect.left;
+                if (rect.left + dropRect.width > paneRect.right - 5) left = (paneRect.right - 5 - dropRect.width) - paneRect.left;
+                if (left < paneRect.left + 5) left = paneRect.left + 5;
                 if (rect.bottom + dropRect.height > window.innerHeight - 5) top = rect.top - paneRect.top - dropRect.height - 5;
                 this.tagDropdown.style.top = `${top}px`; this.tagDropdown.style.left = `${left}px`;
             }
