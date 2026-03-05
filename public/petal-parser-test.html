@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Petal Parser Test</title>
+    <style>
+        :root {
+            --text-main: #5c4b51;
+            --rose-accent: #d88c9a;
+            --bg-base: #fdfbfb;
+            --card-bg: rgba(255, 255, 255, 0.75);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100dvh;
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg-base);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            padding: 3rem 1.5rem;
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #app {
+            width: 100%;
+            max-width: 680px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03), inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+            font-size: 1.05rem;
+            word-wrap: break-word;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            display: block;
+            margin-block: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+        }
+
+        a {
+            color: var(--rose-accent);
+            text-decoration: none;
+            border-bottom: 1px dashed rgba(216, 140, 154, 0.4);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            padding-bottom: 1px;
+        }
+
+        @media (hover: hover) {
+            a:hover {
+                border-bottom-color: var(--rose-accent);
+                background: rgba(216, 140, 154, 0.1);
+            }
+        }
+
+        .line-break {
+            height: 0.5em;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script type="module">
+        import { parse as parseToml } from 'https://esm.sh/smol-toml@1.3.0';
+        import { PetalParser } from './petal-parser.js';
+
+        async function bootstrap() {
+            const app = document.getElementById('app');
+            try {
+                const [synRes, dataRes] = await Promise.all([
+                    fetch('syntax.toml'),
+                    fetch('data.txt')
+                ]);
+
+                if (!synRes.ok || !dataRes.ok) throw new Error('依赖资源加载异常');
+
+                const syntaxData = parseToml(await synRes.text());
+                const rawData = await dataRes.text();
+
+                const rules = syntaxData.rules || [];
+                
+                if (rules.length > 0 || syntaxData.global_css) {
+                    const styleNode = document.createElement('style');
+                    styleNode.textContent = `${syntaxData.global_css || ''}\n${rules.map(r => r.css).filter(Boolean).join('\n')}`;
+                    document.head.appendChild(styleNode);
+                }
+
+                const parser = new PetalParser(rules);
+                let parsedHtml = parser.parse(rawData);
+
+                parsedHtml = parsedHtml
+                    .split('\n')
+                    .join('<div class="line-break"></div>')
+                    .replace(/(?:<div class="line-break"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="line-break"><\/div>)*/g, '$1');
+
+                app.innerHTML = parsedHtml;
+
+            } catch (err) {
+                app.innerHTML = `<div style="color: #d88c9a; text-align: center; font-style: italic;">渲染中止: ${err.message}</div>`;
+            }
+        }
+
+        bootstrap();
+    </script>
+</body>
+</html>
