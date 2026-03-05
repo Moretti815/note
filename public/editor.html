@@ -584,19 +584,7 @@
             }
             parseDreamSyntax(raw) {
                 const blocks = raw.split('\n---\n').map(b => b.trim()).filter(b => b && b.split('\n').length >= 2), total = blocks.length, isAsc = this.sysConfig?.data_order === 'asc';
-                const mappedRules = this.syntaxRules.map(r => {
-                    let openTag = r.openTag || r.open_tag || null, closeTag = r.closeTag || r.close_tag || null;
-                    if (!openTag && r.regex) {
-                        let m = r.regex.match(/^\\?([{}↓]+[a-zA-Z0-9_-]*:?)/);
-                        if (m) {
-                            openTag = m[1].replace(/\\/g, '');
-                            if (openTag === '↓↓') closeTag = '↑↑';
-                            else if (openTag.startsWith('{')) closeTag = openTag.endsWith('}') ? '{/' + openTag.substring(1) : '{/' + openTag.substring(1).replace(/[:\-].*/, '') + '}';
-                        }
-                    }
-                    return { ...r, openTag, closeTag };
-                });
-                const ast = new PetalParser(mappedRules);
+                const ast = new PetalParser(this.syntaxRules);
                 return blocks.map((block, index) => {
                     const id = isAsc ? index + 1 : total - index, lines = block.split('\n'), date = lines.shift().trim();
                     if (lines.length > 0) lines[0] = lines[0].replace(/#([^\s#]+)/g, (_, tag) => `<span class="card-tag">#${tag}</span>`);
