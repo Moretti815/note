@@ -100,6 +100,56 @@ view_value = "ri-subtract-line"
 
 ####################
 
+[merge_groups.markdown]
+title = "Markdown 基础设施"
+icon_html = """<i class="ri-government-line"></i><i class="ri-arrow-down-s-line" style="font-size: 0.8em; margin-left: -2px;"></i>"""
+
+[[rules]]
+regex = "!\\[([^\\]]*)\\]\\(([^)]+)\\)"
+flags = "g"
+replacement = '<img src="@2" alt="@1" class="card-img" loading="lazy" />'
+prefix = "!["
+suffix = "]()"
+group = "markdown"
+title = "Markdown 图片"
+view_type = "icon_class"
+view_value = "ri-image-line"
+
+[[rules]]
+regex = "\\[([^\\]]+)\\]\\((#[^)]*)\\)"
+flags = "g"
+replacement = '<a href="@2" class="card-link">$1</a>'
+prefix = "["
+suffix = "]()"
+group = "markdown"
+title = "内部链接"
+view_type = "icon_class"
+view_value = "ri-link-m"
+
+[[rules]]
+regex = "\\[([^\\]]+)\\]\\(([^)#][^)]*)?\\)"
+flags = "g"
+replacement = '<a href="@2" target="_blank" class="card-link" rel="noopener noreferrer">$1</a>'
+prefix = "["
+suffix = "]()"
+group = "markdown"
+title = "外部链接"
+view_type = "icon_class"
+view_value = "ri-external-link-line"
+
+[[rules]]
+regex = "(https?:\\/\\/)([^\\s<]+?[^.,;:!?。，、！？\\s<\\/>])(\\/?)(?=[.,;:!?。，、！？]*(?:\\s|<|$))"
+flags = "g"
+replacement = '<a href="@1@2@3" target="_blank" class="card-link" rel="noopener noreferrer">@2</a>'
+prefix = "https://"
+suffix = ""
+group = "markdown"
+title = "自动链接(防截断)"
+view_type = "icon_class"
+view_value = "ri-global-line"
+
+####################
+
 [merge_groups.underline_color]
 title = "下划线"
 icon_html = """<i class="ri-underline"></i><i class="ri-arrow-down-s-line" style="font-size: 0.8em; margin-left: -2px;"></i>"""

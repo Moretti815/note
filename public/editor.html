@@ -291,31 +291,23 @@
                         if (m) {
                             openTag = m[1].replace(/\\/g, '');
                             if (openTag === '↓↓') closeTag = '↑↑';
-                            else if (openTag.startsWith('{')) closeTag = openTag.endsWith('}') ? '{/' + openTag.substring(1) : '{/' + openTag.substring(1).replace(/[:\-].*/, '') + '}';
+                            else if (openTag.startsWith('{')) {
+                                closeTag = openTag.endsWith('}') ? '{/' + openTag.substring(1) : '{/' + openTag.substring(1).replace(/[:\-].*/, '') + '}';
+                            }
                         }
                     }
                     return { ...r, openTag, closeTag };
                 });
             }
-            parse(str) { return this.render(this.tokenize(str)); }
+
+            parse(str) {
+                return this.render(this.tokenize(str));
+            }
+
             tokenize(str) {
                 let tokens = [], i = 0, len = str.length;
                 while (i < len) {
                     if (str[i] === '\\' && i + 1 < len) { tokens.push({ type: 'text', val: str[i + 1] }); i += 2; continue; }
-                    if (str.startsWith('![', i)) {
-                        let c1 = str.indexOf('](', i + 2);
-                        if (c1 > -1) {
-                            let c2 = str.indexOf(')', c1 + 2);
-                            if (c2 > -1) { tokens.push({ type: 'img', alt: str.slice(i + 2, c1), url: str.slice(c1 + 2, c2) }); i = c2 + 1; continue; }
-                        }
-                    }
-                    if (str.startsWith('[', i)) {
-                        let c1 = str.indexOf('](', i + 1);
-                        if (c1 > -1) {
-                            let c2 = str.indexOf(')', c1 + 2);
-                            if (c2 > -1) { tokens.push({ type: 'link', content: this.tokenize(str.slice(i + 1, c1)), url: str.slice(c1 + 2, c2) }); i = c2 + 1; continue; }
-                        }
-                    }
                     let matched = false;
                     for (let r of this.customRules) {
                         if (r.regex) {
@@ -333,7 +325,10 @@
                                     if (outer.indexOf(r.openTag, r.openTag.length) > -1) {
                                         let out = outer.substring(0, r.openTag.length), innerD = 0, sIdx = -1;
                                         for (let k = r.openTag.length; k < outer.length - r.closeTag.length; ) {
-                                            if (outer[k] === '\\' && k + 1 < outer.length) { if (innerD === 0) out += outer.substring(k, k+2); k += 2; continue; }
+                                            if (outer[k] === '\\' && k + 1 < outer.length) { 
+                                                if (innerD === 0) out += outer.substring(k, k+2); 
+                                                k += 2; continue; 
+                                            }
                                             if (outer.startsWith(r.openTag, k)) { if (innerD === 0) sIdx = k; innerD++; k += r.openTag.length; }
                                             else if (outer.startsWith(r.closeTag, k)) {
                                                 innerD--; k += r.closeTag.length;
@@ -371,15 +366,6 @@
                         }
                     }
                     if (matched) continue;
-                    let urlMatch = str.slice(i).match(/^https?:\/\/[^\s<]+/);
-                    if (urlMatch) {
-                        let url = urlMatch[0], trailing = '';
-                        let pMatch = url.match(/([.,;:!?。，、！？]+)$/);
-                        if (pMatch) { url = url.substring(0, url.length - pMatch[0].length); trailing = pMatch[0]; }
-                        tokens.push({ type: 'autolink', url });
-                        if (trailing) tokens.push({ type: 'text', val: trailing });
-                        i += urlMatch[0].length; continue;
-                    }
                     tokens.push({ type: 'text', val: str[i] }); i++;
                 }
                 return tokens.reduce((a, c) => {
@@ -387,13 +373,11 @@
                     else a.push(c); return a;
                 }, []);
             }
+
             render(tokens) {
                 return tokens.map(t => {
                     if (t.type === 'text') return t.val;
-                    if (t.type === 'img') return `<img src="${t.url}" alt="${t.alt}" class="card-img" loading="lazy" />`;
-                    if (t.type === 'link') return `<a href="${t.url}" ${t.url.startsWith('#') ? '' : 'target="_blank" rel="noopener noreferrer"'} class="card-link">${this.render(t.content)}</a>`;
-                    if (t.type === 'autolink') return `<a href="${t.url}" target="_blank" class="card-link" rel="noopener noreferrer">${t.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}</a>`;
-                    if (t.type === 'custom_regex') return t.rule.replacement.replace(/\$(\d)/g, (m, p1) => this.parse(t.match[parseInt(p1)] || ''));
+                    if (t.type === 'custom_regex') return t.rule.replacement.replace(/\$(\d)/g, (_, p1) => this.parse(t.match[parseInt(p1)] || '')).replace(/@(\d)/g, (_, p1) => t.match[parseInt(p1)] || '');
                     if (t.type === 'custom_prefix') return t.rule.replacement.replace(/\$1/g, this.parse(t.content));
                     return '';
                 }).join('');
