@@ -22,7 +22,7 @@
         .btn.active { color: var(--rose-ellipsis); background: rgb(216 140 154 / 15%); }
         .btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
         .main-container { flex: 1; display: flex; overflow: hidden; position: relative; }
-        .sidebar-wrapper { width: 260px; flex-shrink: 0; background: var(--card-bg-blur); backdrop-filter: blur(12px); border-right: 1px solid rgb(255 255 255 / 40%); display: flex; flex-direction: column; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), margin-left 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 15; overflow: hidden; }
+        .sidebar-wrapper { width: 260px; flex-shrink: 0; background: var(--card-bg-blur); backdrop-filter: blur(12px); border-right: 1px solid rgb(216 140 154 / 40%); display: flex; flex-direction: column; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), margin-left 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 15; overflow: hidden; }
         .sidebar-wrapper.collapsed { margin-left: -260px; }
         .sidebar-header { padding: 0.8rem 1.2rem; border-bottom: 1px dashed rgb(216 140 154 / 30%); font-size: 0.9rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; font-weight: 500; flex-shrink: 0; }
         .repo-name-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -36,8 +36,10 @@
         details.tree-folder > summary:hover .tree-actions, .tree-file:hover .tree-actions { opacity: 1; pointer-events: auto; }
         .tree-action-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0.2rem; border-radius: 4px; font-size: 0.95rem; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
         .tree-action-btn:hover { color: var(--rose-ellipsis); background: rgb(216 140 154 / 20%); }
-        .tree-file { cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 1.2rem; color: var(--text-muted); transition: all 0.2s; }
-        .tree-file:hover, .tree-file.active { background: rgb(216 140 154 / 15%); color: var(--rose-ellipsis); }
+        .tree-file { position: relative; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 1.2rem; color: var(--text-muted); transition: all 0.2s; }
+        .tree-file:hover { background: rgb(216 140 154 / 10%); }
+        .tree-file.active { background: rgb(216 140 154 / 5%); color: var(--rose-ellipsis); font-weight: 500; }
+        .tree-file.active::after { content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%); height: 60%; width: 4px; background: var(--timeline-accent); border-radius: 4px 0 0 4px; }
         .dirty-dot { width: 6px; height: 6px; background: var(--timeline-accent); border-radius: 50%; margin-left: 0.4rem; flex-shrink: 0; }
         .workspace { flex: 1; display: flex; position: relative; overflow: hidden; background: rgb(253 251 251 / 30%); }
         .pane { flex: 1; height: 100%; overflow-y: auto; overflow-x: hidden; scrollbar-gutter: stable; overscroll-behavior-y: none; }
@@ -114,7 +116,24 @@
         .dropdown-menu.active { opacity: 1; visibility: visible; transform: translateX(var(--shift-x, -50%)) translateY(0) scale(1); }
         .sidebar-overlay { display: none; }
         @media (min-width: 769px) { #btn-split { display: none !important; } #editor-pane { width: 50%; flex: none; display: flex; } #preview { width: 50%; flex: none; display: block; border-left: 1px dashed rgb(216 140 154 / 30%); } }
-        @media (max-width: 768px) { .toolbar { padding: 0.8rem 1rem; } #editor-pane { display: flex; flex-direction: column; width: 100%; flex: 1; } .format-bar { padding: 0.5rem 1rem; } #editor { padding: 1.2rem 1.2rem; } #preview { padding: 1.2rem 1.2rem; display: none; width: 100%; flex: 1; } .split-mode #editor-pane { display: none; } .split-mode #preview { display: block; } .sidebar-wrapper { position: absolute; height: 100%; left: 0; transform: translateX(0); margin-left: 0; box-shadow: 4px 0 25px rgb(0 0 0 / 10%); } .sidebar-wrapper.collapsed { transform: translateX(-100%); margin-left: 0; } .sidebar-overlay { position: absolute; inset: 0; background: rgb(253 251 251 / 40%); backdrop-filter: blur(4px); z-index: 10; display: none; } .sidebar-overlay.active { display: block; } .file-path-display { display: none; } .commit-layout { flex-direction: column; height: auto; max-height: 70vh; } .commit-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgb(216 140 154 / 30%); max-height: 150px; } .diff-container { min-height: 150px; } }
+        @media (max-width: 768px) {
+            .toolbar { padding: 0.8rem 1rem; }
+            #editor-pane { display: flex; flex-direction: column; width: 100%; flex: 1; }
+            .format-bar { padding: 0.5rem 1rem; }
+            #editor { padding: 1.2rem 1.2rem; }
+            #preview { padding: 1.2rem 1.2rem; display: none; width: 100%; flex: 1; }
+            .split-mode #editor-pane { display: none; }
+            .split-mode #preview { display: block; }
+            .sidebar-wrapper { position: absolute; height: 100%; left: 0; transform: translateX(0); margin-left: 0; border-right: 1px solid rgb(216 140 154 / 40%); }
+            .sidebar-wrapper.collapsed { transform: translateX(-100%); margin-left: 0; }
+            .sidebar-overlay { display: block; position: absolute; inset: 0; background: rgb(253 251 251 / 40%); backdrop-filter: blur(4px); z-index: 10; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+            .sidebar-overlay.active { opacity: 1; visibility: visible; }
+            .file-path-display { display: none; }
+            .commit-layout { flex-direction: column; height: auto; max-height: 70vh; }
+            .commit-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgb(216 140 154 / 30%); max-height: 150px; }
+            .diff-container { min-height: 150px; }
+            .tree-actions { opacity: 1; pointer-events: auto; }
+        }
     </style>
 </head>
 <body>
@@ -186,7 +205,7 @@
             </div>
             <div class="file-tree-container" id="file-tree"></div>
         </div>
-        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+        <div class="sidebar-overlay active" id="sidebar-overlay"></div>
         <div class="workspace" id="workspace">
             <div class="pane" id="editor-pane">
                 <div class="format-bar">
@@ -549,7 +568,15 @@
                 this.btnSidebar.addEventListener('click', () => { this.sidebar.classList.toggle('collapsed'); this.sidebarOverlay.classList.toggle('active'); });
                 this.sidebarOverlay.addEventListener('click', () => { this.sidebar.classList.add('collapsed'); this.sidebarOverlay.classList.remove('active'); });
                 this.btnSplit.addEventListener('click', () => { this.workspace.classList.toggle('split-mode'); this.btnSplit.classList.toggle('active', this.workspace.classList.contains('split-mode')); this.updateViewIcon(); this.conditionallyUpdatePreview(); });
-                window.addEventListener('resize', () => { this.updateViewIcon(); if (window.innerWidth > 768 && this.currentPath && this.vfs[this.currentPath] && this.editor.value !== this.vfs[this.currentPath].original) this.updatePreview(); if (window.innerWidth > 768) { this.sidebarOverlay.classList.remove('active'); } });
+                window.addEventListener('resize', () => {
+                    this.updateViewIcon();
+                    if (window.innerWidth > 768 && this.currentPath && this.vfs[this.currentPath] && this.editor.value !== this.vfs[this.currentPath].original) this.updatePreview();
+                    if (window.innerWidth > 768) {
+                        this.sidebarOverlay.classList.remove('active');
+                    } else {
+                        if (!this.sidebar.classList.contains('collapsed')) this.sidebarOverlay.classList.add('active');
+                    }
+                });
                 this.preview.addEventListener('click', e => {
                     const link = e.target.closest('a.card-link');
                     if (link && link.getAttribute('href')?.startsWith('#')) {
