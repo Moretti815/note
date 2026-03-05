@@ -158,7 +158,7 @@ Petal Note 内置了一套自定义语法引擎，任何语法都在 TOML 配置
 放心！Petal Note 遵循 {ud-b}**究极开闭原则**{/ud-b}，杜绝一切硬编码。语法引擎是完全开放的，只需一个 TOML 文件定义即可，甚至还可以完美复刻 *GitHub Alerts* 或者 *Markdown* 部分标准语法，相关示例代码请 [查看文档](https://github.com/miniyu157/petal-note/tree/main?tab=readme-ov-file#-%E7%BC%96%E8%BE%91%E5%99%A8%E5%B7%A5%E5%85%B7%E6%A0%8F%E8%AF%A6%E8%A7%A3)
 (( ![editor_toolbox](./assets/editor_toolbox.png) 甚至是编辑器工具栏的合并行为都可以控制，还支持 **TOML 内链表/数组** 定义复杂图标模板 ))
 单击左下角那片小叶子即可体验内置编辑器 密码: {w-r}✨{/w-r}
-关于{ud-u}编辑器鉴权加密{/ud-u}、{ud-r}复杂正则语法定义{/ud-r}等信息，请移步[文档说明]([查看文档](https://github.com/miniyu157/petal-note/tree/main?tab=readme-ov-file#-%E8%87%AA%E5%AE%9A%E4%B9%89%E8%AF%AD%E6%B3%95)
+关于{ud-u}编辑器鉴权加密{/ud-u}、{ud-r}复杂正则语法定义{/ud-r}等信息，请移步[文档说明](https://github.com/miniyu157/petal-note/tree/main?tab=readme-ov-file#-%E8%87%AA%E5%AE%9A%E4%B9%89%E8%AF%AD%E6%B3%95)
 ---
 Petal
 #用法 #内容
