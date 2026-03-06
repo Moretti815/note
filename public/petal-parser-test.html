@@ -93,14 +93,14 @@
                 const rawData = await dataRes.text();
 
                 const rules = syntaxData.rules || [];
+                const parser = new PetalParser(rules);
+                const css = parser.getStyles(syntaxData.global_css);
                 
-                if (rules.length > 0 || syntaxData.global_css) {
+                if (css) {
                     const styleNode = document.createElement('style');
-                    styleNode.textContent = `${syntaxData.global_css || ''}\n${rules.map(r => r.css).filter(Boolean).join('\n')}`;
+                    styleNode.textContent = css;
                     document.head.appendChild(styleNode);
                 }
-
-                const parser = new PetalParser(rules);
                 let parsedHtml = parser.parse(rawData);
 
                 parsedHtml = parsedHtml

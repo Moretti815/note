@@ -488,9 +488,10 @@
                             if (synRes.ok) {
                                 const synData = parse(await synRes.text());
                                 this.syntaxRules = synData.rules || [];
-                                if (this.syntaxRules.length > 0) {
+                                const css = new PetalParser(this.syntaxRules).getStyles(synData.global_css);
+                                if (css) {
                                     const style = document.createElement('style');
-                                    style.textContent = this.syntaxRules.map(r => r.css).join('\n');
+                                    style.textContent = css;
                                     document.head.appendChild(style);
                                 }
                             }

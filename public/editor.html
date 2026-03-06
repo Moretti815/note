@@ -57,12 +57,6 @@
         .card-tag { color: var(--rose-ellipsis); margin-inline-end: 0.4rem; display: inline-block; font-size: 0.85rem; }
         .card-link { color: var(--rose-ellipsis); text-decoration: none; border-bottom: 1px dashed rgb(216 140 154 / 40%); transition: all 0.3s ease; padding-bottom: 1px; word-break: break-all; }
         .card-link:hover { border-bottom-color: var(--rose-ellipsis); background: rgb(216 140 154 / 10%); }
-        .manual-br { height: 0.5em; }
-        .card-img { max-width: 100%; height: auto; border-radius: 4px; margin-block: 0.6rem; box-shadow: 0 2px 6px rgb(0 0 0 / 5%); display: block; }
-        .gallery { display: grid; gap: 0.4rem; margin-block: 0.6rem; }
-        .gallery.grid-2 { grid-template-columns: repeat(2, 1fr); }
-        .gallery.grid-3 { grid-template-columns: repeat(3, 1fr); }
-        .gallery .card-img { margin: 0; aspect-ratio: 1; object-fit: cover; width: 100%; height: 100%; }
         .modal-overlay { position: fixed; inset: 0; background: rgb(253 251 251 / 60%); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal-box { background: var(--card-bg-blur); border: 1px solid rgb(255 255 255 / 80%); border-radius: 12px; padding: 2rem; width: 850px; max-width: 95vw; box-shadow: 0 15px 35px rgb(0 0 0 / 4%), inset 0 0 0 1px rgb(255 255 255 / 50%); display: flex; flex-direction: column; gap: 1.2rem; }
@@ -97,6 +91,15 @@
         .bg-error { background: var(--danger-color); }
         @keyframes pulse-indicator { 0% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(0.8); opacity: 0.5; } }
         .loading-pulse { animation: pulse-indicator 1.2s infinite ease-in-out; background: var(--timeline-accent); }
+        .status-right { display: flex; align-items: center; gap: 0.8rem; position: relative; flex-shrink: 0; }
+        .format-toggle { background: transparent; border: 1px dashed rgb(216 140 154 / 40%); color: var(--text-muted); font-size: 0.8rem; padding: 0.2rem 0.6rem; border-radius: 4px; cursor: pointer; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 0.3rem; }
+        .format-toggle:hover { color: var(--rose-ellipsis); border-color: var(--rose-ellipsis); background: rgb(216 140 154 / 10%); }
+        .format-menu { position: absolute; bottom: calc(100% + 8px); right: 0; background: var(--card-bg-blur); backdrop-filter: blur(12px); border: 1px solid rgb(255 255 255 / 80%); border-radius: 6px; box-shadow: 0 -4px 15px rgb(0 0 0 / 5%); z-index: 100; min-width: 140px; opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease; display: flex; flex-direction: column; padding: 0.4rem; }
+        .format-menu.active { opacity: 1; visibility: visible; }
+        .format-item { padding: 0.4rem 0.8rem; font-size: 0.8rem; cursor: pointer; border-radius: 4px; color: var(--text-main); transition: background 0.2s, color 0.2s; display: flex; justify-content: space-between; align-items: center; }
+        .format-item:hover { background: rgb(216 140 154 / 15%); color: var(--rose-ellipsis); }
+        .format-item.active { color: var(--rose-ellipsis); font-weight: 500; }
+        .format-item.active::after { content: '\EB7B'; font-family: 'remixicon'; font-size: 0.9rem; }
         .btn-cancel-sm { padding: 0; font-size: 1.1rem; color: var(--danger-color); display: none; flex-shrink: 0; margin-left: 0.5rem; }
         .console-panel { position: absolute; bottom: 100%; left: 0; width: 450px; max-width: 100vw; height: 350px; background: rgb(253 251 251 / 90%); backdrop-filter: blur(16px); border-top: 1px solid rgb(255 255 255 / 80%); border-right: 1px solid rgb(255 255 255 / 80%); border-radius: 0 12px 0 0; box-shadow: 4px -4px 15px rgb(0 0 0 / 3%); display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease; z-index: 15; }
         .console-panel.active { opacity: 1; visibility: visible; }
@@ -241,14 +244,79 @@
             <div class="status-left" id="btn-console-toggle">
                 <div class="status-indicator bg-info" id="status-indicator"></div>
                 <span id="status-msg">初始化...</span>
+                <button class="btn btn-cancel-sm" id="btn-cancel" title="取消请求"><i class="ri-close-circle-line"></i></button>
             </div>
-            <button class="btn btn-cancel-sm" id="btn-cancel" title="取消请求"><i class="ri-close-circle-line"></i></button>
+            <div class="status-right" id="format-switcher">
+                <button class="format-toggle" id="btn-format-toggle" style="display:none;"><i class="ri-magic-line"></i> <span>Auto</span></button>
+                <div class="format-menu" id="format-menu"></div>
+            </div>
         </div>
     </div>
     <script type="module">
         import { parse } from 'https://esm.sh/smol-toml@1.3.0';
         import { diffLines } from 'https://esm.sh/diff@5.2.0';
+        import { marked } from 'https://esm.sh/marked@12.0.0';
         import { PetalParser } from './petal-parser.js';
+
+        const RenderStrategies = [
+            {
+                id: 'dream-card', name: 'Petal Note 卡片', exts: ['.txt'],
+                css: `.manual-br { height: 0.5em; } .card-img { max-width: 100%; height: auto; border-radius: 4px; margin-block: 0.6rem; box-shadow: 0 2px 6px rgb(0 0 0 / 5%); display: block; } .gallery { display: grid; gap: 0.4rem; margin-block: 0.6rem; } .gallery.grid-2 { grid-template-columns: repeat(2, 1fr); } .gallery.grid-3 { grid-template-columns: repeat(3, 1fr); } .gallery .card-img { margin: 0; aspect-ratio: 1; object-fit: cover; width: 100%; height: 100%; }`,
+                render: (raw, ctx) => {
+                    const blocks = raw.split('\n---\n').map(b => b.trim()).filter(b => b && b.split('\n').length >= 2), total = blocks.length, isAsc = ctx.sysConfig?.data_order === 'asc';
+                    return blocks.map((block, index) => {
+                        const id = isAsc ? index + 1 : total - index, lines = block.split('\n'), date = lines.shift().trim();
+                        if (lines.length > 0) lines[0] = lines[0].replace(/#([^\s#]+)/g, (_, tag) => `<span class="card-tag">#${tag}</span>`);
+                        let finalHtml = ctx.parser.parse(lines.join('\n')).split('\n').join('<div class="manual-br"></div>').replace(/(?:<div class="manual-br"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="manual-br"><\/div>)*/g, '$1').replace(/(<img[^>]+>){2,}/g, match => `<div class="gallery ${((match.match(/<img/g) || []).length === 2 || (match.match(/<img/g) || []).length === 4) ? 'grid-2' : 'grid-3'}">${match}</div>`);
+                        return `<div class="preview-item" id="preview-post-${id}"><div class="preview-date">${date}</div><div class="preview-card"><span class="preview-card-id">#${id}</span>${finalHtml}</div></div>`;
+                    }).join('');
+                }
+            },
+            {
+                id: 'markdown-only', name: 'Markdown only', exts: ['.md', '.markdown'],
+                css: `.preview-card h1, .preview-card h2, .preview-card h3 { margin-top: 0; color: var(--rose-ellipsis); font-weight: 500; } .preview-card p { margin-block: 0.8rem; } .preview-card code { background: rgb(216 140 154 / 15%); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em; } .preview-card pre { background: rgb(253 251 251 / 50%); padding: 1rem; border-radius: 6px; overflow-x: auto; border: 1px solid rgb(216 140 154 / 30%); margin-block: 0.8rem; } .preview-card pre code { background: transparent; padding: 0; } .preview-card blockquote { border-left: 4px solid var(--rose-ellipsis); margin: 0; padding-left: 1rem; color: var(--text-muted); background: rgb(216 140 154 / 5%); padding-block: 0.5rem; border-radius: 0 6px 6px 0; font-style: italic; } .preview-card ul, .preview-card ol { padding-left: 1.5rem; margin-block: 0.8rem; } .card-img { max-width: 100%; height: auto; border-radius: 4px; margin-block: 0.6rem; box-shadow: 0 2px 6px rgb(0 0 0 / 5%); display: block; }`,
+                render: (raw, ctx) => `<div class="preview-card" style="margin-bottom:2.5rem">${marked.parse(raw)}</div>`
+            },
+            {
+                id: 'markdown-petal', name: 'MD + Petal', exts: [],
+                css: `.preview-card h1, .preview-card h2, .preview-card h3 { margin-top: 0; color: var(--rose-ellipsis); font-weight: 500; } .preview-card p { margin-block: 0.8rem; } .preview-card code { background: rgb(216 140 154 / 15%); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em; } .preview-card pre { background: rgb(253 251 251 / 50%); padding: 1rem; border-radius: 6px; overflow-x: auto; border: 1px solid rgb(216 140 154 / 30%); margin-block: 0.8rem; } .preview-card pre code { background: transparent; padding: 0; } .preview-card blockquote { border-left: 4px solid var(--rose-ellipsis); margin: 0; padding-left: 1rem; color: var(--text-muted); background: rgb(216 140 154 / 5%); padding-block: 0.5rem; border-radius: 0 6px 6px 0; font-style: italic; } .preview-card ul, .preview-card ol { padding-left: 1.5rem; margin-block: 0.8rem; } .card-img { max-width: 100%; height: auto; border-radius: 4px; margin-block: 0.6rem; box-shadow: 0 2px 6px rgb(0 0 0 / 5%); display: block; }`,
+                render: (raw, ctx) => {
+                    const container = document.createElement('div');
+                    container.innerHTML = marked.parse(raw);
+                    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
+                    const nodes = [];
+                    let node;
+                    while (node = walker.nextNode()) {
+                        let p = node.parentNode, skip = false;
+                        while (p && p !== container) {
+                            if (['a', 'pre', 'code', 'script', 'style'].includes(p.tagName.toLowerCase())) { skip = true; break; }
+                            p = p.parentNode;
+                        }
+                        if (!skip && node.nodeValue.trim()) nodes.push(node);
+                    }
+                    nodes.forEach(n => {
+                        const parsedStr = ctx.parser.parse(n.nodeValue);
+                        if (parsedStr !== n.nodeValue) {
+                            const temp = document.createElement('div');
+                            temp.innerHTML = parsedStr;
+                            const frag = document.createDocumentFragment();
+                            while (temp.firstChild) frag.appendChild(temp.firstChild);
+                            n.parentNode.replaceChild(frag, n);
+                        }
+                    });
+                    return `<div class="preview-card" style="margin-bottom:2.5rem">${container.innerHTML}</div>`;
+                }
+            },
+            {
+                id: 'petal-only', name: 'Petal only', exts: [],
+                css: `.manual-br { height: 0.5em; } .card-img { max-width: 100%; height: auto; border-radius: 4px; margin-block: 0.6rem; box-shadow: 0 2px 6px rgb(0 0 0 / 5%); display: block; }`,
+                render: (raw, ctx) => {
+                    let finalHtml = ctx.parser.parse(raw).split('\n').join('<div class="manual-br"></div>').replace(/(?:<div class="manual-br"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="manual-br"><\/div>)*/g, '$1');
+                    return `<div class="preview-card" style="margin-bottom:2.5rem">${finalHtml}</div>`;
+                }
+            }
+        ];
+
         const CryptoSys = {
             async deriveKey(password) {
                 const encoder = new TextEncoder();
@@ -310,9 +378,12 @@
                 this.statusMsg = document.getElementById('status-msg');
                 this.statusIndicator = document.getElementById('status-indicator');
                 this.filePathDisplay = document.getElementById('current-file-path');
+                this.btnFormatToggle = document.getElementById('btn-format-toggle');
+                this.formatMenu = document.getElementById('format-menu');
                 this.sysConfig = null;
                 this.authConfig = null;
                 this.syntaxRules = [];
+                this.petalParser = new PetalParser([]);
                 this.vfs = {};
                 this.currentPath = null;
                 this.fetchController = null;
@@ -323,8 +394,10 @@
                 this.activeDiffPath = null;
                 this.diffNodes = [];
                 this.currentDiffIndex = 0;
+                this.selectedFormatId = 'auto';
                 this.init();
                 this.initViewportHandler();
+                this.initFormatMenu();
             }
             initViewportHandler() {
                 if (window.visualViewport) {
@@ -337,6 +410,11 @@
                     window.visualViewport.addEventListener('scroll', handleViewport);
                     handleViewport();
                 }
+            }
+            initFormatMenu() {
+                let html = `<div class="format-item ${this.selectedFormatId === 'auto' ? 'active' : ''}" data-id="auto">自动探测 (Auto)</div>`;
+                RenderStrategies.forEach(s => html += `<div class="format-item ${this.selectedFormatId === s.id ? 'active' : ''}" data-id="${s.id}">${s.name}</div>`);
+                this.formatMenu.innerHTML = html;
             }
             log(msg, type = 'info', loading = false) {
                 const time = new Date().toLocaleTimeString('zh-CN', { hour12: false });
@@ -384,8 +462,12 @@
                             if (synRes.ok) {
                                 const synData = parse(await synRes.text());
                                 this.syntaxRules = synData.rules || [];
-                                if (this.syntaxRules.length > 0 || synData.global_css) {
-                                    const style = document.createElement('style'); style.textContent = `${synData.global_css || ''}\n${this.syntaxRules.map(r => r.css).filter(Boolean).join('\n')}`; document.head.appendChild(style);
+                                this.petalParser = new PetalParser(this.syntaxRules);
+                                const css = this.petalParser.getStyles(synData.global_css);
+                                if (css) {
+                                    const style = document.createElement('style'); style.textContent = css; document.head.appendChild(style);
+                                }
+                                if (this.syntaxRules.length > 0) {
                                     const viewTemplates = (synData.view_templates || []).reduce((a, t) => { const k = t.type || t.id || t.name || Object.keys(t)[0]; const v = t.template || t.html || Object.values(t)[0]; if (k) a[k] = v; return a; }, {});
                                     const mg = synData.merge_groups, mergeMap = Array.isArray(mg) ? mg.reduce((a, g) => { const k = g.id || g.group || g.name || Object.keys(g)[0]; if (k) a[k] = g; return a; }, {}) : (mg || {});
                                     const groups = []; this.syntaxRules.forEach(r => { const last = groups[groups.length - 1]; if (r.group && last && last.id === r.group) last.rules.push(r); else groups.push({ id: r.group, rules: [r] }); });
@@ -422,14 +504,60 @@
                 return Object.values(this.vfs).some(node => (node.isNew && !node.deleted) || (node.deleted && node.original !== null) || (!node.deleted && !node.isNew && node.loaded && node.content !== node.original));
             }
             checkDirty() { this.btnSave.style.color = this.hasUnsavedChanges() ? 'var(--rose-ellipsis)' : ''; }
+            resolveRenderer() {
+                if (!this.currentPath) return null;
+                const extMatch = this.currentPath.match(/\.[^.]+$/), ext = extMatch ? extMatch[0].toLowerCase() : '';
+                let detectedStrategy = RenderStrategies.find(s => s.exts.includes(ext)) || RenderStrategies[0];
+                return this.selectedFormatId === 'auto' ? detectedStrategy : (RenderStrategies.find(s => s.id === this.selectedFormatId) || detectedStrategy);
+            }
+            updateFormatUI() {
+                const renderer = this.resolveRenderer();
+                if (!renderer) { this.btnFormatToggle.style.display = 'none'; return; }
+                this.btnFormatToggle.style.display = 'flex';
+                this.btnFormatToggle.querySelector('span').innerText = this.selectedFormatId === 'auto' ? `Auto (${renderer.name})` : renderer.name;
+                this.formatMenu.querySelectorAll('.format-item').forEach(el => el.classList.toggle('active', el.dataset.id === this.selectedFormatId));
+                
+                let styleEl = document.getElementById('strategy-css');
+                if (!styleEl) { styleEl = document.createElement('style'); styleEl.id = 'strategy-css'; document.head.appendChild(styleEl); }
+                styleEl.textContent = renderer.css || '';
+            }
+            updatePreview() {
+                const renderer = this.resolveRenderer();
+                if (!renderer || !this.editor.value) { this.preview.innerHTML = ''; return; }
+                this.preview.innerHTML = renderer.render(this.editor.value, { parser: this.petalParser, sysConfig: this.sysConfig });
+                this.resolvePreviewAssets();
+            }
+
+            resolvePreviewAssets() {
+                if (!this.currentPath || !this.authConfig) return;
+                const branch = this.sysConfig?.github_branch || 'main', baseRepoUrl = `https://raw.githubusercontent.com/${this.authConfig.github_user}/${this.authConfig.github_repo}/${branch}/`, currentDir = this.currentPath.includes('/') ? this.currentPath.substring(0, this.currentPath.lastIndexOf('/') + 1) : '';
+                this.preview.querySelectorAll('img').forEach(img => {
+                    let src = img.getAttribute('src');
+                    if (!src || src.match(/^(https?:\/\/|data:|blob:)/i)) return;
+                    let resolvedPath = '';
+                    if (src.startsWith('/')) resolvedPath = src.substring(1);
+                    else {
+                        let parts = currentDir.split('/').filter(Boolean), srcParts = src.split('/');
+                        for (let part of srcParts) { if (part === '.') continue; if (part === '..') parts.pop(); else parts.push(part); }
+                        resolvedPath = parts.join('/');
+                    }
+                    img.src = baseRepoUrl + resolvedPath;
+                });
+            }
             bindFormatters() {
                 document.getElementById('btn-undo').addEventListener('click', e => { e.preventDefault(); this.editor.focus(); document.execCommand('undo'); });
                 document.getElementById('btn-redo').addEventListener('click', e => { e.preventDefault(); this.editor.focus(); document.execCommand('redo'); });
                 document.getElementById('btn-locate').addEventListener('click', e => {
                     e.preventDefault();
                     if (!this.workspace.classList.contains('split-mode') && window.innerWidth <= 768) { this.workspace.classList.add('split-mode'); this.updateViewIcon(); this.updatePreview(); }
-                    const textBefore = this.editor.value.substring(0, this.editor.selectionStart), index = textBefore.split('\n---\n').length - 1, items = this.preview.querySelectorAll('.preview-item');
-                    if (items[index]) items[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    const renderer = this.resolveRenderer();
+                    if (renderer && renderer.id === 'dream-card') {
+                        const textBefore = this.editor.value.substring(0, this.editor.selectionStart), index = textBefore.split('\n---\n').length - 1, items = this.preview.querySelectorAll('.preview-item');
+                        if (items[index]) items[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    } else {
+                        const percentage = this.editor.value.length > 0 ? this.editor.selectionStart / this.editor.value.length : 0;
+                        this.preview.scrollTop = this.preview.scrollHeight * percentage;
+                    }
                 });
                 document.querySelectorAll('.fmt-action').forEach(btn => {
                     btn.addEventListener('click', e => {
@@ -444,6 +572,11 @@
                 });
             }
             bindEvents() {
+                this.btnFormatToggle.addEventListener('click', e => { e.stopPropagation(); this.formatMenu.classList.toggle('active'); });
+                this.formatMenu.addEventListener('click', e => {
+                    const item = e.target.closest('.format-item');
+                    if (item) { this.selectedFormatId = item.dataset.id; this.formatMenu.classList.remove('active'); this.updateFormatUI(); this.conditionallyUpdatePreview(); }
+                });
                 this.btnConsoleToggle.addEventListener('click', () => this.consolePanel.classList.toggle('active'));
                 document.getElementById('btn-clear-console').addEventListener('click', () => { this.consoleLogs.innerHTML = ''; this.log('控制台已清空', 'info'); });
                 this.btnCancel.addEventListener('click', e => { e.stopPropagation(); if (this.fetchController) { this.fetchController.abort(); this.fetchController = null; this.log('用户取消了请求', 'info'); } });
@@ -454,11 +587,7 @@
                 window.addEventListener('resize', () => {
                     this.updateViewIcon();
                     if (window.innerWidth > 768 && this.currentPath && this.vfs[this.currentPath] && this.editor.value !== this.vfs[this.currentPath].original) this.updatePreview();
-                    if (window.innerWidth > 768) {
-                        this.sidebarOverlay.classList.remove('active');
-                    } else {
-                        if (!this.sidebar.classList.contains('collapsed')) this.sidebarOverlay.classList.add('active');
-                    }
+                    if (window.innerWidth > 768) { this.sidebarOverlay.classList.remove('active'); } else { if (!this.sidebar.classList.contains('collapsed')) this.sidebarOverlay.classList.add('active'); }
                 });
                 this.preview.addEventListener('click', e => {
                     const link = e.target.closest('a.card-link');
@@ -483,9 +612,7 @@
                 document.getElementById('commit-file-list').addEventListener('click', e => {
                     const cb = e.target.closest('.commit-file-checkbox'), item = e.target.closest('.commit-item-clickable');
                     if (cb) { const p = cb.dataset.path; if (cb.checked) this.stagedFiles.add(p); else this.stagedFiles.delete(p); }
-                    if (item && !e.target.closest('.tree-folder')) {
-                        this.activeDiffPath = item.dataset.path; document.querySelectorAll('.commit-item-clickable').forEach(el => el.classList.toggle('active', el.dataset.path === this.activeDiffPath)); this.renderDiff();
-                    }
+                    if (item && !e.target.closest('.tree-folder')) { this.activeDiffPath = item.dataset.path; document.querySelectorAll('.commit-item-clickable').forEach(el => el.classList.toggle('active', el.dataset.path === this.activeDiffPath)); this.renderDiff(); }
                 });
                 this.btnSave.addEventListener('click', () => this.showCommitModal());
                 document.getElementById('btn-commit-cancel').addEventListener('click', () => this.commitModal.classList.remove('active'));
@@ -505,6 +632,7 @@
                     }
                 });
                 document.addEventListener('click', e => {
+                    if (!e.target.closest('#format-menu') && !e.target.closest('#btn-format-toggle')) this.formatMenu.classList.remove('active');
                     if (!e.target.closest('#tag-dropdown') && !e.target.closest('#btn-tag')) this.tagDropdown.classList.remove('active');
                     if (!e.target.closest('#console-panel') && !e.target.closest('#status-bar')) this.consolePanel.classList.remove('active');
                     const toggle = e.target.closest('.fmt-dropdown-toggle');
@@ -542,7 +670,7 @@
                 if (isDir) { Object.keys(this.vfs).forEach(p => { if (p.startsWith(path)) this.vfs[p].deleted = true; }); }
                 else if (this.vfs[path]) this.vfs[path].deleted = true;
                 if (this.currentPath && (this.currentPath === path || this.currentPath.startsWith(path))) {
-                    this.currentPath = null; this.editor.value = ''; this.editor.disabled = true; this.filePathDisplay.innerText = '未选择文件'; this.preview.innerHTML = '';
+                    this.currentPath = null; this.editor.value = ''; this.editor.disabled = true; this.filePathDisplay.innerText = '未选择文件'; this.preview.innerHTML = ''; this.updateFormatUI();
                 }
                 this.renderFileTree(); this.checkDirty();
             }
@@ -582,17 +710,6 @@
                     if (res.ok) this.log(`上传成功`, 'success'); else throw new Error(`HTTP ${res.status}`);
                 } catch (e) { this.log(`上传失败: ${e.message}`, 'error'); }
             }
-            parseDreamSyntax(raw) {
-                const blocks = raw.split('\n---\n').map(b => b.trim()).filter(b => b && b.split('\n').length >= 2), total = blocks.length, isAsc = this.sysConfig?.data_order === 'asc';
-                const ast = new PetalParser(this.syntaxRules);
-                return blocks.map((block, index) => {
-                    const id = isAsc ? index + 1 : total - index, lines = block.split('\n'), date = lines.shift().trim();
-                    if (lines.length > 0) lines[0] = lines[0].replace(/#([^\s#]+)/g, (_, tag) => `<span class="card-tag">#${tag}</span>`);
-                    let finalHtml = ast.parse(lines.join('\n')).split('\n').join('<div class="manual-br"></div>').replace(/(?:<div class="manual-br"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="manual-br"><\/div>)*/g, '$1').replace(/(<img[^>]+>){2,}/g, match => `<div class="gallery ${((match.match(/<img/g) || []).length === 2 || (match.match(/<img/g) || []).length === 4) ? 'grid-2' : 'grid-3'}">${match}</div>`);
-                    return `<div class="preview-item" id="preview-post-${id}"><div class="preview-date">${date}</div><div class="preview-card"><span class="preview-card-id">#${id}</span>${finalHtml}</div></div>`;
-                }).join('');
-            }
-            updatePreview() { this.preview.innerHTML = this.parseDreamSyntax(this.editor.value); }
             async loadRepository() {
                 this.log('正在拉取全量文件树...', 'info', true); this.editor.disabled = true;
                 if (this.fetchController) this.fetchController.abort(); this.fetchController = new AbortController();
@@ -642,7 +759,7 @@
             }
             async openFile(path) {
                 if (this.currentPath && this.vfs[this.currentPath]) this.vfs[this.currentPath].content = this.editor.value;
-                this.currentPath = path; this.filePathDisplay.innerText = path; this.filePathDisplay.title = path; this.editor.disabled = false;
+                this.currentPath = path; this.filePathDisplay.innerText = path; this.filePathDisplay.title = path; this.editor.disabled = false; this.updateFormatUI();
                 if (this.vfs[path].loaded) { this.editor.value = this.vfs[path].content; this.renderFileTree(); this.conditionallyUpdatePreview(); this.checkDirty(); return; }
                 if (this.fetchController) this.fetchController.abort(); this.fetchController = new AbortController();
                 this.log(`加载: ${path}...`, 'info', true); this.editor.disabled = true;
