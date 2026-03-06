@@ -11,6 +11,11 @@ export class PetalParser {
         }));
     }
 
+    getStyles(globalCss = '') {
+        const rulesCss = this.customRules.map(r => r.css).filter(Boolean).join('\n');
+        return [globalCss, rulesCss].filter(Boolean).join('\n');
+    }
+
     parse(str) {
         return this.render(this.tokenize(str));
     }
