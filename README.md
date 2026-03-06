@@ -247,9 +247,13 @@ Petal Note 支持基于正则表达式的复杂自定义规则
 [[rules]]
 regex = '\{bg-([A-Za-z0-9#\(\),.\s]+)\}(.*?)\{/bg\}'
 flags = "gs"
+openTag = "{bg-"
+closeTag = "{/bg}"
 replacement = '<span style="background-color: color-mix(in srgb, $1, transparent 60%); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid color-mix(in srgb, $1 60%, var(--text-main) 40%);">$2</span>'
 group = "color"
 ```
+
+指定 `open_tag` 和 `close_tag` 字段表示开闭标签, 解析引擎将启用状态机模式, 再向下传递给 regex 处理
 
 *示例:* 复刻 Markdown 标题层级语法
 
@@ -281,6 +285,8 @@ view_value = "ri-h-1"
 
 #### 🖇️ Prefix / Suffix 的默认行为
 
+当语法逻辑是对称且简单的字符串包裹时，推荐使用 prefix 模式
+
 ```toml
 [[rules]]
 prefix = "=="
@@ -292,7 +298,7 @@ replacement = "<mark>$1</mark>"
 
 ```toml
 [[rules]]
-regex = "(?<!\\\\)==(.+?)(?<!\\\\)=="
+regex = '(?<!\\)==(.+?)(?<!\\)=='
 flags = "gs"
 replacement = "<mark>$1</mark>"
 ```
