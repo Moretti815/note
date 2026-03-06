@@ -258,10 +258,20 @@
         import { marked } from 'https://esm.sh/marked@12.0.0';
         import { PetalParser } from './petal-parser.js';
 
+        const sharedMarkdownCss = `.preview-card h1, .preview-card h2, .preview-card h3 { margin-top: 0; color: var(--rose-ellipsis); font-weight: 500; } .preview-card p { margin-block: 0.8rem; } .preview-card code { background: rgb(216 140 154 / 15%); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em; } .preview-card pre { background: rgb(253 251 251 / 50%); padding: 1rem; border-radius: 6px; overflow-x: auto; border: 1px solid rgb(216 140 154 / 30%); margin-block: 0.8rem; } .preview-card pre code { background: transparent; padding: 0; } .preview-card blockquote { border-left: 4px solid var(--rose-ellipsis); margin: 0; padding-left: 1rem; color: var(--text-muted); background: rgb(216 140 154 / 5%); padding-block: 0.5rem; border-radius: 0 6px 6px 0; font-style: italic; } .preview-card ul, .preview-card ol { padding-left: 1.5rem; margin-block: 0.8rem; } .card-img { max-width: 100%; height: auto; border-radius: 4px; margin-block: 0.6rem; box-shadow: 0 2px 6px rgb(0 0 0 / 5%); display: block; }`;
+        const sharedPetalCss = `.manual-br { height: 0.5em; } .card-img { max-width: 100%; height: auto; border-radius: 4px; margin-block: 0.6rem; box-shadow: 0 2px 6px rgb(0 0 0 / 5%); display: block; }`;
+        
+        const getFileIcon = filename => {
+            if (!filename.includes('.')) return 'ri-file-3-line';
+            const ext = filename.split('.').pop().toLowerCase();
+            const map = { md: 'ri-markdown-line', markdown: 'ri-markdown-line', txt: 'ri-file-text-line', html: 'ri-html5-line', htm: 'ri-html5-line', css: 'ri-css3-line', js: 'ri-javascript-line', mjs: 'ri-javascript-line', ts: 'ri-javascript-line', json: 'ri-braces-line', toml: 'ri-settings-4-line', yaml: 'ri-settings-4-line', yml: 'ri-settings-4-line', png: 'ri-image-line', jpg: 'ri-image-line', jpeg: 'ri-image-line', gif: 'ri-image-line', svg: 'ri-image-line', webp: 'ri-image-line', mp3: 'ri-music-2-line', wav: 'ri-music-2-line', mp4: 'ri-video-line', webm: 'ri-video-line', pdf: 'ri-file-pdf-line', zip: 'ri-file-zip-line', tar: 'ri-file-zip-line', gz: 'ri-file-zip-line', gitkeep: 'ri-git-commit-line', gitignore: 'ri-git-commit-line' };
+            return map[ext] || 'ri-file-3-line';
+        };
+
         const RenderStrategies = [
             {
                 id: 'dream-card', name: 'Petal Note 卡片', exts: ['.txt'],
-                css: `.manual-br { height: 0.5em; } .card-img { max-width: 100%; height: auto; border-radius: 4px; margin-block: 0.6rem; box-shadow: 0 2px 6px rgb(0 0 0 / 5%); display: block; } .gallery { display: grid; gap: 0.4rem; margin-block: 0.6rem; } .gallery.grid-2 { grid-template-columns: repeat(2, 1fr); } .gallery.grid-3 { grid-template-columns: repeat(3, 1fr); } .gallery .card-img { margin: 0; aspect-ratio: 1; object-fit: cover; width: 100%; height: 100%; }`,
+                css: sharedPetalCss + ` .gallery { display: grid; gap: 0.4rem; margin-block: 0.6rem; } .gallery.grid-2 { grid-template-columns: repeat(2, 1fr); } .gallery.grid-3 { grid-template-columns: repeat(3, 1fr); } .gallery .card-img { margin: 0; aspect-ratio: 1; object-fit: cover; width: 100%; height: 100%; }`,
                 render: (raw, ctx) => {
                     const blocks = raw.split('\n---\n').map(b => b.trim()).filter(b => b && b.split('\n').length >= 2), total = blocks.length, isAsc = ctx.sysConfig?.data_order === 'asc';
                     return blocks.map((block, index) => {
@@ -274,12 +284,12 @@
             },
             {
                 id: 'markdown-only', name: 'Markdown only', exts: ['.md', '.markdown'],
-                css: `.preview-card h1, .preview-card h2, .preview-card h3 { margin-top: 0; color: var(--rose-ellipsis); font-weight: 500; } .preview-card p { margin-block: 0.8rem; } .preview-card code { background: rgb(216 140 154 / 15%); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em; } .preview-card pre { background: rgb(253 251 251 / 50%); padding: 1rem; border-radius: 6px; overflow-x: auto; border: 1px solid rgb(216 140 154 / 30%); margin-block: 0.8rem; } .preview-card pre code { background: transparent; padding: 0; } .preview-card blockquote { border-left: 4px solid var(--rose-ellipsis); margin: 0; padding-left: 1rem; color: var(--text-muted); background: rgb(216 140 154 / 5%); padding-block: 0.5rem; border-radius: 0 6px 6px 0; font-style: italic; } .preview-card ul, .preview-card ol { padding-left: 1.5rem; margin-block: 0.8rem; } .card-img { max-width: 100%; height: auto; border-radius: 4px; margin-block: 0.6rem; box-shadow: 0 2px 6px rgb(0 0 0 / 5%); display: block; }`,
+                css: sharedMarkdownCss,
                 render: (raw, ctx) => `<div class="preview-card" style="margin-bottom:2.5rem">${marked.parse(raw)}</div>`
             },
             {
                 id: 'markdown-petal', name: 'MD + Petal', exts: [],
-                css: `.preview-card h1, .preview-card h2, .preview-card h3 { margin-top: 0; color: var(--rose-ellipsis); font-weight: 500; } .preview-card p { margin-block: 0.8rem; } .preview-card code { background: rgb(216 140 154 / 15%); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em; } .preview-card pre { background: rgb(253 251 251 / 50%); padding: 1rem; border-radius: 6px; overflow-x: auto; border: 1px solid rgb(216 140 154 / 30%); margin-block: 0.8rem; } .preview-card pre code { background: transparent; padding: 0; } .preview-card blockquote { border-left: 4px solid var(--rose-ellipsis); margin: 0; padding-left: 1rem; color: var(--text-muted); background: rgb(216 140 154 / 5%); padding-block: 0.5rem; border-radius: 0 6px 6px 0; font-style: italic; } .preview-card ul, .preview-card ol { padding-left: 1.5rem; margin-block: 0.8rem; } .card-img { max-width: 100%; height: auto; border-radius: 4px; margin-block: 0.6rem; box-shadow: 0 2px 6px rgb(0 0 0 / 5%); display: block; }`,
+                css: sharedMarkdownCss,
                 render: (raw, ctx) => {
                     const container = document.createElement('div');
                     container.innerHTML = marked.parse(raw);
@@ -289,27 +299,21 @@
                     while (node = walker.nextNode()) {
                         let p = node.parentNode, skip = false;
                         while (p && p !== container) {
-                            if (['a', 'pre', 'code', 'script', 'style'].includes(p.tagName.toLowerCase())) { skip = true; break; }
+                            if (ctx.sysConfig.syntaxConfig.ignore_tags.includes(p.tagName.toLowerCase())) { skip = true; break; }
                             p = p.parentNode;
                         }
                         if (!skip && node.nodeValue.trim()) nodes.push(node);
                     }
                     nodes.forEach(n => {
                         const parsedStr = ctx.parser.parse(n.nodeValue);
-                        if (parsedStr !== n.nodeValue) {
-                            const temp = document.createElement('div');
-                            temp.innerHTML = parsedStr;
-                            const frag = document.createDocumentFragment();
-                            while (temp.firstChild) frag.appendChild(temp.firstChild);
-                            n.parentNode.replaceChild(frag, n);
-                        }
+                        if (parsedStr !== n.nodeValue) n.parentNode.replaceChild(document.createRange().createContextualFragment(parsedStr), n);
                     });
                     return `<div class="preview-card" style="margin-bottom:2.5rem">${container.innerHTML}</div>`;
                 }
             },
             {
                 id: 'petal-only', name: 'Petal only', exts: [],
-                css: `.manual-br { height: 0.5em; } .card-img { max-width: 100%; height: auto; border-radius: 4px; margin-block: 0.6rem; box-shadow: 0 2px 6px rgb(0 0 0 / 5%); display: block; }`,
+                css: sharedPetalCss,
                 render: (raw, ctx) => {
                     let finalHtml = ctx.parser.parse(raw).split('\n').join('<div class="manual-br"></div>').replace(/(?:<div class="manual-br"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="manual-br"><\/div>)*/g, '$1');
                     return `<div class="preview-card" style="margin-bottom:2.5rem">${finalHtml}</div>`;
@@ -461,6 +465,7 @@
                             const synRes = await fetch(this.sysConfig.syntax_config);
                             if (synRes.ok) {
                                 const synData = parse(await synRes.text());
+                                this.sysConfig.syntaxConfig = synData;
                                 this.syntaxRules = synData.rules || [];
                                 this.petalParser = new PetalParser(this.syntaxRules);
                                 const css = this.petalParser.getStyles(synData.global_css);
@@ -737,11 +742,11 @@
                         if(isCommit) {
                             let cb = isDirty ? `<input type="checkbox" class="commit-file-checkbox" data-path="${fullPath}" ${this.stagedFiles.has(fullPath) ? 'checked' : ''}>` : `<span style="width:14px;display:inline-block;flex-shrink:0;"></span>`;
                             let tag = vNode.deleted ? '<del>' : (vNode.isNew ? '<ins style="text-decoration:none;color:var(--success-color);">' : '<span>'), tagEnd = vNode.deleted ? '</del>' : (vNode.isNew ? '</ins>' : '</span>');
-                            html += `<div class="tree-file commit-item-clickable ${this.activeDiffPath === fullPath ? 'active' : ''}" data-path="${fullPath}" style="padding-left: ${indent + 0.5}rem"><div class="file-content">${cb} <i class="ri-file-text-line"></i> ${tag}${key}${tagEnd}</div></div>`;
+                            html += `<div class="tree-file commit-item-clickable ${this.activeDiffPath === fullPath ? 'active' : ''}" data-path="${fullPath}" style="padding-left: ${indent + 0.5}rem"><div class="file-content">${cb} <i class="${getFileIcon(key)}"></i> ${tag}${key}${tagEnd}</div></div>`;
                         } else {
                             let actions = `<div class="tree-actions"><button class="tree-action-btn action-del" data-path="${fullPath}" title="删除"><i class="ri-delete-bin-line"></i></button></div>`;
                             let dot = isDirty ? '<span class="dirty-dot"></span>' : '';
-                            html += `<div class="tree-file ${this.currentPath === fullPath ? 'active' : ''}" data-path="${fullPath}" style="padding-left: ${indent + 0.5}rem"><div class="file-content"><i class="ri-file-text-line"></i> ${key}</div>${dot}${actions}</div>`;
+                            html += `<div class="tree-file ${this.currentPath === fullPath ? 'active' : ''}" data-path="${fullPath}" style="padding-left: ${indent + 0.5}rem"><div class="file-content"><i class="${getFileIcon(key)}"></i> ${key}</div>${dot}${actions}</div>`;
                         }
                     }
                 }

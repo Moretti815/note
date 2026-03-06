@@ -4,6 +4,9 @@ global_css = """
 .fmt-b64 { width: 1.1rem; height: 1.1rem; object-fit: contain; pointer-events: none; }
 """
 
+immune_nodes = ["code", "inlineCode", "link", "html"]
+ignore_tags = ["a", "pre", "code", "script", "style"]
+
 [[view_templates]]
 type = "icon_class"
 template = '<i class="{{value}}"></i>'
@@ -742,3 +745,81 @@ replacement = '<div style="text-align: center;">$1</div>'
 title = "居中"
 view_type = "icon_class"
 view_value = "ri-align-center"
+
+[[view_templates]]
+type = "github_alerts"
+template = '<div style="display:flex; align-items:center; gap:6px; color:{{color}}; font-size:0.85rem; font-family:ui-monospace,monospace; font-weight:600; "><i class="{{icon}}"></i><span>{{label}}</span></div>'
+
+[merge_groups.github_alerts]
+title = "插入 GitHub Alerts"
+icon_html = """<i class="ri-chat-4-line"></i>"""
+
+[[rules]]
+prefix = ":::note\n"
+suffix = "\n:::"
+replacement = """<div class="gh-alert gh-alert-note"><div class="gh-alert-title"><i class="ri-information-line"></i> Note</div><div class="gh-alert-body">$1</div></div>"""
+css = """
+.gh-alert { border-left: 4px solid; padding: 0.6rem 1rem; margin: 0.8rem 0; border-radius: 0 6px 6px 0; box-shadow: 0 2px 8px rgb(0 0 0 / 2%); }
+.gh-alert-title { display: flex; align-items: center; gap: 0.4rem; font-weight: 600; margin-bottom: 0.2rem; font-size: 0.9rem; }
+.gh-alert-body { font-size: 0.9rem; color: var(--text-main); line-height: 1.6; }
+.gh-alert-note { border-left-color: #0969da; background: rgb(9 105 218 / 4%); }
+.gh-alert-note .gh-alert-title { color: #0969da; }
+"""
+group = "github_alerts"
+title = "Note (常规提示)"
+view_type = "github_alerts"
+view_value = { color = "#0969da", icon = "ri-information-line", label = "Note" }
+
+[[rules]]
+prefix = ":::tip\n"
+suffix = "\n:::"
+replacement = """<div class="gh-alert gh-alert-tip"><div class="gh-alert-title"><i class="ri-lightbulb-line"></i> Tip</div><div class="gh-alert-body">$1</div></div>"""
+css = """
+.gh-alert-tip { border-left-color: #1a7f37; background: rgb(26 127 55 / 4%); }
+.gh-alert-tip .gh-alert-title { color: #1a7f37; }
+"""
+group = "github_alerts"
+title = "Tip (建议与技巧)"
+view_type = "github_alerts"
+view_value = { color = "#1a7f37", icon = "ri-lightbulb-line", label = "Tip" }
+
+[[rules]]
+prefix = ":::important\n"
+suffix = "\n:::"
+replacement = """<div class="gh-alert gh-alert-important"><div class="gh-alert-title"><i class="ri-message-3-line"></i> Important</div><div class="gh-alert-body">$1</div></div>"""
+css = """
+.gh-alert-important { border-left-color: #8250df; background: rgb(130 80 223 / 4%); }
+.gh-alert-important .gh-alert-title { color: #8250df; }
+"""
+group = "github_alerts"
+title = "Important (重要信息)"
+view_type = "github_alerts"
+view_value = { color = "#8250df", icon = "ri-message-3-line", label = "Important" }
+
+[[rules]]
+prefix = ":::warning\n"
+suffix = "\n:::"
+openTag = ":::warning"
+closeTag = ":::"
+replacement = """<div class="gh-alert gh-alert-warning"><div class="gh-alert-title"><i class="ri-error-warning-line"></i> Warning</div><div class="gh-alert-body">$1</div></div>"""
+css = """
+.gh-alert-warning { border-left-color: #9a6700; background: rgb(154 103 0 / 4%); }
+.gh-alert-warning .gh-alert-title { color: #9a6700; }
+"""
+group = "github_alerts"
+title = "Warning (警告提示)"
+view_type = "github_alerts"
+view_value = { color = "#9a6700", icon = "ri-error-warning-line", label = "Warning" }
+
+[[rules]]
+prefix = ":::caution\n"
+suffix = "\n:::"
+replacement = """<div class="gh-alert gh-alert-caution"><div class="gh-alert-title"><i class="ri-close-circle-line"></i> Caution</div><div class="gh-alert-body">$1</div></div>"""
+css = """
+.gh-alert-caution { border-left-color: #d1242f; background: rgb(209 36 47 / 4%); }
+.gh-alert-caution .gh-alert-title { color: #d1242f; }
+"""
+group = "github_alerts"
+title = "Caution (危险操作)"
+view_type = "github_alerts"
+view_value = { color = "#d1242f", icon = "ri-close-circle-line", label = "Caution" }
