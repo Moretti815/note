@@ -57,7 +57,7 @@ curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/c
 如果你希望外观和特性永远保持最新, 并与个人日记解耦
 
 1. 在静态服务平台托管你的仓库, 无需放入 HTML 和任何加密文件
-2. 在部署设置中, 将 **Build command** 设置为:
+1. 在部署设置中, 将 **Build command** 设置为:
 
     ```bash
     curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/e310ca1/scripts/build.sh | bash -e -s -- index.html syntax.toml
@@ -65,7 +65,7 @@ curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/c
 
     [提交 e310ca1 - build.sh](https://github.com/miniyu157/petal-note/commit/e310ca1)
 
-3. 将构建输出目录 **Output Directory** 设置为 `public`
+1. 将构建输出目录 **Output Directory** 设置为 `public`
 
 > [!NOTE]
 > 如果希望手动配置语法文件, 而不是跟随仓库更新, 则去掉 **Build command** 末尾的 `syntax.toml`
@@ -478,6 +478,144 @@ view_value = { color = "#d1242f", icon = "ri-close-circle-line", label = "Cautio
 ```
 
 </details>
+
+---
+
+## 🧩 独立解析引擎 petal-parser.js
+
+Petal Note 的核心解析引擎 `petal-parser.js` 被设计为完全解耦的独立模块
+
+### ☘️ Vanilla JS 原生引入
+
+在没有任何构建工具链的纯静态页面中, 你可以直接通过 ES Module 引入解析器并接管 DOM 渲染
+
+*以下是一个极简的集成示例:*
+
+<details>
+<summary><b>点击展开代码</b></summary>
+
+```html
+<body>
+    <div id="app"></div>
+
+    <script type="module">
+        import { parse as parseToml } from 'https://esm.sh/smol-toml@1.6.0';
+        import { PetalParser } from './petal-parser.js';
+
+        async function bootstrap() {
+            const app = document.getElementById('app');
+            try {
+                const [synRes, dataRes] = await Promise.all([
+                    fetch('syntax.toml'),
+                    fetch('data.txt')
+                ]);
+
+                if (!synRes.ok || !dataRes.ok) throw new Error('依赖资源加载异常');
+
+                const syntaxData = parseToml(await synRes.text());
+                const rawData = await dataRes.text();
+
+                const rules = syntaxData.rules || [];
+                const parser = new PetalParser(rules);
+                const css = parser.getStyles(syntaxData.global_css);
+                
+                if (css) {
+                    const styleNode = document.createElement('style');
+                    styleNode.textContent = css;
+                    document.head.appendChild(styleNode);
+                }
+                let parsedHtml = parser.parse(rawData);
+
+                parsedHtml = parsedHtml
+                    .split('\n')
+                    .join('<div class="line-break"></div>')
+                    .replace(/(?:<div class="line-break"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="line-break"><\/div>)*/g, '$1');
+
+                app.innerHTML = parsedHtml;
+
+            } catch (err) {
+                app.innerHTML = `<div style="color: #d88c9a; text-align: center; font-style: italic;">渲染中止: ${err.message}</div>`;
+            }
+        }
+
+        bootstrap();
+    </script>
+</body>
+```
+
+</details>
+
+### 🚀 静态站点集成 (以 Astro 为例)
+
+可以在构建期间侵入，最终输出纯净的静态 HTML
+
+* **步骤一**: 补全构建依赖, 安装 AST 节点遍历工具和轻量级 TOML 解析器
+
+  ```console
+  npm install unist-util-visit smol-toml
+  ```
+
+* **步骤二**: 将 `petal-parser.js` 和 `syntax.toml` 复制到你的项目目录 (例如 `src/lib/`)
+* **步骤三**: 编写 Remark 插件 `src/lib/remark-petal.mjs`, 拦截并重写文本节点
+
+  ```javascript
+  import { visit } from 'unist-util-visit';
+  import { PetalParser } from './petal-parser.js';
+
+  export default function remarkPetal(options = {}) {
+    const parser = new PetalParser(options.rules || []);
+    const immune = new Set(options.immuneNodes || []);
+
+    return (tree) => {
+      visit(tree, 'text', (node, _, parent) => {
+        if (parent && immune.has(parent.type)) return;
+
+        const parsed = parser.parse(node.value);
+        if (parsed !== node.value) {
+          node.type = 'html';
+          node.value = parsed;
+        }
+      });
+    };
+  }
+  ```
+
+* **步骤四**: 在 `astro.config.mjs` 中读取语法配置, 并注入全局解析管道
+
+  ```javascript
+  import mdx from '@astrojs/mdx';
+  import sitemap from '@astrojs/sitemap';
+  import { defineConfig } from 'astro/config';
+  import { readFileSync } from 'node:fs';
+  import { parse } from 'smol-toml';
+  import remarkPetal from './src/lib/remark-petal.mjs';
+
+  const syntaxData = parse(readFileSync(new URL('./src/lib/syntax.toml', import.meta.url), 'utf-8'));
+
+  export default defineConfig({
+    site: 'https://example.com',
+    integrations: [mdx(), sitemap()],
+    markdown: {
+      remarkPlugins: [[remarkPetal, { rules: syntaxData.rules || [] }]]
+    }
+  });
+  ```
+
+* **步骤五**: 在全局头部组件 (如 `src/components/BaseHead.astro`) 中提取并挂载语法引擎专属样式
+
+  ```astro
+  import { readFileSync } from 'node:fs';
+  import { parse } from 'smol-toml';
+  import { PetalParser } from '../lib/petal-parser.js';
+
+  //...
+
+  const syntaxData = parse(readFileSync(new URL('../lib/syntax.toml', import.meta.url), 'utf-8'));
+  const petalCss = new PetalParser(syntaxData.rules || []).getStyles(syntaxData.global_css);
+
+  //...
+  { petalCss && <style set:html={petalCss} /> }
+  ```
 
 ---
 
