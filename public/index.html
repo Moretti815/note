@@ -478,7 +478,7 @@
                     if (!configRes.ok) throw new Error('Config missing');
 
                     const rawConfig = await configRes.text();
-                    const { parse } = await import('https://esm.sh/smol-toml@1.3.0');
+                    const { parse } = await import('https://esm.sh/smol-toml@1.6.0');
                     this.config = parse(rawConfig);
                     this.applyConfig(this.config);
                     
