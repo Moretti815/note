@@ -53,13 +53,6 @@
             .fmt-divider { width: 1px; height: 1.2rem; background: var(--border-color); margin: 0 0.4rem; flex-shrink: 0; }
             #editor { width: 100%; flex: 1; resize: none; border: none; background: transparent; color: var(--text-main); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 1.05rem; line-height: 1.9; outline: none; padding: 2rem; }
             #preview { flex: 1; background: var(--bg-app); scroll-behavior: smooth; padding: 2rem; display: none; font-family: "Georgia", "Times New Roman", serif; }
-            .preview-item { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 3rem; }
-            .preview-date { font-size: 0.8rem; color: var(--text-muted); letter-spacing: 0.05em; font-family: system-ui, -apple-system, sans-serif; border-bottom: 1px solid var(--border-color); padding-bottom: 0.2rem; margin-bottom: 0.5rem; }
-            .preview-card { position: relative; background: var(--card-bg); border-radius: 0; border: 1px solid var(--border-color); box-shadow: 6px 6px 0 rgba(43, 43, 41, 0.04); padding: 2rem; line-height: 1.9; font-size: 1.05rem; word-wrap: break-word; }
-            .preview-card-id { position: absolute; top: 1rem; right: 1.5rem; font-size: 0.8rem; color: var(--text-muted); opacity: 0.5; pointer-events: none; font-family: ui-monospace, monospace; }
-            .card-tag { color: var(--timeline-accent); margin-inline-end: 0.5rem; display: inline-block; font-size: 0.9rem; font-family: system-ui, -apple-system, sans-serif; }
-            .card-link { color: var(--timeline-accent); text-decoration: none; border-bottom: 1px solid var(--border-color); transition: all 0.3s ease; padding-bottom: 1px; word-break: break-all; }
-            .card-link:hover { border-bottom-color: var(--timeline-accent); }
             .modal-overlay { position: fixed; inset: 0; background: rgba(239, 237, 232, 0.85); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease; }
             .modal-overlay.active { opacity: 1; visibility: visible; }
             .modal-box { background: var(--card-bg); border: 1px solid var(--text-main); border-radius: 0; padding: 2rem; width: 850px; max-width: 95vw; box-shadow: 8px 8px 0 rgba(43, 43, 41, 0.06); display: flex; flex-direction: column; gap: 1.5rem; font-family: system-ui, -apple-system, sans-serif; }
@@ -113,10 +106,6 @@
             .log-item.type-success { color: var(--success-color); background: rgba(74, 93, 60, 0.05); border-left: 3px solid var(--success-color); padding-left: calc(1.2rem - 3px); }
             .log-item.type-error { color: var(--danger-color); background: rgba(156, 63, 63, 0.05); border-left: 3px solid var(--danger-color); padding-left: calc(1.2rem - 3px); }
             .log-time { color: var(--text-muted); flex-shrink: 0; }
-            .tag-dropdown { position: absolute; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 0; box-shadow: 6px 6px 0 rgba(43, 43, 41, 0.04); z-index: 100; max-height: 220px; min-width: 120px; overflow-y: auto; opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease; display: flex; flex-direction: column; padding: 0.4rem; font-family: system-ui, -apple-system, sans-serif; }
-            .tag-dropdown.active { opacity: 1; visibility: visible; }
-            .tag-item { padding: 0.5rem 0.8rem; font-size: 0.85rem; cursor: pointer; border-radius: 0; color: var(--text-main); transition: background 0.2s; }
-            .tag-item:hover { background: rgba(43, 43, 41, 0.05); }
             .fmt-dropdown-container { position: relative; display: flex; align-items: center; }
             .dropdown-menu { position: absolute; top: calc(100% + 4px); left: 50%; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 0; box-shadow: 6px 6px 0 rgba(43, 43, 41, 0.04); padding: 0.4rem; z-index: 100; display: flex; gap: 0.3rem; flex-wrap: wrap; width: max-content; max-width: 260px; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1); transform: translateX(var(--shift-x, -50%)) translateY(-4px); transform-origin: top center; }
             .dropdown-menu.active { opacity: 1; visibility: visible; transform: translateX(var(--shift-x, -50%)) translateY(0); }
@@ -231,10 +220,9 @@
                     <div class="fmt-divider"></div>
                     <button class="fmt-btn" id="btn-upload-img" title="上传图片"><i class="ri-image-add-line"></i></button>
                     <input type="file" id="file-upload-input" accept="image/*" style="display: none;">
-                    <button class="fmt-btn" id="btn-tag" title="标签"><i class="ri-hashtag"></i></button>
+                    <div id="strategy-tools-slot" style="display:contents;"></div>
                 </div>
                 <textarea id="editor" spellcheck="false" disabled></textarea>
-                <div id="tag-dropdown" class="tag-dropdown"></div>
             </div>
             <div class="resizer" id="split-resizer"></div>
             <div class="pane" id="preview"></div>
@@ -266,9 +254,6 @@
         import { marked } from 'https://esm.sh/marked@12.0.0';
         import { PetalParser } from './petal-parser.js';
 
-        const sharedMarkdownCss = `.preview-card h1, .preview-card h2, .preview-card h3 { margin-top: 0; color: var(--text-main); font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1.5rem; } .preview-card p { margin-block: 1rem; } .preview-card code { background: var(--bg-gradient-start); border: 1px solid var(--border-color); padding: 0.1rem 0.4rem; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em; color: var(--text-main); } .preview-card pre { background: var(--card-bg-blur); padding: 1.5rem; border: 1px solid var(--border-color); overflow-x: auto; margin-block: 1rem; box-shadow: inset 2px 2px 0 rgba(0,0,0,0.02); } .preview-card pre code { background: transparent; padding: 0; border: none; } .preview-card blockquote { border-left: 2px solid var(--text-main); margin: 0; padding-left: 1.5rem; color: var(--text-muted); background: transparent; padding-block: 0.2rem; font-style: italic; } .preview-card ul, .preview-card ol { padding-left: 1.8rem; margin-block: 1rem; } .card-img { max-width: 100%; height: auto; margin-block: 1.5rem; display: block; border: 1px solid var(--border-color); }`;
-        const sharedPetalCss = `.manual-br { height: 0.5em; } .card-img { max-width: 100%; height: auto; margin-block: 1.5rem; display: block; border: 1px solid var(--border-color); }`;
-        
         const getFileIcon = filename => {
             if (!filename.includes('.')) return 'ri-file-3-line';
             const ext = filename.split('.').pop().toLowerCase();
@@ -276,10 +261,16 @@
             return map[ext] || 'ri-file-3-line';
         };
 
+        const standardLocate = (editorEl, previewEl) => {
+            const percentage = editorEl.value.length > 0 ? editorEl.selectionStart / editorEl.value.length : 0;
+            previewEl.scrollTop = previewEl.scrollHeight * percentage;
+        };
+
         const RenderStrategies = [
             {
                 id: 'dream-card', name: 'Petal Note 卡片', exts: ['.txt'],
-                css: sharedPetalCss + ` .gallery { display: grid; gap: 1px; margin-block: 1rem; background: var(--border-color); border: 1px solid var(--border-color); } .gallery.grid-2 { grid-template-columns: repeat(2, 1fr); } .gallery.grid-3 { grid-template-columns: repeat(3, 1fr); } .gallery .card-img { margin: 0; aspect-ratio: 1; object-fit: cover; width: 100%; height: 100%; border: none; }`,
+                css: `.preview-card { position: relative; background: var(--card-bg); border-radius: 0; border: 1px solid var(--border-color); box-shadow: 6px 6px 0 rgba(43, 43, 41, 0.04); padding: 2rem; line-height: 1.9; font-size: 1.05rem; word-wrap: break-word; } .card-img { max-width: 100%; height: auto; margin-block: 1.5rem; display: block; border: 1px solid var(--border-color); } .preview-item { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 3rem; } .preview-date { font-size: 0.8rem; color: var(--text-muted); letter-spacing: 0.05em; font-family: system-ui, -apple-system, sans-serif; border-bottom: 1px solid var(--border-color); padding-bottom: 0.2rem; margin-bottom: 0.5rem; } .preview-card-id { position: absolute; top: 1rem; right: 1.5rem; font-size: 0.8rem; color: var(--text-muted); opacity: 0.5; pointer-events: none; font-family: ui-monospace, monospace; } .card-tag { color: var(--timeline-accent); margin-inline-end: 0.5rem; display: inline-block; font-size: 0.9rem; font-family: system-ui, -apple-system, sans-serif; } .card-link { color: var(--timeline-accent); text-decoration: none; border-bottom: 1px solid var(--border-color); transition: all 0.3s ease; padding-bottom: 1px; word-break: break-all; } .card-link:hover { border-bottom-color: var(--timeline-accent); } .manual-br { height: 0.5em; } .gallery { display: grid; gap: 1px; margin-block: 1rem; background: var(--border-color); border: 1px solid var(--border-color); } .gallery.grid-2 { grid-template-columns: repeat(2, 1fr); } .gallery.grid-3 { grid-template-columns: repeat(3, 1fr); } .gallery .card-img { margin: 0; aspect-ratio: 1; object-fit: cover; width: 100%; height: 100%; border: none; } .tag-dropdown { position: absolute; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 0; box-shadow: 6px 6px 0 rgba(43, 43, 41, 0.04); z-index: 100; max-height: 220px; min-width: 120px; overflow-y: auto; opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease; display: flex; flex-direction: column; padding: 0.4rem; font-family: system-ui, -apple-system, sans-serif; } .tag-dropdown.active { opacity: 1; visibility: visible; } .tag-item { padding: 0.5rem 0.8rem; font-size: 0.85rem; cursor: pointer; border-radius: 0; color: var(--text-main); transition: background 0.2s; } .tag-item:hover { background: rgba(43, 43, 41, 0.05); }`,
+                ctx: {},
                 render: (raw, ctx) => {
                     const blocks = raw.split('\n---\n').map(b => b.trim()).filter(b => b && b.split('\n').length >= 2), total = blocks.length, isAsc = ctx.sysConfig?.data_order === 'asc';
                     return blocks.map((block, index) => {
@@ -288,16 +279,91 @@
                         let finalHtml = ctx.parser.parse(lines.join('\n')).split('\n').join('<div class="manual-br"></div>').replace(/(?:<div class="manual-br"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="manual-br"><\/div>)*/g, '$1').replace(/(<img[^>]+>){2,}/g, match => `<div class="gallery ${((match.match(/<img/g) || []).length === 2 || (match.match(/<img/g) || []).length === 4) ? 'grid-2' : 'grid-3'}">${match}</div>`);
                         return `<div class="preview-item" id="preview-post-${id}"><div class="preview-date">${date}</div><div class="preview-card"><span class="preview-card-id">#${id}</span>${finalHtml}</div></div>`;
                     }).join('');
+                },
+                activate: function(env) {
+                    this.ctx.env = env;
+                    this.ctx.btnTag = document.createElement('button');
+                    this.ctx.btnTag.className = 'fmt-btn';
+                    this.ctx.btnTag.title = '标签';
+                    this.ctx.btnTag.innerHTML = '<i class="ri-hashtag"></i>';
+                    env.slot.appendChild(this.ctx.btnTag);
+                    this.ctx.dropdown = document.createElement('div');
+                    this.ctx.dropdown.className = 'tag-dropdown';
+                    env.editorPane.appendChild(this.ctx.dropdown);
+                    this.ctx.onClick = e => {
+                        const link = e.target.closest('a.card-link');
+                        if (link && link.getAttribute('href')?.startsWith('#')) {
+                            e.preventDefault(); const targetEl = document.getElementById('preview-post-' + link.getAttribute('href').substring(1));
+                            if (targetEl) { targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); targetEl.querySelector('.preview-card').animate([{ borderColor: 'var(--timeline-accent)' }, { borderColor: 'var(--border-color)' }], { duration: 1500, easing: 'ease-out' }); }
+                        }
+                    };
+                    env.preview.addEventListener('click', this.ctx.onClick);
+                    this.ctx.onBtnClick = e => {
+                        e.preventDefault(); e.stopPropagation();
+                        const start = env.editor.selectionStart, end = env.editor.selectionEnd;
+                        if (!document.execCommand('insertText', false, '#')) env.editor.setRangeText('#', start, end, 'end');
+                        env.editor.dispatchEvent(new Event('input'));
+                        this._showDropdown();
+                    };
+                    this.ctx.btnTag.addEventListener('click', this.ctx.onBtnClick);
+                    this.ctx.onDocClick = e => {
+                        if (!e.target.closest('.tag-dropdown') && !e.target.closest('.fmt-btn[title="标签"]')) this.ctx.dropdown.classList.remove('active');
+                        if (e.target.classList.contains('tag-item')) {
+                            const tagText = e.target.dataset.tag; env.editor.focus();
+                            if (!document.execCommand('insertText', false, tagText + ' ')) { const start = env.editor.selectionStart; env.editor.setRangeText(tagText + ' ', start, start, 'end'); }
+                            env.editor.dispatchEvent(new Event('input')); this.ctx.dropdown.classList.remove('active');
+                        }
+                    };
+                    document.addEventListener('click', this.ctx.onDocClick);
+                },
+                deactivate: function(env) {
+                    if (this.ctx.onClick) env.preview.removeEventListener('click', this.ctx.onClick);
+                    if (this.ctx.onDocClick) document.removeEventListener('click', this.ctx.onDocClick);
+                    if (this.ctx.btnTag) this.ctx.btnTag.remove();
+                    if (this.ctx.dropdown) this.ctx.dropdown.remove();
+                    this.ctx = {};
+                },
+                _showDropdown: function() {
+                    const editor = this.ctx.env.editor;
+                    const tags = new Set(), content = editor.value; if (!content) return;
+                    content.split('\n---\n').map(b => b.trim()).filter(Boolean).forEach(block => { const lines = block.split('\n'); if (lines.length >= 2) { (lines[1].match(/#([^\s#]+)/g) || []).forEach(m => tags.add(m.substring(1))); } });
+                    if (tags.size === 0) return;
+                    this.ctx.dropdown.innerHTML = Array.from(tags).map(t => `<div class="tag-item" data-tag="${t}">${t}</div>`).join('');
+                    this.ctx.dropdown.classList.add('active');
+                    const rect = this.ctx.btnTag.getBoundingClientRect(), paneRect = this.ctx.env.editorPane.getBoundingClientRect(), dropRect = this.ctx.dropdown.getBoundingClientRect();
+                    let top = rect.bottom - paneRect.top + 5, left = rect.left - paneRect.left;
+                    if (rect.left + dropRect.width > paneRect.right - 5) left = (paneRect.right - 5 - dropRect.width) - paneRect.left;
+                    if (left < paneRect.left + 5) left = paneRect.left + 5;
+                    if (rect.bottom + dropRect.height > window.innerHeight - 5) top = rect.top - paneRect.top - dropRect.height - 5;
+                    this.ctx.dropdown.style.top = `${top}px`; this.ctx.dropdown.style.left = `${left}px`;
+                },
+                locate: (editorEl, previewEl) => {
+                    const textBefore = editorEl.value.substring(0, editorEl.selectionStart), index = textBefore.split('\n---\n').length - 1, items = previewEl.querySelectorAll('.preview-item');
+                    if (items[index]) items[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                },
+                interceptFormat: (dataset, editorEl) => {
+                    if (dataset.prefix === '---' && dataset.type === 'wrap') {
+                        const start = editorEl.selectionStart, end = editorEl.selectionEnd;
+                        const replacement = '---' + editorEl.value.substring(start, end) + (dataset.suffix || '');
+                        editorEl.focus(); editorEl.setSelectionRange(start, end);
+                        if (!document.execCommand('insertText', false, replacement)) editorEl.setRangeText(replacement, start, end, 'end');
+                        const pos = start + replacement.length;
+                        editorEl.setSelectionRange(pos, pos);
+                        editorEl.dispatchEvent(new Event('input'));
+                        return true;
+                    }
+                    return false;
                 }
             },
             {
                 id: 'markdown-only', name: 'Markdown only', exts: ['.md', '.markdown'],
-                css: sharedMarkdownCss,
-                render: (raw, ctx) => `<div class="preview-card" style="margin-bottom:3rem">${marked.parse(raw)}</div>`
+                css: `.preview-card { position: relative; background: var(--card-bg); border-radius: 0; border: 1px solid var(--border-color); box-shadow: 6px 6px 0 rgba(43, 43, 41, 0.04); padding: 2rem; line-height: 1.9; font-size: 1.05rem; word-wrap: break-word; } .preview-card h1, .preview-card h2, .preview-card h3 { margin-top: 0; color: var(--text-main); font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1.5rem; } .preview-card p { margin-block: 1rem; } .preview-card code { background: rgba(43,43,41,0.05); border: 1px solid var(--border-color); padding: 0.1rem 0.4rem; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em; color: var(--text-main); } .preview-card pre { background: var(--bg-app); padding: 1.5rem; border: 1px solid var(--border-color); overflow-x: auto; margin-block: 1rem; box-shadow: inset 2px 2px 0 rgba(0,0,0,0.02); } .preview-card pre code { background: transparent; padding: 0; border: none; } .preview-card blockquote { border-left: 2px solid var(--text-main); margin: 0; padding-left: 1.5rem; color: var(--text-muted); background: transparent; padding-block: 0.2rem; font-style: italic; } .preview-card ul, .preview-card ol { padding-left: 1.8rem; margin-block: 1rem; } .card-img { max-width: 100%; height: auto; margin-block: 1.5rem; display: block; border: 1px solid var(--border-color); }`,
+                render: (raw) => `<div class="preview-card" style="margin-bottom:3rem">${marked.parse(raw)}</div>`,
+                locate: standardLocate
             },
             {
                 id: 'markdown-petal', name: 'MD + Petal', exts: [],
-                css: sharedMarkdownCss,
+                css: `.preview-card { position: relative; background: var(--card-bg); border-radius: 0; border: 1px solid var(--border-color); box-shadow: 6px 6px 0 rgba(43, 43, 41, 0.04); padding: 2rem; line-height: 1.9; font-size: 1.05rem; word-wrap: break-word; } .preview-card h1, .preview-card h2, .preview-card h3 { margin-top: 0; color: var(--text-main); font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1.5rem; } .preview-card p { margin-block: 1rem; } .preview-card code { background: rgba(43,43,41,0.05); border: 1px solid var(--border-color); padding: 0.1rem 0.4rem; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em; color: var(--text-main); } .preview-card pre { background: var(--bg-app); padding: 1.5rem; border: 1px solid var(--border-color); overflow-x: auto; margin-block: 1rem; box-shadow: inset 2px 2px 0 rgba(0,0,0,0.02); } .preview-card pre code { background: transparent; padding: 0; border: none; } .preview-card blockquote { border-left: 2px solid var(--text-main); margin: 0; padding-left: 1.5rem; color: var(--text-muted); background: transparent; padding-block: 0.2rem; font-style: italic; } .preview-card ul, .preview-card ol { padding-left: 1.8rem; margin-block: 1rem; } .card-img { max-width: 100%; height: auto; margin-block: 1.5rem; display: block; border: 1px solid var(--border-color); }`,
                 render: (raw, ctx) => {
                     const container = document.createElement('div');
                     container.innerHTML = marked.parse(raw);
@@ -317,15 +383,17 @@
                         if (parsedStr !== n.nodeValue) n.parentNode.replaceChild(document.createRange().createContextualFragment(parsedStr), n);
                     });
                     return `<div class="preview-card" style="margin-bottom:3rem">${container.innerHTML}</div>`;
-                }
+                },
+                locate: standardLocate
             },
             {
                 id: 'petal-only', name: 'Petal only', exts: [],
-                css: sharedPetalCss,
+                css: `.preview-card { position: relative; background: var(--card-bg); border-radius: 0; border: 1px solid var(--border-color); box-shadow: 6px 6px 0 rgba(43, 43, 41, 0.04); padding: 2rem; line-height: 1.9; font-size: 1.05rem; word-wrap: break-word; } .manual-br { height: 0.5em; } .card-img { max-width: 100%; height: auto; margin-block: 1.5rem; display: block; border: 1px solid var(--border-color); }`,
                 render: (raw, ctx) => {
                     let finalHtml = ctx.parser.parse(raw).split('\n').join('<div class="manual-br"></div>').replace(/(?:<div class="manual-br"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="manual-br"><\/div>)*/g, '$1');
                     return `<div class="preview-card" style="margin-bottom:3rem">${finalHtml}</div>`;
-                }
+                },
+                locate: standardLocate
             }
         ];
 
@@ -382,8 +450,6 @@
                 this.btnSplit = document.getElementById('btn-split');
                 this.btnSave = document.getElementById('btn-save');
                 this.btnNewRoot = document.getElementById('btn-new-root');
-                this.btnTag = document.getElementById('btn-tag');
-                this.tagDropdown = document.getElementById('tag-dropdown');
                 this.consolePanel = document.getElementById('console-panel');
                 this.consoleLogs = document.getElementById('console-logs');
                 this.btnConsoleToggle = document.getElementById('btn-console-toggle');
@@ -407,6 +473,7 @@
                 this.diffNodes = [];
                 this.currentDiffIndex = 0;
                 this.selectedFormatId = 'auto';
+                this.currentStrategy = null;
                 this.init();
                 this.initViewportHandler();
                 this.initFormatMenu();
@@ -580,17 +647,21 @@
                 this.btnFormatToggle.querySelector('span').innerText = this.selectedFormatId === 'auto' ? `Auto (${renderer.name})` : renderer.name;
                 this.formatMenu.querySelectorAll('.format-item').forEach(el => el.classList.toggle('active', el.dataset.id === this.selectedFormatId));
                 
-                let styleEl = document.getElementById('strategy-css');
-                if (!styleEl) { styleEl = document.createElement('style'); styleEl.id = 'strategy-css'; document.head.appendChild(styleEl); }
-                styleEl.textContent = renderer.css || '';
+                if (this.currentStrategy !== renderer) {
+                    const env = { editor: this.editor, preview: this.preview, editorPane: document.getElementById('editor-pane'), slot: document.getElementById('strategy-tools-slot') };
+                    if (this.currentStrategy && this.currentStrategy.deactivate) this.currentStrategy.deactivate(env);
+                    this.currentStrategy = renderer;
+                    let styleEl = document.getElementById('strategy-css');
+                    if (!styleEl) { styleEl = document.createElement('style'); styleEl.id = 'strategy-css'; document.head.appendChild(styleEl); }
+                    styleEl.textContent = renderer.css || '';
+                    if (this.currentStrategy.activate) this.currentStrategy.activate(env);
+                }
             }
             updatePreview() {
-                const renderer = this.resolveRenderer();
-                if (!renderer || !this.editor.value) { this.preview.innerHTML = ''; return; }
-                this.preview.innerHTML = renderer.render(this.editor.value, { parser: this.petalParser, sysConfig: this.sysConfig });
+                if (!this.currentStrategy || !this.editor.value) { this.preview.innerHTML = ''; return; }
+                this.preview.innerHTML = this.currentStrategy.render(this.editor.value, { parser: this.petalParser, sysConfig: this.sysConfig });
                 this.resolvePreviewAssets();
             }
-
             resolvePreviewAssets() {
                 if (!this.currentPath || !this.authConfig) return;
                 const branch = this.sysConfig?.github_branch || 'main', baseRepoUrl = `https://raw.githubusercontent.com/${this.authConfig.github_user}/${this.authConfig.github_repo}/${branch}/`, currentDir = this.currentPath.includes('/') ? this.currentPath.substring(0, this.currentPath.lastIndexOf('/') + 1) : '';
@@ -613,23 +684,18 @@
                 document.getElementById('btn-locate').addEventListener('click', e => {
                     e.preventDefault();
                     if (!this.workspace.classList.contains('split-mode') && window.innerWidth <= 768) { this.workspace.classList.add('split-mode'); this.updateViewIcon(); this.updatePreview(); }
-                    const renderer = this.resolveRenderer();
-                    if (renderer && renderer.id === 'dream-card') {
-                        const textBefore = this.editor.value.substring(0, this.editor.selectionStart), index = textBefore.split('\n---\n').length - 1, items = this.preview.querySelectorAll('.preview-item');
-                        if (items[index]) items[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    } else {
-                        const percentage = this.editor.value.length > 0 ? this.editor.selectionStart / this.editor.value.length : 0;
-                        this.preview.scrollTop = this.preview.scrollHeight * percentage;
-                    }
+                    if (this.currentStrategy && this.currentStrategy.locate) this.currentStrategy.locate(this.editor, this.preview);
                 });
                 document.querySelectorAll('.fmt-action').forEach(btn => {
                     btn.addEventListener('click', e => {
                         e.preventDefault();
-                        const { type, prefix: pre, suffix: suf } = btn.dataset, start = this.editor.selectionStart, end = this.editor.selectionEnd, selected = this.editor.value.substring(start, end), replacement = pre + selected + suf;
+                        const dataset = btn.dataset;
+                        if (this.currentStrategy && this.currentStrategy.interceptFormat && this.currentStrategy.interceptFormat(dataset, this.editor)) return;
+                        const { type, prefix: pre, suffix: suf } = dataset, start = this.editor.selectionStart, end = this.editor.selectionEnd, selected = this.editor.value.substring(start, end), replacement = pre + selected + suf;
                         this.editor.focus(); this.editor.setSelectionRange(start, end);
                         if (!document.execCommand('insertText', false, replacement)) this.editor.setRangeText(replacement, start, end, 'end');
                         if (type === 'link') { const pos = start + pre.length + selected.length + 2; this.editor.setSelectionRange(pos, pos); }
-                        else if (!selected && type === 'wrap' && pre !== '---') { const pos = start + pre.length; this.editor.setSelectionRange(pos, pos); }
+                        else if (!selected && type === 'wrap') { const pos = start + pre.length; this.editor.setSelectionRange(pos, pos); }
                         this.editor.dispatchEvent(new Event('input'));
                     });
                 });
@@ -651,13 +717,6 @@
                     this.updateViewIcon();
                     if (window.innerWidth > 768 && this.currentPath && this.vfs[this.currentPath] && this.editor.value !== this.vfs[this.currentPath].original) this.updatePreview();
                     if (window.innerWidth > 768) { this.sidebarOverlay.classList.remove('active'); } else { if (!this.sidebar.classList.contains('collapsed')) this.sidebarOverlay.classList.add('active'); }
-                });
-                this.preview.addEventListener('click', e => {
-                    const link = e.target.closest('a.card-link');
-                    if (link && link.getAttribute('href')?.startsWith('#')) {
-                        e.preventDefault(); const targetEl = document.getElementById('preview-post-' + link.getAttribute('href').substring(1));
-                        if (targetEl) { targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); targetEl.querySelector('.preview-card').animate([{ borderColor: 'var(--timeline-accent)' }, { borderColor: 'var(--border-color)' }], { duration: 1500, easing: 'ease-out' }); }
-                    }
                 });
                 this.editor.addEventListener('input', () => { if (this.currentPath && this.vfs[this.currentPath]) this.vfs[this.currentPath].content = this.editor.value; this.conditionallyUpdatePreview(); this.checkDirty(); this.renderFileTree(); });
                 this.editor.addEventListener('paste', e => {
@@ -686,17 +745,8 @@
                 document.getElementById('file-upload-input').addEventListener('change', e => { if (e.target.files && e.target.files[0]) { this.prepareUpload(e.target.files[0], true); e.target.value = ''; } });
                 document.getElementById('btn-upload-cancel').addEventListener('click', () => { this.uploadModal.classList.remove('active'); this.pendingUploadFile = null; this.editor.focus(); if (this.savedSelection) this.editor.setSelectionRange(this.savedSelection.start, this.savedSelection.end); });
                 document.getElementById('btn-upload-confirm').addEventListener('click', () => this.executeUpload());
-                this.btnTag.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); const start = this.editor.selectionStart, end = this.editor.selectionEnd; if (!document.execCommand('insertText', false, '#')) this.editor.setRangeText('#', start, end, 'end'); this.editor.dispatchEvent(new Event('input')); this.showTagDropdown(); });
-                this.tagDropdown.addEventListener('click', e => {
-                    if (e.target.classList.contains('tag-item')) {
-                        const tagText = e.target.dataset.tag; this.editor.focus();
-                        if (!document.execCommand('insertText', false, tagText + ' ')) { const start = this.editor.selectionStart; this.editor.setRangeText(tagText + ' ', start, start, 'end'); }
-                        this.editor.dispatchEvent(new Event('input')); this.tagDropdown.classList.remove('active');
-                    }
-                });
                 document.addEventListener('click', e => {
                     if (!e.target.closest('#format-menu') && !e.target.closest('#btn-format-toggle')) this.formatMenu.classList.remove('active');
-                    if (!e.target.closest('#tag-dropdown') && !e.target.closest('#btn-tag')) this.tagDropdown.classList.remove('active');
                     if (!e.target.closest('#console-panel') && !e.target.closest('#status-bar')) this.consolePanel.classList.remove('active');
                     const toggle = e.target.closest('.fmt-dropdown-toggle');
                     document.querySelectorAll('.dropdown-menu').forEach(menu => { if (!toggle || toggle.nextElementSibling !== menu) menu.classList.remove('active'); });
@@ -714,7 +764,7 @@
                         }
                     }
                 });
-                document.addEventListener('mousedown', e => { if (e.target.closest('.fmt-btn') || e.target.closest('.dropdown-menu') || e.target.closest('.tag-item')) e.preventDefault(); });
+                document.addEventListener('mousedown', e => { if (e.target.closest('.fmt-btn') || e.target.closest('.dropdown-menu')) e.preventDefault(); });
                 window.addEventListener('beforeunload', e => { if (this.hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; } });
             }
             async handleCreateFile(prefix = '') {
@@ -736,19 +786,6 @@
                     this.currentPath = null; this.editor.value = ''; this.editor.disabled = true; this.filePathDisplay.innerText = '未选择文件'; this.preview.innerHTML = ''; this.updateFormatUI();
                 }
                 this.renderFileTree(); this.checkDirty();
-            }
-            showTagDropdown() {
-                const tags = new Set(), content = this.editor.value; if (!content) return;
-                content.split('\n---\n').map(b => b.trim()).filter(Boolean).forEach(block => { const lines = block.split('\n'); if (lines.length >= 2) { (lines[1].match(/#([^\s#]+)/g) || []).forEach(m => tags.add(m.substring(1))); } });
-                if (tags.size === 0) return;
-                this.tagDropdown.innerHTML = Array.from(tags).map(t => `<div class="tag-item" data-tag="${t}">${t}</div>`).join('');
-                this.tagDropdown.classList.add('active');
-                const rect = this.btnTag.getBoundingClientRect(), paneRect = document.getElementById('editor-pane').getBoundingClientRect(), dropRect = this.tagDropdown.getBoundingClientRect();
-                let top = rect.bottom - paneRect.top + 5, left = rect.left - paneRect.left;
-                if (rect.left + dropRect.width > paneRect.right - 5) left = (paneRect.right - 5 - dropRect.width) - paneRect.left;
-                if (left < paneRect.left + 5) left = paneRect.left + 5;
-                if (rect.bottom + dropRect.height > window.innerHeight - 5) top = rect.top - paneRect.top - dropRect.height - 5;
-                this.tagDropdown.style.top = `${top}px`; this.tagDropdown.style.left = `${left}px`;
             }
             prepareUpload(file, isManual = false) {
                 if (!this.authConfig.image?.api_url || !this.authConfig.image?.api_key) return this.log('缺少 api_url 或 api_key 配置', 'error');
