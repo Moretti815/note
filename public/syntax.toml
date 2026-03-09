@@ -438,7 +438,6 @@ title = "自定义颜色高亮"
 view_type = "color"
 view_value = "conic-gradient(from 90deg, #ff8787, #faa2c1, #e599f7, #74c0fc, #8ce99a, #ffd43b, #ff8787)"
 
-
 ####################
 
 [merge_groups.fg_color]
