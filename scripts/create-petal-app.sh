@@ -75,8 +75,10 @@ read -r answer < /dev/tty || answer="Y"
 *.html
 *.sh
 cipher-thoughts.py
+
 public/editor.toml
 public/private.txt
+public/petal-parser.js
 EOF
 }
 
@@ -84,7 +86,7 @@ git init -b main > /dev/null 2>&1 || true
 git add . > /dev/null 2>&1 || true
 git commit -m "init petal note project" > /dev/null 2>&1 || true
 
-deploy_args=("index.html")
+deploy_args=("index.html" "petal-parser.js")
 
 ((_fetched_syntax != 1)) && deploy_args+=("syntax.toml")
 
