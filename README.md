@@ -178,6 +178,19 @@ export default {
 
 部署成功后, 将 Worker 的路由地址填入 `api_url`, 如果存储桶绑定了自定义域名, 将其填入 `img_domain`
 
+### 🔬 编辑器细节
+
+Petal Note 编辑器集成了多种渲染器, 均在 `const RenderStrategies = []` 中定义, 右下角会显示一个下拉菜单, 允许自由切换渲染器
+
+![editor_renders](./public/assets/editor_renders.png)
+
+简单介绍:
+
+* Petal Note 卡片: Petal Note 客户端格式
+* Markdown only: 仅 Markdown, 使用 marked 解析
+* Petal only: 仅富文本渲染
+* MD + Petal: 为 Markdown 添加 Petal 的富文本语法
+
 ---
 
 ## 🐏 自定义语法
@@ -294,7 +307,7 @@ flags = "gs"
 replacement = "<mark>$1</mark>"
 ```
 
-### 🦇 编辑器工具栏详解
+### 🦇 编辑器工具栏
 
 #### 🧩 工具栏组与合并行为
 
@@ -468,7 +481,7 @@ view_value = { color = "#d1242f", icon = "ri-close-circle-line", label = "Cautio
 
 </details>
 
-### 📄 语法文件结构概览
+### 📄 语法文件结构
 
 ```toml
 global_css = ""   # 全局 CSS 样式表
