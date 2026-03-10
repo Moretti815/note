@@ -604,6 +604,15 @@ view_value = { color = "#d1242f", icon = "ri-close-circle-line", label = "Cautio
 
 </details>
 
+如果想要能够处理复杂变态嵌套, 还可以添加以下字段 (以 note 为例):
+
+```toml
+regex = ':::note\n(.*?)\n:::'
+flags = "gs"
+openRegex = ':::[A-Za-z]+\n'
+closeRegex = '\n:::(?!\w)'
+```
+
 ### 📜 语法文件结构
 
 ```toml
