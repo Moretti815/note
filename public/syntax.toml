@@ -708,6 +708,25 @@ view_type = "icon_class"
 view_value = "ri-chat-quote-line"
 
 [[rules]]
+regex = '\{stamp\}\s*(.*?)\s*\{/stamp\}'
+flags = "gs"
+openTag = "{stamp}"
+closeTag = "{/stamp}"
+prefix = "{stamp}\n今天的心情...\n{/stamp}"
+suffix = ""
+replacement = '<div class="petal-stamp"><div class="stamp-pin"></div><div class="stamp-content">$1</div></div>'
+css = """
+.petal-stamp { position: relative; width: fit-content; min-width: 140px; max-width: 90%; margin: 2rem auto; padding: 1.5rem 2rem; background: #fffcfd; border: 1px solid #ffe3e8; border-radius: 2px; box-shadow: 2px 4px 12px rgba(209,107,128,0.06); text-align: center; font-family: ui-serif, serif; color: #a65d6f; transform: rotate(-1deg); }
+.petal-stamp::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: repeating-linear-gradient(45deg, #faa2c1, #faa2c1 10px, transparent 10px, transparent 20px, #74c0fc 20px, #74c0fc 30px, transparent 30px, transparent 40px); opacity: 0.6; }
+.stamp-pin { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffd43b, #f08c00); box-shadow: 1px 2px 4px rgba(0,0,0,0.15); z-index: 2; }
+.stamp-content { line-height: 1.8; text-shadow: 0 1px 0 #fff; margin-top: 0.5rem; }
+"""
+group = "magic_tools"
+title = "拍立得日签"
+view_type = "icon_class"
+view_value = "ri-pushpin-line"
+
+[[rules]]
 prefix = "(( "
 suffix = " ))"
 replacement = '<span class="washi-tape">$1</span>'
