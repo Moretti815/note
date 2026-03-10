@@ -4,16 +4,31 @@ export class PetalParser {
     }
 
     _initRules(rules) {
-        return rules.map(r => ({
-            ...r,
-            openTag: r.open_tag || r.openTag || null,
-            closeTag: r.close_tag || r.closeTag || null
-        }));
+        return rules.map(r => {
+            let oR = r.openRegex || r.open_regex;
+            let cR = r.closeRegex || r.close_regex;
+            return {
+                ...r,
+                openTag: r.open_tag || r.openTag || null,
+                closeTag: r.close_tag || r.closeTag || null,
+                oRgx: oR ? new RegExp(oR, 'y') : null,
+                cRgx: cR ? new RegExp(cR, 'y') : null,
+            };
+        });
     }
 
     getStyles(globalCss = '') {
         const rulesCss = this.customRules.map(r => r.css).filter(Boolean).join('\n');
         return [globalCss, rulesCss].filter(Boolean).join('\n');
+    }
+
+    _matchLen(str, index, rgx, tag) {
+        if (rgx) {
+            rgx.lastIndex = index;
+            let m = rgx.exec(str);
+            return m ? m[0].length : 0;
+        }
+        return (tag && str.startsWith(tag, index)) ? tag.length : 0;
     }
 
     parse(str) {
@@ -28,35 +43,56 @@ export class PetalParser {
             for (let r of this.customRules) {
                 if (r.regex) {
                     let ruleMatched = false;
-                    if (r.openTag && r.closeTag && r.openTag !== r.closeTag && str.startsWith(r.openTag, i)) {
+                    let hasBounds = (r.oRgx && r.cRgx) || (r.openTag && r.closeTag && r.openTag !== r.closeTag);
+                    let openLen = this._matchLen(str, i, r.oRgx, r.openTag);
+                    
+                    if (hasBounds && openLen > 0) {
                         let d = 0, j = i;
+                        let lastCloseLen = 0;
                         while (j < len) {
                             if (str[j] === '\\' && j + 1 < len) { j += 2; continue; }
-                            if (str.startsWith(r.openTag, j)) { d++; j += r.openTag.length; }
-                            else if (str.startsWith(r.closeTag, j)) { d--; j += r.closeTag.length; if (d === 0) break; }
-                            else j++;
+                            let oL = this._matchLen(str, j, r.oRgx, r.openTag);
+                            if (oL > 0) { d++; j += oL; continue; }
+                            let cL = this._matchLen(str, j, r.cRgx, r.closeTag);
+                            if (cL > 0) { d--; j += cL; if (d === 0) { lastCloseLen = cL; break; } continue; }
+                            j++;
                         }
                         if (d === 0) {
                             let outer = str.slice(i, j), masked = outer, masks = [];
-                            if (outer.indexOf(r.openTag, r.openTag.length) > -1) {
-                                let out = outer.substring(0, r.openTag.length), innerD = 0, sIdx = -1;
-                                for (let k = r.openTag.length; k < outer.length - r.closeTag.length; ) {
+                            
+                            let hasNested = false;
+                            for (let testK = openLen; testK < outer.length - lastCloseLen; testK++) {
+                                if (this._matchLen(outer, testK, r.oRgx, r.openTag) > 0) { hasNested = true; break; }
+                            }
+
+                            if (hasNested) {
+                                let out = outer.substring(0, openLen), innerD = 0, sIdx = -1;
+                                for (let k = openLen; k < outer.length - lastCloseLen; ) {
                                     if (outer[k] === '\\' && k + 1 < outer.length) { 
                                         if (innerD === 0) out += outer.substring(k, k+2); 
                                         k += 2; continue; 
                                     }
-                                    if (outer.startsWith(r.openTag, k)) { if (innerD === 0) sIdx = k; innerD++; k += r.openTag.length; }
-                                    else if (outer.startsWith(r.closeTag, k)) {
-                                        innerD--; k += r.closeTag.length;
+                                    let oL = this._matchLen(outer, k, r.oRgx, r.openTag);
+                                    if (oL > 0) { 
+                                        if (innerD === 0) sIdx = k; 
+                                        innerD++; k += oL; continue; 
+                                    }
+                                    let cL = this._matchLen(outer, k, r.cRgx, r.closeTag);
+                                    if (cL > 0) {
+                                        innerD--; 
                                         if (innerD === 0 && sIdx > -1) {
                                             let key = `__M${masks.length}__`;
-                                            masks.push({ key, val: outer.substring(sIdx, k) });
+                                            masks.push({ key, val: outer.substring(sIdx, k + cL) });
                                             out += key; sIdx = -1;
                                         }
-                                    } else { if (innerD === 0) out += outer[k]; k++; }
+                                        k += cL; continue;
+                                    } 
+                                    if (innerD === 0) out += outer[k]; 
+                                    k++; 
                                 }
-                                masked = out + outer.substring(outer.length - r.closeTag.length);
+                                masked = out + outer.substring(outer.length - lastCloseLen);
                             }
+                            
                             let rx = new RegExp('^' + r.regex.replace(/^\^/, ''), (r.flags || '').replace(/g/g, ''));
                             let m = masked.match(rx);
                             if (m) {
