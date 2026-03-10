@@ -380,7 +380,7 @@ replacement = '<span style="background-color: color-mix(in srgb, $1, transparent
 group = "color"
 ```
 
-指定 `open_tag` 和 `close_tag` 字段表示开闭标签, 解析引擎将启用状态机模式, 再向下传递给 regex 处理
+指定 `openTag` / `closeRegex` 和 `closeTag` / `closeRegex` 字段表示开闭标签, 解析引擎将启用状态机模式, 再向下传递给 regex 处理
 
 *示例:* 复刻 Markdown 标题层级语法
 
@@ -644,6 +644,8 @@ regex = ""         # 正则表达式, 使用捕获组提取内容
 flags = ""         # 正则细调
 openTag = ""       # 复杂状态机模式下必要的开标签
 closeTag = ""      # 复杂状态机模式下必要的闭标签
+open_regex = ""    # 动态状态机开标签, 支持正则前瞻/断言, 用于解决定界符嵌套歧义
+close_regex = ""   # 动态状态机闭标签, 支持正则前瞻/断言, 用于解决定界符嵌套歧义
 prefix = ""        # 编辑器按钮插入内容的前缀
 suffix = ""        # 编辑器按钮插入内容的后缀
 replacement = ""   # 实际渲染的 DOM, 替换 $1, $2... 为正则表达式捕获的内容
