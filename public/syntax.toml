@@ -787,19 +787,18 @@ title = "淡雅相册"
 icon_html = """<i class="ri-camera-lens-line"></i><i class="ri-arrow-down-s-line" style="font-size: 0.8em; margin-left: -2px;"></i>"""
 
 [[rules]]
-regex = '\{po\}\s*([^\s|]+)\s*\|\s*([^\}]+?)\s*\{/po\}'
+regex = '\{po\}\s*(.*?)\s*\{/po\}'
 flags = "gs"
 openTag = "{po}"
 closeTag = "{/po}"
-prefix = "{po}图片链接 | 记忆描述{/po}"
+prefix = "{po}\n![图片描述](图片链接)\n这里是关于这张照片的记忆...\n{/po}"
 suffix = ""
-replacement = '''<div class="po-container"><div class="po-card po-classic"><div class="po-inner"><img src="$1" alt="Memory" class="po-img" loading="lazy" /><p class="po-caption">$2</p></div></div></div>'''
+replacement = '''<div class="po-container"><div class="po-card po-classic"><div class="po-inner">$1</div></div></div>'''
 css = """
 .po-container { text-align: center; margin: 2rem auto; }
 .po-card { display: inline-block; max-width: 90%; background: #fff; padding: 12px 12px 30px 12px; border-radius: 2px; box-shadow: 0 3px 12px rgba(0,0,0,0.06); transform: rotate(-1.5deg); border: 1px solid rgba(0,0,0,0.02); }
-.po-inner { position: relative; }
-.po-img { width: 240px; height: auto; max-height: 400px; object-fit: cover; display: block; border-radius: 1px; }
-.po-caption { font-family: ui-serif, Georgia, serif; margin: 18px 0 0 0; text-align: center; color: #8a7b73; font-size: 0.9rem; font-style: italic; line-height: 1.5; word-break: break-all; }
+.po-inner { display: flex; flex-direction: column; align-items: center; gap: 18px; font-family: ui-serif, Georgia, serif; text-align: center; color: #8a7b73; font-size: 0.9rem; font-style: italic; line-height: 1.5; word-break: break-all; }
+.po-inner img { width: 240px; height: auto; max-height: 400px; object-fit: cover; display: block; border-radius: 1px; margin: 0 !important; }
 """
 group = "polaroid_series"
 title = "经典拍立得"
@@ -807,17 +806,17 @@ view_type = "icon_class"
 view_value = "ri-camera-switch-line"
 
 [[rules]]
-regex = '\{po-p\}\s*([^\s|]+)\s*\|\s*([^\}]+?)\s*\{/po-p\}'
+regex = '\{po-p\}\s*(.*?)\s*\{/po-p\}'
 flags = "gs"
 openTag = "{po-p}"
 closeTag = "{/po-p}"
-prefix = "{po-p}图片链接 | 描述{/po-p}"
+prefix = "{po-p}\n![图片描述](图片链接)\n这里是关于这张照片的记忆...\n{/po-p}"
 suffix = ""
-replacement = '''<div class="po-container"><div class="po-card po-tape-pink"><div class="po-tape"></div><div class="po-inner"><img src="$1" alt="Memory" class="po-img" loading="lazy" /><p class="po-caption">$2</p></div></div></div>'''
+replacement = '''<div class="po-container"><div class="po-card po-tape-pink"><div class="po-tape"></div><div class="po-inner">$1</div></div></div>'''
 css = """
 .po-tape-pink { transform: rotate(1deg); }
 .po-tape-pink .po-tape { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); width: 70px; height: 24px; background-color: rgba(250, 162, 193, 0.4); box-shadow: 1px 1px 3px rgba(0,0,0,0.03); opacity: 0.8; z-index: 1; border-left: 2px dashed rgba(255,255,255,0.3); border-right: 2px dashed rgba(255,255,255,0.3); }
-.po-tape-pink .po-caption { color: #d16b80; }
+.po-tape-pink .po-inner { color: #d16b80; }
 """
 group = "polaroid_series"
 title = "落樱粉胶带"
@@ -825,17 +824,17 @@ view_type = "color"
 view_value = "#faa2c1"
 
 [[rules]]
-regex = '\{po-b\}\s*([^\s|]+)\s*\|\s*([^\}]+?)\s*\{/po-b\}'
+regex = '\{po-b\}\s*(.*?)\s*\{/po-b\}'
 flags = "gs"
 openTag = "{po-b}"
 closeTag = "{/po-b}"
-prefix = "{po-b}图片链接 | 描述{/po-b}"
+prefix = "{po-b}\n![图片描述](图片链接)\n这里是关于这张照片的记忆...\n{/po-b}"
 suffix = ""
-replacement = '''<div class="po-container"><div class="po-card po-tape-blue"><div class="po-tape"></div><div class="po-inner"><img src="$1" alt="Memory" class="po-img" loading="lazy" /><p class="po-caption">$2</p></div></div></div>'''
+replacement = '''<div class="po-container"><div class="po-card po-tape-blue"><div class="po-tape"></div><div class="po-inner">$1</div></div></div>'''
 css = """
 .po-tape-blue { transform: rotate(-2deg); }
 .po-tape-blue .po-tape { position: absolute; top: -15px; left: -25px; transform: rotate(-15deg); width: 80px; height: 22px; background-color: rgba(116, 192, 252, 0.4); box-shadow: 1px 1px 3px rgba(0,0,0,0.03); opacity: 0.8; z-index: 1; border-radius: 2px; }
-.po-tape-blue .po-caption { color: #5c82a6; }
+.po-tape-blue .po-inner { color: #5c82a6; }
 """
 group = "polaroid_series"
 title = "雾霾蓝胶带"
@@ -843,18 +842,18 @@ view_type = "color"
 view_value = "#74c0fc"
 
 [[rules]]
-regex = '\{po-g\}\s*([^\s|]+)\s*\|\s*([^\}]+?)\s*\{/po-g\}'
+regex = '\{po-g\}\s*(.*?)\s*\{/po-g\}'
 flags = "gs"
 openTag = "{po-g}"
 closeTag = "{/po-g}"
-prefix = "{po-g}图片链接 | 描述{/po-g}"
+prefix = "{po-g}\n![图片描述](图片链接)\n这里是关于这张照片的记忆...\n{/po-g}"
 suffix = ""
-replacement = '''<div class="po-container"><div class="po-card po-tape-green"><div class="po-tape-tr"></div><div class="po-tape-bl"></div><div class="po-inner"><img src="$1" alt="Memory" class="po-img" loading="lazy" /><p class="po-caption">$2</p></div></div></div>'''
+replacement = '''<div class="po-container"><div class="po-card po-tape-green"><div class="po-tape-tr"></div><div class="po-tape-bl"></div><div class="po-inner">$1</div></div></div>'''
 css = """
 .po-tape-green { transform: rotate(1.2deg); padding-top: 20px; }
 .po-tape-green .po-tape-tr { position: absolute; top: -10px; right: -15px; width: 50px; height: 18px; background-color: rgba(140, 233, 154, 0.4); transform: rotate(30deg); opacity: 0.7; z-index: 1; }
 .po-tape-green .po-tape-bl { position: absolute; bottom: 35px; left: -15px; width: 50px; height: 18px; background-color: rgba(140, 233, 154, 0.4); transform: rotate(30deg); opacity: 0.7; z-index: 1; }
-.po-tape-green .po-caption { color: #699e78; }
+.po-tape-green .po-inner { color: #699e78; }
 """
 group = "polaroid_series"
 title = "抹茶绿双角戳"
