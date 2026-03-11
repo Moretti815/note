@@ -300,27 +300,133 @@
         const RenderStrategies = [
             {
                 id: 'petal-note', name: 'Petal Note 卡片', exts: ['.txt'],
-                css: `.preview-card { position: relative; background: var(--card-bg); border-radius: 0; border: 1px solid var(--border-color); box-shadow: 6px 6px 0 rgba(43, 43, 41, 0.04); padding: 2rem; line-height: 1.9; font-size: var(--editor-font-size); word-wrap: break-word; } .card-img { max-width: 100%; height: auto; margin-block: 1.5rem; display: block; border: 1px solid var(--border-color); } .preview-item { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 3rem; } .preview-date { font-size: 0.8rem; color: var(--text-muted); letter-spacing: 0.05em; font-family: system-ui, -apple-system, sans-serif; border-bottom: 1px solid var(--border-color); padding-bottom: 0.2rem; margin-bottom: 0.5rem; } .preview-card-id { position: absolute; top: 1rem; right: 1.5rem; font-size: 0.8rem; color: var(--text-muted); opacity: 0.5; pointer-events: none; font-family: ui-monospace, monospace; } .card-tag { color: var(--timeline-accent); margin-inline-end: 0.5rem; display: inline-block; font-size: 0.9rem; font-family: system-ui, -apple-system, sans-serif; } .card-link { color: var(--timeline-accent); text-decoration: none; border-bottom: 1px solid var(--border-color); transition: all 0.3s ease; padding-bottom: 1px; word-break: break-all; } .card-link:hover { border-bottom-color: var(--timeline-accent); } .manual-br { height: 0.5em; } .gallery { display: grid; gap: 1px; margin-block: 1rem; background: var(--border-color); border: 1px solid var(--border-color); } .gallery.grid-2 { grid-template-columns: repeat(2, 1fr); } .gallery.grid-3 { grid-template-columns: repeat(3, 1fr); } .gallery .card-img { margin: 0; aspect-ratio: 1; object-fit: cover; width: 100%; height: 100%; border: none; } .tag-dropdown { position: absolute; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 0; box-shadow: 6px 6px 0 rgba(43, 43, 41, 0.04); z-index: 100; max-height: 220px; min-width: 120px; overflow-y: auto; opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease; display: flex; flex-direction: column; padding: 0.4rem; font-family: system-ui, -apple-system, sans-serif; } .tag-dropdown.active { opacity: 1; visibility: visible; } .tag-item { padding: 0.5rem 0.8rem; font-size: 0.85rem; cursor: pointer; border-radius: 0; color: var(--text-main); transition: background 0.2s; } .tag-item:hover { background: rgba(43, 43, 41, 0.05); }`,
+                css: `.preview-card { position: relative; background: var(--card-bg); border-radius: 0; border: 1px solid var(--border-color); box-shadow: 6px 6px 0 rgba(43, 43, 41, 0.04); padding: 2rem; line-height: 1.9; font-size: var(--editor-font-size); word-wrap: break-word; transition: all 0.2s; } .preview-card.opt-nopd { padding: 0.8rem; } .preview-card.opt-nobg { background: transparent; border: none; box-shadow: none; } .card-img { max-width: 100%; height: auto; margin-block: 1.5rem; display: block; border: 1px solid var(--border-color); } .preview-item { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 3rem; } .preview-date { font-size: 0.8rem; color: var(--text-muted); letter-spacing: 0.05em; font-family: system-ui, -apple-system, sans-serif; border-bottom: 1px solid var(--border-color); padding-bottom: 0.2rem; margin-bottom: 0.5rem; } .preview-card-id { position: absolute; top: 1rem; right: 1.5rem; font-size: 0.8rem; color: var(--text-muted); opacity: 0.5; pointer-events: none; font-family: ui-monospace, monospace; } .opt-nopd .preview-card-id, .opt-nobg .preview-card-id { top: 0; right: 0; opacity: 0.3; } .card-tag { color: var(--timeline-accent); margin-inline-end: 0.5rem; display: inline-block; font-size: 0.9rem; font-family: system-ui, -apple-system, sans-serif; } .card-link { color: var(--timeline-accent); text-decoration: none; border-bottom: 1px solid var(--border-color); transition: all 0.3s ease; padding-bottom: 1px; word-break: break-all; } .card-link:hover { border-bottom-color: var(--timeline-accent); } .manual-br { height: 0.5em; } .gallery { display: grid; gap: 1px; margin-block: 1rem; background: var(--border-color); border: 1px solid var(--border-color); } .gallery.grid-2 { grid-template-columns: repeat(2, 1fr); } .gallery.grid-3 { grid-template-columns: repeat(3, 1fr); } .gallery .card-img { margin: 0; aspect-ratio: 1; object-fit: cover; width: 100%; height: 100%; border: none; } .tag-dropdown, .config-dropdown { position: absolute; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 0; box-shadow: 6px 6px 0 rgba(43, 43, 41, 0.04); z-index: 100; max-height: 220px; min-width: 120px; overflow-y: auto; opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease; display: flex; flex-direction: column; padding: 0.4rem; font-family: system-ui, -apple-system, sans-serif; } .tag-dropdown.active, .config-dropdown.active { opacity: 1; visibility: visible; } .tag-item { padding: 0.5rem 0.8rem; font-size: 0.85rem; cursor: pointer; border-radius: 0; color: var(--text-main); transition: background 0.2s; } .tag-item:hover { background: rgba(43, 43, 41, 0.05); } .config-dropdown { gap: 0.6rem; padding: 0.8rem; min-width: 160px; } .config-dropdown label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; cursor: pointer; color: var(--text-main); user-select: none; } .config-dropdown input { cursor: pointer; margin: 0; accent-color: var(--timeline-accent); width: 14px; height: 14px; }`,
                 ctx: {},
                 render: (raw, ctx) => {
                     const blocks = raw.split('\n---\n').map(b => b.trim()).filter(b => b && b.split('\n').length >= 2), total = blocks.length, isAsc = ctx.sysConfig?.data_order === 'asc';
                     return blocks.map((block, index) => {
-                        const id = isAsc ? index + 1 : total - index, lines = block.split('\n'), date = lines.shift().trim();
+                        const id = isAsc ? index + 1 : total - index, lines = block.split('\n');
+                        let date = lines.shift().trim(), classStr = '';
+                        const m = date.match(/^\[(.*?)\]\s*(.*)$/);
+                        if (m) {
+                            const opts = m[1].split(',').map(s=>s.trim());
+                            if(opts.includes('nopd')) classStr += ' opt-nopd';
+                            if(opts.includes('nobg')) classStr += ' opt-nobg';
+                            date = m[2];
+                        }
                         if (lines.length > 0) lines[0] = lines[0].replace(/#([^\s#]+)/g, (_, tag) => `<span class="card-tag">#${tag}</span>`);
                         let finalHtml = ctx.parser.parse(lines.join('\n')).split('\n').join('<div class="manual-br"></div>').replace(/(?:<div class="manual-br"><\/div>)*\s*(<img[^>]+>)\s*(?:<div class="manual-br"><\/div>)*/g, '$1').replace(/(<img[^>]+>){2,}/g, match => `<div class="gallery ${((match.match(/<img/g) || []).length === 2 || (match.match(/<img/g) || []).length === 4) ? 'grid-2' : 'grid-3'}">${match}</div>`);
-                        return `<div class="preview-item" id="preview-post-${id}"><div class="preview-date">${date}</div><div class="preview-card"><span class="preview-card-id">#${id}</span>${finalHtml}</div></div>`;
+                        return `<div class="preview-item" id="preview-post-${id}"><div class="preview-date">${date}</div><div class="preview-card${classStr}"><span class="preview-card-id">#${id}</span>${finalHtml}</div></div>`;
                     }).join('');
                 },
                 activate: function(env) {
                     this.ctx.env = env;
+                    
+                    this.ctx.btnTime = document.createElement('button');
+                    this.ctx.btnTime.className = 'fmt-btn';
+                    this.ctx.btnTime.title = '插入时间戳';
+                    this.ctx.btnTime.innerHTML = '<i class="ri-time-line"></i>';
+                    
+                    this.ctx.btnSep = document.createElement('button');
+                    this.ctx.btnSep.className = 'fmt-btn';
+                    this.ctx.btnSep.title = '插入分割线';
+                    this.ctx.btnSep.innerHTML = '<i class="ri-separator"></i>';
+                    
                     this.ctx.btnTag = document.createElement('button');
                     this.ctx.btnTag.className = 'fmt-btn';
                     this.ctx.btnTag.title = '标签';
                     this.ctx.btnTag.innerHTML = '<i class="ri-hashtag"></i>';
+
+                    this.ctx.btnConfig = document.createElement('button');
+                    this.ctx.btnConfig.className = 'fmt-btn';
+                    this.ctx.btnConfig.title = '卡片外观';
+                    this.ctx.btnConfig.innerHTML = '<i class="ri-settings-4-line"></i>';
+                    
+                    env.slot.appendChild(this.ctx.btnTime);
+                    env.slot.appendChild(this.ctx.btnSep);
                     env.slot.appendChild(this.ctx.btnTag);
+                    env.slot.appendChild(this.ctx.btnConfig);
+                    
                     this.ctx.dropdown = document.createElement('div');
                     this.ctx.dropdown.className = 'tag-dropdown';
                     env.editorPane.appendChild(this.ctx.dropdown);
+
+                    this.ctx.cfgDropdown = document.createElement('div');
+                    this.ctx.cfgDropdown.className = 'config-dropdown';
+                    this.ctx.cfgDropdown.innerHTML = `<label><input type="checkbox" value="nopd"> 极简内边距 (nopd)</label><label><input type="checkbox" value="nobg"> 幽灵卡片 (nobg)</label>`;
+                    env.editorPane.appendChild(this.ctx.cfgDropdown);
+
+                    this.ctx.btnTime.onclick = e => {
+                        e.preventDefault();
+                        const now = new Date(), pad = n => n.toString().padStart(2, '0');
+                        const ts = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+                        const ed = env.editor, start = ed.selectionStart, textBefore = ed.value.substring(0, start);
+                        const prefix = (textBefore.length === 0 || textBefore.endsWith('\n')) ? '' : '\n';
+                        const insert = prefix + ts + '\n';
+                        ed.focus();
+                        if (!document.execCommand('insertText', false, insert)) ed.setRangeText(insert, start, ed.selectionEnd, 'end');
+                        ed.dispatchEvent(new Event('input'));
+                    };
+
+                    this.ctx.btnSep.onclick = e => {
+                        e.preventDefault();
+                        const ed = env.editor, start = ed.selectionStart, tb = ed.value.substring(0, start), ta = ed.value.substring(ed.selectionEnd);
+                        const pre = (tb.length === 0 || tb.endsWith('\n\n')) ? '' : (tb.endsWith('\n') ? '\n' : '\n\n');
+                        const suf = (ta.length === 0 || ta.startsWith('\n\n')) ? '' : (ta.startsWith('\n') ? '\n' : '\n\n');
+                        const insert = pre + '---' + suf;
+                        ed.focus();
+                        if (!document.execCommand('insertText', false, insert)) ed.setRangeText(insert, start, ed.selectionEnd, 'end');
+                        ed.dispatchEvent(new Event('input'));
+                    };
+
+                    const getBlockCtx = () => {
+                        const ed = env.editor, pos = ed.selectionStart, blocks = ed.value.split('\n---\n');
+                        let curr = 0, targetIdx = 0, blockStart = 0;
+                        for (let i = 0; i < blocks.length; i++) {
+                            const blockEnd = curr + blocks[i].length;
+                            if (pos >= curr && pos <= blockEnd + (i < blocks.length - 1 ? 5 : 0)) { targetIdx = i; blockStart = curr; break; }
+                            curr = blockEnd + 5;
+                        }
+                        const bTxt = blocks[targetIdx] || '', flEnd = bTxt.indexOf('\n'), actEnd = flEnd === -1 ? bTxt.length : flEnd;
+                        return { start: blockStart, end: blockStart + actEnd, text: bTxt.substring(0, actEnd) };
+                    };
+
+                    this.ctx.btnConfig.onclick = e => {
+                        e.preventDefault(); e.stopPropagation();
+                        if(!env.editor.value) return;
+                        const bCtx = getBlockCtx(), m = bCtx.text.match(/^\[(.*?)\]/);
+                        const opts = m ? m[1].split(',').map(s=>s.trim()) : [];
+                        this.ctx.cfgDropdown.querySelectorAll('input').forEach(cb => cb.checked = opts.includes(cb.value));
+                        this.ctx.dropdown.classList.remove('active');
+                        this.ctx.cfgDropdown.classList.add('active');
+                        
+                        const rect = this.ctx.btnConfig.getBoundingClientRect(), paneRect = env.editorPane.getBoundingClientRect();
+                        this.ctx.cfgDropdown.style.top = `${rect.bottom - paneRect.top + 5}px`;
+                        let left = rect.left - paneRect.left;
+                        if (left + this.ctx.cfgDropdown.offsetWidth > paneRect.width) left = paneRect.width - this.ctx.cfgDropdown.offsetWidth - 5;
+                        this.ctx.cfgDropdown.style.left = `${left}px`;
+                    };
+
+                    this.ctx.cfgDropdown.addEventListener('change', e => {
+                        if(e.target.tagName === 'INPUT') {
+                            const boxes = Array.from(this.ctx.cfgDropdown.querySelectorAll('input:checked')).map(cb => cb.value);
+                            const bCtx = getBlockCtx(), m = bCtx.text.match(/^\[(.*?)\]\s*(.*)$/);
+                            const dateStr = m ? m[2] : bCtx.text;
+                            const newLine = boxes.length > 0 ? `[${boxes.join(',')}] ${dateStr}` : dateStr;
+                            
+                            const ed = env.editor, oStart = ed.selectionStart, oEnd = ed.selectionEnd;
+                            ed.focus(); ed.setSelectionRange(bCtx.start, bCtx.end);
+                            if (!document.execCommand('insertText', false, newLine)) ed.setRangeText(newLine, bCtx.start, bCtx.end, 'end');
+                            
+                            const diff = newLine.length - bCtx.text.length;
+                            let nStart = oStart, nEnd = oEnd;
+                            if (oStart > bCtx.end) { nStart += diff; nEnd += diff; }
+                            else if (oStart > bCtx.start) { nStart = Math.min(bCtx.start + newLine.length, nStart + diff); nEnd = Math.min(bCtx.start + newLine.length, nEnd + diff); }
+                            ed.setSelectionRange(nStart, nEnd);
+                            ed.dispatchEvent(new Event('input'));
+                        }
+                    });
+
                     this.ctx.onClick = e => {
                         const link = e.target.closest('a.card-link');
                         if (link && link.getAttribute('href')?.startsWith('#')) {
@@ -329,16 +435,19 @@
                         }
                     };
                     env.preview.addEventListener('click', this.ctx.onClick);
-                    this.ctx.onBtnClick = e => {
+                    
+                    this.ctx.btnTag.onclick = e => {
                         e.preventDefault(); e.stopPropagation();
                         const start = env.editor.selectionStart, end = env.editor.selectionEnd;
                         if (!document.execCommand('insertText', false, '#')) env.editor.setRangeText('#', start, end, 'end');
                         env.editor.dispatchEvent(new Event('input'));
                         this._showDropdown();
                     };
-                    this.ctx.btnTag.addEventListener('click', this.ctx.onBtnClick);
+                    
                     this.ctx.onDocClick = e => {
                         if (!e.target.closest('.tag-dropdown') && !e.target.closest('.fmt-btn[title="标签"]')) this.ctx.dropdown.classList.remove('active');
+                        if (!e.target.closest('.config-dropdown') && !e.target.closest('.fmt-btn[title="卡片外观"]')) this.ctx.cfgDropdown.classList.remove('active');
+                        
                         if (e.target.classList.contains('tag-item')) {
                             const tagText = e.target.dataset.tag; env.editor.focus();
                             if (!document.execCommand('insertText', false, tagText + ' ')) { const start = env.editor.selectionStart; env.editor.setRangeText(tagText + ' ', start, start, 'end'); }
@@ -350,8 +459,12 @@
                 deactivate: function(env) {
                     if (this.ctx.onClick) env.preview.removeEventListener('click', this.ctx.onClick);
                     if (this.ctx.onDocClick) document.removeEventListener('click', this.ctx.onDocClick);
+                    if (this.ctx.btnTime) this.ctx.btnTime.remove();
+                    if (this.ctx.btnSep) this.ctx.btnSep.remove();
                     if (this.ctx.btnTag) this.ctx.btnTag.remove();
+                    if (this.ctx.btnConfig) this.ctx.btnConfig.remove();
                     if (this.ctx.dropdown) this.ctx.dropdown.remove();
+                    if (this.ctx.cfgDropdown) this.ctx.cfgDropdown.remove();
                     this.ctx = {};
                 },
                 _showDropdown: function() {

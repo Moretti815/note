@@ -242,6 +242,11 @@
         }
         .card:active .card-id, .card.locked .card-id { opacity: 0.5; }
 
+        .card.opt-nopd .card-inner { padding: 0.8rem 1.2rem; }
+        .card.opt-nobg { background: transparent !important; border: none !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+        .card.opt-nobg:active { transform: none !important; }
+        .card.opt-nopd .card-id, .card.opt-nobg .card-id { top: 0; right: 0; opacity: 0.15; }
+
         .card-inner { padding: 1.2rem 1.4rem; line-height: 1.7; font-size: 0.95rem; max-height: calc(1.7em * 5 + 2.4rem); overflow: hidden; transition: max-height 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
         .card.expanded .card-inner, .card.locked .card-inner { max-height: 2000px; }
         .card-tag { color: var(--rose-ellipsis); margin-inline-end: 0.4rem; display: inline-block; font-family: system-ui, sans-serif; font-size: 0.85rem; }
@@ -265,6 +270,7 @@
         body.private-mode .card-mask { background: linear-gradient(to bottom, transparent, rgb(255 253 254 / 85%) 50%, rgb(255 253 254 / 98%) 100%); }
         .card.has-more:not(.expanded):not(.locked) .card-mask { display: flex; }
         .card.has-more.expanded .card-mask, .card.has-more.locked .card-mask { display: flex; opacity: 0; }
+        .card.opt-nobg .card-mask { display: none !important; }
         .ellipsis { color: var(--rose-ellipsis); font-size: 1.2rem; letter-spacing: 0.15em; line-height: 1; transform: translateY(2px); user-select: none; -webkit-user-select: none; }
         .empty-tip { text-align: center; color: var(--text-muted); font-size: 0.95rem; letter-spacing: 0.1em; margin-block-start: 2.5rem; font-style: italic; opacity: 0; }
     </style>
@@ -878,8 +884,17 @@
 
                 const parsedData = blocks.map((block, index) => {
                     const lines = block.split('\n');
-                    const date = lines.shift().trim();
+                    let date = lines.shift().trim();
                     const tags = [];
+                    let classStr = '';
+
+                    const optMatch = date.match(/^\[(.*?)\]\s*(.*)$/);
+                    if (optMatch) {
+                        const opts = optMatch[1].split(',').map(s => s.trim());
+                        if(opts.includes('nopd')) classStr += ' opt-nopd';
+                        if(opts.includes('nobg')) classStr += ' opt-nobg';
+                        date = optMatch[2];
+                    }
                     
                     if (lines.length > 0) {
                         lines[0] = lines[0].replace(/#([^\s#]+)/g, (_, tag) => { tags.push(tag); return `<span class="card-tag">#${tag}</span>`; });
@@ -893,7 +908,7 @@
                         return `<div class="gallery ${(match.match(/<img/g) || []).length === 2 || (match.match(/<img/g) || []).length === 4 ? 'grid-2' : 'grid-3'}">${match}</div>`;
                     });
 
-                    return { id: isAsc ? index + 1 : total - index, date, text: finalHtml, tags, hash: (isPrivate ? 'priv_' : 'pub_') + this.generateHash(block) };
+                    return { id: isAsc ? index + 1 : total - index, date, text: finalHtml, tags, hash: (isPrivate ? 'priv_' : 'pub_') + this.generateHash(block), classStr };
                 });
 
                 return isAsc ? parsedData.reverse() : parsedData;
@@ -961,7 +976,7 @@
                         </div>
                         <div class="content">
                             <time class="date">${item.date}</time>
-                            <div class="card" data-id="${item.id}" data-hash="${item.hash}">
+                            <div class="card${item.classStr}" data-id="${item.id}" data-hash="${item.hash}">
                                 <span class="card-id">#${item.id}</span>
                                 <div class="card-inner">${item.text}</div>
                                 <div class="card-mask"><span class="ellipsis">...</span></div>
