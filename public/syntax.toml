@@ -426,6 +426,36 @@ view_type = "color"
 view_value = "#ebfbee"
 
 [[rules]]
+prefix = "{bg-u}"
+suffix = "{/bg-u}"
+replacement = '<span class="hl-purple">$1</span>'
+css = '.hl-purple { background-color: rgba(243, 217, 250, 0.7); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid rgba(204, 93, 232, 0.2); }'
+group = "color"
+title = "淡紫高亮"
+view_type = "color"
+view_value = "#f3d9fa"
+
+[[rules]]
+prefix = "{bg-o}"
+suffix = "{/bg-o}"
+replacement = '<span class="hl-orange">$1</span>'
+css = '.hl-orange { background-color: rgba(255, 232, 204, 0.7); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid rgba(253, 126, 20, 0.2); }'
+group = "color"
+title = "淡橙高亮"
+view_type = "color"
+view_value = "#ffe8cc"
+
+[[rules]]
+prefix = "{bg-n}"
+suffix = "{/bg-n}"
+replacement = '<span class="hl-neutral">$1</span>'
+css = '.hl-neutral { background-color: rgba(241, 243, 245, 0.8); padding: 0 4px; border-radius: 4px; border-bottom: 1px solid rgba(134, 142, 150, 0.2); }'
+group = "color"
+title = "雅灰高亮"
+view_type = "color"
+view_value = "#f1f3f5"
+
+[[rules]]
 regex = '\{bg-([A-Za-z0-9#\(\),.\s]+)\}(.*?)\{/bg\}'
 flags = "gs"
 openTag = "{bg-"
@@ -448,68 +478,68 @@ icon_html = """<i class="ri-markup-line"></i><i class="ri-arrow-down-s-line" sty
 prefix = "{fg-r}"
 suffix = "{/fg-r}"
 replacement = '<span class="fg-red">$1</span>'
-css = '.fg-red { color: #e03131; }'
+css = '.fg-red { color: #c85a6a; }'
 group = "fg_color"
-title = "红色"
+title = "薄暮红"
 view_type = "fg_color"
-view_value = "#e03131"
+view_value = "#c85a6a"
 
 [[rules]]
 prefix = "{fg-p}"
 suffix = "{/fg-p}"
 replacement = '<span class="fg-pink">$1</span>'
-css = '.fg-pink { color: #d6336c; }'
+css = '.fg-pink { color: #d16b80; }'
 group = "fg_color"
-title = "粉色"
+title = "落樱粉"
 view_type = "fg_color"
-view_value = "#d6336c"
+view_value = "#d16b80"
 
 [[rules]]
 prefix = "{fg-g}"
 suffix = "{/fg-g}"
 replacement = '<span class="fg-green">$1</span>'
-css = '.fg-green { color: #2f9e44; }'
+css = '.fg-green { color: #699e78; }'
 group = "fg_color"
-title = "绿色"
+title = "抹茶绿"
 view_type = "fg_color"
-view_value = "#2f9e44"
+view_value = "#699e78"
 
 [[rules]]
 prefix = "{fg-b}"
 suffix = "{/fg-b}"
 replacement = '<span class="fg-blue">$1</span>'
-css = '.fg-blue { color: #1971c2; }'
+css = '.fg-blue { color: #5c82a6; }'
 group = "fg_color"
-title = "蓝色"
+title = "雾霾蓝"
 view_type = "fg_color"
-view_value = "#1971c2"
+view_value = "#5c82a6"
 
 [[rules]]
 prefix = "{fg-y}"
 suffix = "{/fg-y}"
 replacement = '<span class="fg-yellow">$1</span>'
-css = '.fg-yellow { color: #f08c00; }'
+css = '.fg-yellow { color: #c88d3b; }'
 group = "fg_color"
-title = "黄色"
+title = "琥珀黄"
 view_type = "fg_color"
-view_value = "#f08c00"
+view_value = "#c88d3b"
 
 [[rules]]
 prefix = "{fg-u}"
 suffix = "{/fg-u}"
 replacement = '<span class="fg-purple">$1</span>'
-css = '.fg-purple { color: #cb48e8; }'
+css = '.fg-purple { color: #9573ad; }'
 group = "fg_color"
-title = "紫色"
+title = "香芋紫"
 view_type = "fg_color"
-view_value = "#cb48e8"
+view_value = "#9573ad"
 
 [[rules]]
 regex = '\{fg-([A-Za-z0-9#\(\),.\s]+)\}(.*?)\{/fg\}'
 flags = "gs"
 openTag = "{fg-"
 closeTag = "{/fg}"
-prefix = "{fg-#cb48e8}"
+prefix = "{fg-#9573ad}"
 suffix = "{/fg}"
 replacement = '<span style="color: $1; font-weight: inherit;">$2</span>'
 group = "fg_color"
