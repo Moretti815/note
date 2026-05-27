@@ -11,6 +11,7 @@
     </script>
     <style>
             :root { --text-main: #2b2b29; --text-muted: #8c8881; --timeline-accent: #a84b3e; --bg-app: #efede8; --bg-sidebar: #f5f4ef; --bg-editor: #fbfaf8; --card-bg: #ffffff; --danger-color: #9c3f3f; --success-color: #4a5d3c; --border-color: #e2dfd8; --v-height: 100dvh; --sidebar-width: 260px; --editor-width: 50%; --editor-font-size: 1.05rem; }
+            body.dark-mode { --text-main: #d4c5c0; --text-muted: #8a7b73; --timeline-accent: #8b5a6b; --bg-app: #1a181a; --bg-sidebar: #2d2a2d; --bg-editor: #252325; --card-bg: #323032; --danger-color: #a86b6b; --success-color: #699e78; --border-color: #4a4648; }
             *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
             ::-webkit-scrollbar { width: 4px; height: 4px; }
             ::-webkit-scrollbar-track { background: transparent; }
@@ -146,6 +147,48 @@
                 .diff-container { min-height: 0; }
                 .tree-actions { opacity: 1; pointer-events: auto; }
             }
+
+            #theme-toggle {
+                position: fixed; bottom: 2rem; right: 2rem;
+                width: 44px; height: 44px;
+                background: var(--card-bg);
+                backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+                border: 1px solid var(--border-color);
+                border-radius: 50%;
+                display: flex; align-items: center; justify-content: center;
+                cursor: pointer;
+                z-index: 100;
+                transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+                box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+                -webkit-tap-highlight-color: transparent;
+            }
+            #theme-toggle:hover {
+                transform: scale(1.08);
+                box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            }
+            #theme-toggle:active {
+                transform: scale(0.95);
+            }
+            #theme-toggle svg {
+                width: 18px; height: 18px;
+                transition: all 0.3s ease;
+            }
+            body.dark-mode #theme-toggle svg {
+                transform: rotate(180deg);
+            }
+
+            @media (max-width: 768px) {
+                #theme-toggle {
+                    bottom: 5.5rem;
+                    right: 1rem;
+                    width: 40px;
+                    height: 40px;
+                }
+                #theme-toggle svg {
+                    width: 16px;
+                    height: 16px;
+                }
+            }
     </style>
 </head>
 <body>
@@ -260,6 +303,9 @@
             <div class="pane" id="preview"></div>
         </div>
     </div>
+    <button id="theme-toggle" title="切换主题">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M8 12a4 4 0 1 0 8 0a4 4 0 1 0-8 0m-5 0h1m8-9v1m8 8h1m-9 8v1M5.6 5.6l.7.7m12.1-.7l-.7.7m0 11.4l.7.7m-12.1-.7l-.7.7"/></svg>
+    </button>
     <div class="bottom-area">
         <div class="console-panel" id="console-panel">
             <div class="console-header">
@@ -285,6 +331,73 @@
         import { diffLines } from 'https://esm.sh/diff@5.2.0';
         import { marked } from 'https://esm.sh/marked@12.0.0';
         import { PetalParser } from './petal-parser.js';
+
+        const lightenColor = (hex, percent) => {
+            const num = parseInt(hex.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = Math.min(255, (num >> 16) + amt);
+            const G = Math.min(255, ((num >> 8) & 0x00FF) + amt);
+            const B = Math.min(255, (num & 0x0000FF) + amt);
+            return `#${(0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1)}`;
+        };
+        
+        const darkenColor = (hex, percent) => {
+            const num = parseInt(hex.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = Math.max(0, (num >> 16) - amt);
+            const G = Math.max(0, ((num >> 8) & 0x00FF) - amt);
+            const B = Math.max(0, (num & 0x0000FF) - amt);
+            return `#${(0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1)}`;
+        };
+
+        let sysConfig = null;
+
+        const applyThemeColor = (themeColor) => {
+            if (!themeColor) return;
+            
+            const isDark = document.body.classList.contains('dark-mode');
+            const root = document.documentElement;
+            
+            if (isDark) {
+                const darkTheme = darkenColor(themeColor, 30);
+                root.style.setProperty('--timeline-accent', darkTheme);
+                root.style.setProperty('--border-color', `${darkTheme}40`);
+            } else {
+                root.style.setProperty('--timeline-accent', themeColor);
+                root.style.setProperty('--border-color', `${themeColor}40`);
+            }
+        };
+
+        const initTheme = () => {
+            const savedMode = localStorage.getItem('petal_dark_mode');
+            if (savedMode === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+        };
+
+        const setupThemeToggle = () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    document.body.classList.toggle('dark-mode');
+                    const isDark = document.body.classList.contains('dark-mode');
+                    localStorage.setItem('petal_dark_mode', isDark ? 'true' : 'false');
+                    if (sysConfig?.theme_color) {
+                        applyThemeColor(sysConfig.theme_color);
+                    }
+                });
+            }
+        };
+
+        const setThemeFromConfig = (config) => {
+            sysConfig = config;
+            if (config?.theme_color) {
+                applyThemeColor(config.theme_color);
+            }
+        };
+
+        initTheme();
+        setupThemeToggle();
 
         const getFileIcon = filename => {
             if (!filename.includes('.')) return 'ri-file-3-line';
@@ -741,6 +854,7 @@
                     const res = await fetch('config.toml');
                     if (!res.ok) throw new Error(`config.toml load failed: ${res.status}`);
                     this.sysConfig = parse(await res.text());
+                    setThemeFromConfig(this.sysConfig);
                     if (this.sysConfig.syntax_config) {
                         try {
                             const synRes = await fetch(this.sysConfig.syntax_config);

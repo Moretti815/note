@@ -18,6 +18,9 @@
             --private-accent: #f2c6d0;
             --glow-accent: rgb(216 140 154 / 30%);
             --text-deco: rgb(171 155 160 / 60%);
+            --card-bg: rgb(255 255 255 / 85%);
+            --border-color: rgb(244 194 194 / 30%);
+            --shadow-color: rgb(0 0 0 / 5%);
         }
 
         body.private-mode {
@@ -26,6 +29,30 @@
             --timeline-accent: #e8a0b0;
             --card-bg-blur: rgb(255 253 254 / 75%);
             --text-deco: rgb(238 187 77 / 40%);
+        }
+
+        body.dark-mode {
+            --text-main: #d4c5c0;
+            --text-muted: #8a7b73;
+            --timeline-accent: #8b5a6b;
+            --card-bg-blur: rgb(30 28 30 / 65%);
+            --rose-ellipsis: #a86b7a;
+            --bg-gradient-start: #1a181a;
+            --bg-gradient-end: #2d2a2d;
+            --private-accent: #7a4a5a;
+            --glow-accent: rgb(139 90 107 / 30%);
+            --text-deco: rgb(138 123 115 / 60%);
+            --card-bg: rgb(30 28 30 / 85%);
+            --border-color: rgb(139 90 107 / 30%);
+            --shadow-color: rgb(0 0 0 / 20%);
+        }
+
+        body.dark-mode.private-mode {
+            --bg-gradient-start: #1a1518;
+            --bg-gradient-end: #2d2528;
+            --timeline-accent: #9a6a7a;
+            --card-bg-blur: rgb(30 25 28 / 75%);
+            --text-deco: rgb(200 160 100 / 30%);
         }
 
         *, *::before, *::after { box-sizing: border-box; }
@@ -137,6 +164,48 @@
             font-family: system-ui, sans-serif; z-index: 10; display: none;
         }
         .corner-link:hover { opacity: 0.8; }
+
+        #theme-toggle {
+            position: fixed; bottom: 2rem; right: 2.5rem;
+            width: 44px; height: 44px;
+            background: var(--card-bg);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 2px 12px var(--shadow-color);
+            -webkit-tap-highlight-color: transparent;
+        }
+        #theme-toggle:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 16px var(--shadow-color);
+        }
+        #theme-toggle:active {
+            transform: scale(0.95);
+        }
+        #theme-toggle svg {
+            width: 18px; height: 18px;
+            transition: all 0.3s ease;
+        }
+        body.dark-mode #theme-toggle svg {
+            transform: rotate(180deg);
+        }
+
+        @media (max-width: 600px) {
+            #theme-toggle {
+                bottom: 1.5rem;
+                right: 1.5rem;
+                width: 40px;
+                height: 40px;
+            }
+            #theme-toggle svg {
+                width: 16px;
+                height: 16px;
+            }
+        }
 
         .container { flex: 1; width: 100%; max-width: 580px; margin-inline: auto; padding: 4rem 1.5rem; }
 
@@ -283,6 +352,10 @@
 
     <i id="secret-petal" class="ri-flower-fill"></i>
     <i id="editor-link" class="ri-quill-pen-line"></i>
+    
+    <button id="theme-toggle" title="切换主题">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M8 12a4 4 0 1 0 8 0a4 4 0 1 0-8 0m-5 0h1m8-9v1m8 8h1m-9 8v1M5.6 5.6l.7.7m12.1-.7l-.7.7m0 11.4l.7.7m-12.1-.7l-.7.7"/></svg>
+    </button>
     
     <div id="pwd-modal">
         <input type="text" id="pwd-input" placeholder="输入轻语解锁梦境..." autocomplete="off">
@@ -477,6 +550,7 @@
 
             async bootstrap() {
                 this.bindGlobalEvents();
+                this.initTheme();
                 const loader = document.getElementById('loader');
 
                 try {
@@ -663,6 +737,55 @@
                 set('site-title', mode ? (c.private_header_title || c.header_title) : c.header_title);
                 const sub = mode ? (c.private_header_subtitle || c.header_subtitle) : c.header_subtitle;
                 if (sub !== undefined) document.getElementById('site-subtitle').innerHTML = sub.replace(/\n/g, '<br>');
+                
+                this.applyThemeColor();
+            }
+
+            applyThemeColor() {
+                const c = this.config, mode = this.isPrivateMode;
+                const themeColor = mode ? (c.private_theme_color || c.theme_color) : c.theme_color;
+                
+                if (!themeColor) return;
+                
+                const isDark = document.body.classList.contains('dark-mode');
+                
+                const lightenColor = (hex, percent) => {
+                    const num = parseInt(hex.replace('#', ''), 16);
+                    const amt = Math.round(2.55 * percent);
+                    const R = Math.min(255, (num >> 16) + amt);
+                    const G = Math.min(255, ((num >> 8) & 0x00FF) + amt);
+                    const B = Math.min(255, (num & 0x0000FF) + amt);
+                    return `#${(0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1)}`;
+                };
+                
+                const darkenColor = (hex, percent) => {
+                    const num = parseInt(hex.replace('#', ''), 16);
+                    const amt = Math.round(2.55 * percent);
+                    const R = Math.max(0, (num >> 16) - amt);
+                    const G = Math.max(0, ((num >> 8) & 0x00FF) - amt);
+                    const B = Math.max(0, (num & 0x0000FF) - amt);
+                    return `#${(0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1)}`;
+                };
+                
+                const root = document.documentElement;
+                
+                if (isDark) {
+                    const darkTheme = darkenColor(themeColor, 30);
+                    const darkMuted = darkenColor(themeColor, 50);
+                    root.style.setProperty('--timeline-accent', darkTheme);
+                    root.style.setProperty('--rose-ellipsis', darkMuted);
+                    root.style.setProperty('--private-accent', darkenColor(themeColor, 25));
+                    root.style.setProperty('--glow-accent', `${darkTheme}40`);
+                    root.style.setProperty('--border-color', `${darkTheme}30`);
+                } else {
+                    const lightTheme = themeColor;
+                    const lightMuted = lightenColor(themeColor, 20);
+                    root.style.setProperty('--timeline-accent', lightTheme);
+                    root.style.setProperty('--rose-ellipsis', lightMuted);
+                    root.style.setProperty('--private-accent', lightenColor(themeColor, 15));
+                    root.style.setProperty('--glow-accent', `${lightTheme}30`);
+                    root.style.setProperty('--border-color', `${lightTheme}30`);
+                }
             }
 
             applyConfig(c) {
@@ -844,6 +967,23 @@
                         history.replaceState(null, '', window.location.pathname + window.location.search);
                     }
                 });
+
+                const themeToggle = document.getElementById('theme-toggle');
+                if (themeToggle) {
+                    themeToggle.addEventListener('click', () => {
+                        document.body.classList.toggle('dark-mode');
+                        const isDark = document.body.classList.contains('dark-mode');
+                        localStorage.setItem('petal_dark_mode', isDark ? 'true' : 'false');
+                        this.applyThemeColor();
+                    });
+                }
+            }
+
+            initTheme() {
+                const savedMode = localStorage.getItem('petal_dark_mode');
+                if (savedMode === 'true') {
+                    document.body.classList.add('dark-mode');
+                }
             }
 
             handleInitialHash() {
