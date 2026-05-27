@@ -5,7 +5,7 @@ set -a
 [[ -f .env ]] && source .env
 set +a
 
-readonly REPO="https://raw.githubusercontent.com/miniyu157/petal-note/main"
+readonly REPO="https://raw.githubusercontent.com/Moretti815/note/main"
 PATH_PART=${REPO#https://raw.githubusercontent.com/}
 _user=${PATH_PART%%/*} _repo=${PATH_PART#*/} _repo=${_repo%%/*}
 _src="${_user}/${_repo}"

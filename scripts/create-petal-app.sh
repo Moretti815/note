@@ -5,7 +5,7 @@ readonly BLUE=$'\e[34m'
 readonly GREEN=$'\e[32m'
 readonly OFF=$'\e[0m'
 
-readonly REPO="https://raw.githubusercontent.com/miniyu157/petal-note/main"
+readonly REPO="https://raw.githubusercontent.com/Moretti815/note/main"
 PATH_PART=${REPO#https://raw.githubusercontent.com/}
 _user=${PATH_PART%%/*} _repo=${PATH_PART#*/} _repo=${_repo%%/*}
 _src="${_user}/${_repo}"
@@ -97,7 +97,7 @@ cat << EOF
 
 部署命令：
 
-  curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/build.sh | bash -e -s -- ${deploy_args[*]}
+  curl -fsSL https://raw.githubusercontent.com/Moretti815/note/main/scripts/build.sh | bash -e -s -- ${deploy_args[*]}
 
 部署完成后可以启动本地服务器预览效果。
 EOF
