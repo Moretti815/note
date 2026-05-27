@@ -287,6 +287,9 @@
             color: #d4a86a;
             border-color: rgb(200 160 100 / 30%);
         }
+        body.dark-mode .card-tag {
+            color: #c9a0a8;
+        }
 
         .timeline { display: grid; gap: 2rem; perspective: 1200px; }
         .item { display: grid; grid-template-columns: 20px 1fr; gap: 1.2rem; opacity: 0; transform-style: preserve-3d; }
@@ -393,7 +396,7 @@
 
         .card-inner { padding: 1.2rem 1.4rem; line-height: 1.7; font-size: 0.95rem; max-height: calc(1.7em * 5 + 2.4rem); overflow: hidden; transition: max-height 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
         .card.expanded .card-inner, .card.locked .card-inner { max-height: 2000px; }
-        .card-tag { color: var(--rose-ellipsis); margin-inline-end: 0.4rem; display: inline-block; font-family: system-ui, sans-serif; font-size: 0.85rem; }
+        .card-tag { color: #b85a6c; margin-inline-end: 0.4rem; display: inline-block; font-family: system-ui, sans-serif; font-size: 0.85rem; font-weight: 500; }
         .card-link { color: var(--rose-ellipsis); text-decoration: none; border-bottom: 1px dashed rgb(216 140 154 / 40%); transition: all 0.3s ease; padding-bottom: 1px; word-break: break-all; }
         .card-link:hover { border-bottom-color: var(--rose-ellipsis); background: rgb(216 140 154 / 10%); }
 
